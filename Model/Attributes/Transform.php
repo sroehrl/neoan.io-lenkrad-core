@@ -1,0 +1,36 @@
+<?php
+
+namespace Neoan\Model\Attributes;
+use Attribute;
+use Exception;
+use Neoan\Enums\AttributeType;
+use Neoan\Enums\Direction;
+use Neoan\Helper\AttributeHelper;
+use Neoan\Model\Model;
+use Neoan\Model\ModelAttribute;
+use Neoan\Model\Transformation;
+use ReflectionException;
+
+#[Attribute]
+class Transform extends ModelAttribute
+{
+    private string $converterClass;
+    public AttributeType $type = AttributeType::MUTATE;
+    public function __construct(string $converterClass){
+        $this->converterClass = $converterClass;
+
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    public function __invoke(array $result, Direction $direction, string $property){
+        $check = new AttributeHelper($this->converterClass);
+        if(!$check->reflection->implementsInterface(Transformation::class)){
+            throw new Exception($this->converterClass . ' does not implement ' . Transformation::class);
+        }
+        $class = new $this->converterClass();
+        return $class($result, $direction, $property);
+    }
+}

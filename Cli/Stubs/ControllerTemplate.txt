@@ -1,0 +1,13 @@
+<?php
+
+namespace {{namespace}};
+
+use Neoan\Routing\Routable;
+
+class {{name}} implements Routable
+{
+    public function __invoke(array $provided): array
+    {
+        return ['name' => '{{name}}'];
+    }
+}

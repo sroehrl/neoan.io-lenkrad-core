@@ -1,0 +1,13 @@
+<?php
+
+namespace {{namespace}};
+
+use Neoan\Model\Attributes\IsPrimaryKey;
+use Neoan\Model\Model;
+
+class {{name}} extends Model
+{
+    #[IsPrimaryKey]
+    public int $id;
+
+}
