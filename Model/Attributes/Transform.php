@@ -6,16 +6,14 @@ use Exception;
 use Neoan\Enums\AttributeType;
 use Neoan\Enums\Direction;
 use Neoan\Helper\AttributeHelper;
-use Neoan\Model\Model;
-use Neoan\Model\ModelAttribute;
-use Neoan\Model\Transformation;
+use Neoan\Model\Interfaces\ModelAttribute;
+use Neoan\Model\Interfaces\Transformation;
 use ReflectionException;
 
 #[Attribute]
-class Transform extends ModelAttribute
+class Transform implements ModelAttribute
 {
     private string $converterClass;
-    public AttributeType $type = AttributeType::MUTATE;
     public function __construct(string $converterClass){
         $this->converterClass = $converterClass;
 
@@ -32,5 +30,10 @@ class Transform extends ModelAttribute
         }
         $class = new $this->converterClass();
         return $class($result, $direction, $property);
+    }
+
+    public function getType(): AttributeType
+    {
+        return AttributeType::MUTATE;
     }
 }

@@ -3,12 +3,11 @@
 namespace Neoan\Model\Attributes;
 use Attribute;
 use Neoan\Enums\AttributeType;
-use Neoan\Model\ModelAttribute;
+use Neoan\Model\Interfaces\ModelAttribute;
 
 #[Attribute]
-class Type extends ModelAttribute
+class Type implements ModelAttribute
 {
-    public AttributeType $type = AttributeType::DECLARE;
     public string $propertyType;
     public ?string $propertyLength = null;
     public ?string $default = null;
@@ -17,5 +16,10 @@ class Type extends ModelAttribute
         $this->propertyType = $propertyType;
         $this->propertyLength = $propertyLength;
         $this->default = $default;
+    }
+
+    public function getType(): AttributeType
+    {
+        return AttributeType::DECLARE;
     }
 }

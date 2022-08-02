@@ -3,14 +3,13 @@
 namespace Neoan\Model\Attributes;
 use Attribute;
 use Neoan\Enums\AttributeType;
-use Neoan\Model\ModelAttribute;
+use Neoan\Model\Interfaces\ModelAttribute;
 
 #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
-class HasMany extends ModelAttribute
+class HasMany implements ModelAttribute
 {
     public string $modelClass;
     public array $matching;
-    public AttributeType $type = AttributeType::ATTACH;
 
     public function __construct(string $modelClass, array $matching = [])
     {
@@ -30,5 +29,10 @@ class HasMany extends ModelAttribute
 
         return $this->modelClass::retrieve($matching);
 
+    }
+
+    public function getType(): AttributeType
+    {
+        return AttributeType::ATTACH;
     }
 }

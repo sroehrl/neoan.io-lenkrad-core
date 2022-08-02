@@ -3,7 +3,7 @@
 namespace Neoan\Model\Transformers;
 
 use Neoan\Enums\Direction;
-use Neoan\Model\Transformation;
+use Neoan\Model\Interfaces\Transformation;
 
 class Hash implements Transformation
 {

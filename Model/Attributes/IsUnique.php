@@ -4,12 +4,16 @@ namespace Neoan\Model\Attributes;
 
 use Attribute;
 use Neoan\Enums\AttributeType;
-use Neoan\Model\ModelAttribute;
+use Neoan\Model\Interfaces\ModelAttribute;
 
 #[Attribute]
-class IsUnique extends ModelAttribute
+class IsUnique implements ModelAttribute
 {
-    public AttributeType $type = AttributeType::DECLARE;
     public function __construct(){}
     public function __invoke(){}
+
+    public function getType(): AttributeType
+    {
+        return AttributeType::DECLARE;
+    }
 }

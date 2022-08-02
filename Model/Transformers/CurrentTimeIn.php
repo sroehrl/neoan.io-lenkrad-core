@@ -4,7 +4,7 @@ namespace Neoan\Model\Transformers;
 
 use Neoan\Enums\Direction;
 use Neoan\Helper\DateHelper;
-use Neoan\Model\Transformation;
+use Neoan\Model\Interfaces\Transformation;
 
 class CurrentTimeIn implements Transformation
 {

@@ -92,7 +92,7 @@ class Interpreter
             } else {
                 foreach ($attributes as $attribute){
                     $attributeInstance = $attribute->newInstance();
-                    switch($attributeInstance->type) {
+                    switch($attributeInstance->getType()) {
                         case AttributeType::ATTACH:
                             $attachable[$property->getName()] = $attributeInstance;
                             break;

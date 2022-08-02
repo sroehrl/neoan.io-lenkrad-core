@@ -1,6 +1,6 @@
 <?php
 
-namespace Neoan\Model;
+namespace Neoan\Model\Interfaces;
 
 use Neoan\Enums\Direction;
 

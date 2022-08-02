@@ -4,12 +4,11 @@ namespace Neoan\Model\Attributes;
 
 use Neoan\Enums\AttributeType;
 use Neoan\Enums\Direction;
-use Neoan\Model\ModelAttribute;
+use Neoan\Model\Interfaces\ModelAttribute;
 
 #[\Attribute]
-class Initialize extends ModelAttribute
+class Initialize implements ModelAttribute
 {
-    public AttributeType $type = AttributeType::INITIAL;
     private mixed $setter;
     public function __construct(mixed $setter)
     {
@@ -24,4 +23,8 @@ class Initialize extends ModelAttribute
         return $modelArray;
     }
 
+    public function getType(): AttributeType
+    {
+        return AttributeType::INITIAL;
+    }
 }
