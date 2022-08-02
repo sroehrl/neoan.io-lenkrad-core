@@ -10,16 +10,11 @@
     }
   ],
   "require": {
+    "php": "~8.1",
     "neoan3-apps/template": "^1.2",
     "neoan3-apps/db": "^0.3.6",
     "vlucas/phpdotenv": "^5.4",
     "symfony/console": "^6.1"
-  },
-  "autoload": {
-    "psr-4": {
-      "App\\": "app/",
-      "Neoan\\": "neoan/",
-      "Cli\\": "cli/"
-    }
   }
+
 }
