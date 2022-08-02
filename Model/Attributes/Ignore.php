@@ -19,6 +19,6 @@ class Ignore implements ModelAttribute
 
     public function getType(): AttributeType
     {
-        return AttributeType::MUTATE;
+        return AttributeType::ATTACH;
     }
 }
