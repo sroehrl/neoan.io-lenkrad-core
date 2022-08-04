@@ -122,7 +122,6 @@ class Route
      */
     private function execute(array $route): void
     {
-        var_dump($route);
         if(empty($route['classes'])) {
             Response::output($route['injections'], [$route['view']]);
         } else {
@@ -148,7 +147,8 @@ class Route
     }
     private function lastRoutable(array $route, $result): void
     {
-        if($route['response']){
+        var_dump($result);
+        if(!empty($route['response'])){
             $route['response'][0]::{$route['response'][1]}($result, $route['view'] ?? null);
         } else {
             Response::output($result, [$route['view'] ?? null]);
