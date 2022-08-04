@@ -86,9 +86,10 @@ class Response implements ResponseInterface
 
     static public function json($data): void
     {
+        $json = new VerifyJson($data);
         self::getInstance()
             ->setResponseHeaders('Content-type: application/json')
-            ->respond(new VerifyJson($data));
+            ->respond($json->jsonSerialize());
     }
 
     static public function html($data, ?string $view = null): void
