@@ -1,6 +1,6 @@
 <?php
 
-namespace Neoan\Tests\Mocks;
+namespace Test\Mocks;
 
 use Neoan\Model\Attributes\IsPrimaryKey;
 use Neoan\Model\Attributes\Type;

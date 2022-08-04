@@ -2,32 +2,42 @@
 
 namespace Neoan\Request;
 
+use Neoan\CoreInterfaces\RequestInterface;
 use Neoan\Enums\GenericEvent;
 use Neoan\Event\Event;
+use Neoan\Helper\FileParser;
+use Neoan\Helper\Terminate;
 use Neoan\Helper\VerifyJson;
 use Neoan\NeoanApp;
 
-class Request
+class Request implements RequestInterface
 {
-    private static ?Request $instance = null;
+    private static ?RequestInterface $instance = null;
 
     public string $requestMethod;
     public array $requestHeaders = [];
     public array $urlParts = [];
     public array $parameters = [];
     public string $requestUri;
+    public string $webPath;
     public array $files = [];
     public array $input = [];
 
-    public static function getInstance(): ?Request
+    public static function getInstance($mockMe = null, $webPath = ''): ?RequestInterface
     {
+        if($mockMe){
+            self::$instance = $mockMe;
+        }
         if (self::$instance === null) {
             self::$instance = new Request();
+            self::$instance->webPath = $webPath;
             if (isset($_SERVER['REQUEST_METHOD'])) {
                 self::$instance->requestMethod = $_SERVER['REQUEST_METHOD'];
             }
             if (isset($_SERVER['REQUEST_URI'])) {
-                self::$instance->requestUri = preg_replace('/[a-z\d\/_.\-]*\/public/i', '', $_SERVER['REQUEST_URI']);
+                $sanitizedWebPath = str_replace('/','\\/',$webPath);
+                $pattern = "[a-z\d\/_.\-]*\/{$sanitizedWebPath}";
+                self::$instance->requestUri = preg_replace("/$pattern/i", '', $_SERVER['REQUEST_URI']);
                 self::$instance->urlParts = array_values(array_filter(explode('/', self::$instance->requestUri)));
             }
             if (!empty($_FILES)) {
@@ -39,13 +49,13 @@ class Request
 
     public function __invoke(NeoanApp $app): void
     {
-        self::parseActualFile($app->publicPath);
-        $instance = self::getInstance();
-
+        new FileParser($app->publicPath. $_SERVER['REQUEST_URI']);
+        $instance = self::getInstance(null, $app->webPath);
         self::parseInput();
         self::parseRequestHeaders();
 
     }
+
 
     public static function setParameters(array $parameters): void
     {
@@ -56,9 +66,9 @@ class Request
     private static function parseRequestHeaders(): void
     {
         $instance = self::getInstance();
-        foreach ($_SERVER as $item) {
-            if (str_starts_with($item, 'HTTP_')) {
-                $instance->requestHeaders[] = $item;
+        foreach ($_SERVER as $key => $item) {
+            if (str_starts_with($key, 'HTTP_')) {
+                $instance->requestHeaders[$key] = $item;
             }
         }
         Event::dispatch(GenericEvent::REQUEST_HEADERS_SET, $instance->requestHeaders);
@@ -74,28 +84,6 @@ class Request
             $instance->input = $_POST;
         }
         Event::dispatch(GenericEvent::REQUEST_INPUT_PARSED, $instance->input);
-    }
-    private static function parseActualFile($publicPath): void
-    {
-        $potential = $publicPath . $_SERVER['REQUEST_URI'];
-        if(file_exists($potential) && !is_dir($potential)){
-
-            preg_match('/\.([a-z0-9]+)$/',$potential, $hits);
-            switch ($hits[1]) {
-                case 'js':
-                    header('Content-Type: text/javascript');
-                    break;
-                case 'css':
-                    header('Content-Type: text/css');
-                    break;
-                case 'svg':
-                    header('Content-Type: image/svg+xml');
-                    break;
-
-            }
-            echo file_get_contents($publicPath .$_SERVER['REQUEST_URI']);
-            die();
-        }
     }
 
     public static function getRequestMethod(): string
@@ -129,5 +117,10 @@ class Request
     {
         $instance = self::getInstance();
         return $instance->parameters[$which] ?? null;
+    }
+
+    public static function detachInstance(): void
+    {
+        self::$instance = null;
     }
 }

@@ -3,7 +3,7 @@
          stderr="true"
          backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="vendor/autoload.php"
+         bootstrap="Tests/bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -18,11 +18,12 @@
             <directory>./NeoanApp.php</directory>
             <directory>./Tests</directory>
             <directory>./vendor</directory>
+            <directory>./Cli</directory>
             <directory suffix="Test.php">./</directory>
         </exclude>
         <report>
             <clover outputFile="Tests/clover.xml"/>
-            <html outputDirectory="Tests/report"/>
+            <html outputDirectory="Tests/_report"/>
         </report>
     </coverage>
     <testsuites>

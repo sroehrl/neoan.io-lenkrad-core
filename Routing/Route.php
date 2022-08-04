@@ -15,7 +15,7 @@ class Route
     private string $currentPath;
     private string $currentMethod;
 
-    private static function getInstance(string $path = null) :self
+    public static function getInstance($mockMe = null, string $path = null) :self
     {
         if (self::$instance === null)
         {
@@ -61,7 +61,7 @@ class Route
 
     public static function request(string $method, string $path, ...$classNames) : self
     {
-        $instance = self::getInstance($path);
+        $instance = self::getInstance(null, $path);
         Event::dispatch(GenericEvent::ROUTE_REGISTERED, [
             'method' => $method,
             'route' => $path
@@ -133,18 +133,25 @@ class Route
                     throw new \Exception($class.' needs to implement ' . Routable::class, 500);
                 }
                 $result = $run($passIn);
-                $passIn = $this->packUnpack($passIn, $result);
-                if($i + 1 === sizeof($route['classes'])){
-                    if($route['response']){
-                        $route['response'][0]::{$route['response'][1]}($result, $route['view'] ?? null);
-                    } else {
-                        Response::output($result, [$route['view'] ?? null]);
-                    }
-
+                if($this->isLastRoutable($route, $i)){
+                    $this->lastRoutable($route, $result);
                 }
+                $passIn = $this->packUnpack($passIn, $result);
             }
         }
 
+    }
+    private function isLastRoutable(array $route, int $index):bool
+    {
+        return $index + 1 === sizeof($route['classes']);
+    }
+    private function lastRoutable(array $route, $result): void
+    {
+        if($route['response']){
+            $route['response'][0]::{$route['response'][1]}($result, $route['view'] ?? null);
+        } else {
+            Response::output($result, [$route['view'] ?? null]);
+        }
     }
     private function packUnpack(array $existing, mixed $previousResult): array
     {

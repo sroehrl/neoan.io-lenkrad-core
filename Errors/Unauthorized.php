@@ -2,8 +2,8 @@
 
 namespace Neoan\Errors;
 
+use Neoan\Helper\Terminate;
 use Neoan\Response\Response;
-use Neoan3\Apps\Template;
 
 class Unauthorized
 {
@@ -12,6 +12,6 @@ class Unauthorized
         $response = new Response();
         http_response_code(401);
         $response->respond('Unauthorized');
-        die();
+        Terminate::die();
     }
 }

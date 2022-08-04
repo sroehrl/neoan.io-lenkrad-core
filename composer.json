@@ -19,7 +19,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Neoan\\": "./"
+      "Neoan\\": "./",
+      "Test\\": "./Tests/"
     }
   },
   "require-dev": {

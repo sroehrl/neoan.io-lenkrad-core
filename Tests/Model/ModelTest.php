@@ -1,14 +1,14 @@
 <?php
 
-namespace Model;
+namespace Test\Model;
 
 use Neoan\Database\Database;
 use Neoan\Enums\TransactionType;
 use Neoan\Model\Attributes\Initialize;
 use Neoan\Model\Collection;
 use Neoan\Model\Interpreter;
-use Neoan\Tests\Mocks\DatabaseTestAdapter;
-use Neoan\Tests\Mocks\MockModel;
+use Test\Mocks\DatabaseTestAdapter;
+use Test\Mocks\MockModel;
 use Neoan\Model\Model;
 use PHPUnit\Framework\TestCase;
 

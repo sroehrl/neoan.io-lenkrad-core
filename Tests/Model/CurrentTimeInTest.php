@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace Test\Model;
 
 use Neoan\Enums\Direction;
 use Neoan\Helper\DateHelper;

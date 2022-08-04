@@ -1,6 +1,6 @@
 <?php
 
-namespace Neoan\Tests\Mocks;
+namespace Test\Mocks;
 
 use PDO;
 
@@ -138,6 +138,6 @@ class DatabaseTestAdapter implements \Neoan\Database\Adapter
      */
     public function delete($table, string $id, bool $hard = false)
     {
-        // TODO: Implement delete() method.
+        return $this->raw("DELETE FROM `$table` WHERE id = ?",['id'=>$id]);
     }
 }

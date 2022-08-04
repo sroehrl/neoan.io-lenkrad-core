@@ -1,6 +1,6 @@
 <?php
 
-namespace Neoan\Tests\Mocks;
+namespace Test\Mocks;
 
 use Neoan\Database\Database;
 use Neoan\Model\Attributes\HasMany;
