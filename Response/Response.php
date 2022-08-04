@@ -83,14 +83,12 @@ class Response implements ResponseInterface
         self::{self::getInstance()->defaultOutput}($data, ...$renderOptions);
     }
 
-    /**
-     * @throws \JsonException
-     */
+
     static public function json($data): void
     {
         self::getInstance()
             ->setResponseHeaders('Content-type: application/json')
-            ->respond(json_encode(new VerifyJson($data),JSON_THROW_ON_ERROR));
+            ->respond(new VerifyJson($data));
     }
 
     static public function html($data, ?string $view = null): void
