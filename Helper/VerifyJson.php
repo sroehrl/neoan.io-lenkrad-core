@@ -3,7 +3,7 @@
 namespace Neoan\Helper;
 
 
-class VerifyJson
+class VerifyJson implements \JsonSerializable
 {
     private mixed $data;
     public function __construct(mixed $data)

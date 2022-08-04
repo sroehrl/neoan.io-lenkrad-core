@@ -83,6 +83,9 @@ class Response implements ResponseInterface
         self::{self::getInstance()->defaultOutput}($data, ...$renderOptions);
     }
 
+    /**
+     * @throws \JsonException
+     */
     static public function json($data): void
     {
         self::getInstance()
