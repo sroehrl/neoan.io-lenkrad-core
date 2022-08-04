@@ -122,6 +122,7 @@ class Route
      */
     private function execute(array $route): void
     {
+        var_dump($route);
         if(empty($route['classes'])) {
             Response::output($route['injections'], [$route['view']]);
         } else {

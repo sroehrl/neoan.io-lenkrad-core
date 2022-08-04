@@ -6,7 +6,6 @@ use Neoan\CoreInterfaces\RequestInterface;
 use Neoan\Enums\GenericEvent;
 use Neoan\Event\Event;
 use Neoan\Helper\FileParser;
-use Neoan\Helper\Terminate;
 use Neoan\Helper\VerifyJson;
 use Neoan\NeoanApp;
 
