@@ -31,7 +31,7 @@ class VerifyJson implements \JsonSerializable
     private function makeJson($rawData): string
     {
         try{
-            return json_encode(new VerifyJson($rawData),JSON_THROW_ON_ERROR);
+            return json_encode($rawData,JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             http_response_code(500);
             return json_encode(['error' => 'output-data is not serializable']);
