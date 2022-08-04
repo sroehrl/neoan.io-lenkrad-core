@@ -2,7 +2,9 @@
 
 namespace Neoan\Routing;
 
+use Neoan\Enums\GenericEvent;
 use Neoan\Errors\NotFound;
+use Neoan\Event\Event;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
 
@@ -22,7 +24,10 @@ class Route
         if($path){
             self::$instance->currentPath = $path;
         }
-
+        Event::dispatch(GenericEvent::ROUTE_HANDLER_INITIALIZED, [
+            'clientMethod' => __FUNCTION__,
+            'arguments' => func_get_args()
+        ]);
         return self::$instance;
     }
 
@@ -30,11 +35,20 @@ class Route
     {
         $instance = self::getInstance();
         $instance->paths[$instance->currentMethod][$instance->currentPath]['response'] = $responseHandler;
+        Event::dispatch(GenericEvent::RESPONSE_HANDLER_SET, [
+            'clientMethod' => __FUNCTION__,
+            'handler' => func_get_args()
+        ]);
     }
 
     public function inject(array $injections): self
     {
         $instance = self::getInstance();
+        Event::dispatch(GenericEvent::ROUTE_INJECTION, [
+            'method' => $instance->currentMethod,
+            'path' => $instance->currentPath,
+            'injections' => $injections
+        ]);
         $instance->paths[$instance->currentMethod][$instance->currentPath]['injections'] = $injections;
         return $instance;
     }
@@ -48,6 +62,10 @@ class Route
     public static function request(string $method, string $path, ...$classNames) : self
     {
         $instance = self::getInstance($path);
+        Event::dispatch(GenericEvent::ROUTE_REGISTERED, [
+            'method' => $method,
+            'route' => $path
+        ]);
         $instance->currentMethod = $method;
         $instance->paths[$method][$path] = ['classes' => [...$classNames], 'injections' => [], 'response' => []];
         return $instance;
@@ -90,6 +108,7 @@ class Route
                     array_shift($matches);
                     $instance->handleParameters($path, $matches);
                 }
+                Event::dispatch(GenericEvent::BEFORE_ROUTABLE_EXECUTION, $route);
                 $instance->execute($route);
             }
         }

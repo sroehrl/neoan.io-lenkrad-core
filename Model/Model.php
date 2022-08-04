@@ -9,6 +9,8 @@ use Neoan\Database\Database;
 use Neoan\Enums\AttributeType;
 use Neoan\Enums\Direction;
 use Neoan\Enums\TransactionType;
+use Neoan\Event\Event;
+use Neoan\Event\EventNotification;
 use Neoan\Helper\AttributeHelper;
 use Neoan\Model\Attributes\HasMany;
 use Neoan\Model\Attributes\IsPrimaryKey;
@@ -16,18 +18,21 @@ use Neoan3\Apps\Db;
 use ReflectionAttribute;
 use ReflectionException;
 
+
 class Model
 {
     private TransactionType $transactionMode = TransactionType::INSERT;
     private static string $tableName;
     private static Interpreter $interpreter;
-
+    private static EventNotification $notify;
 
     public function __construct(array $staticModel = [])
     {
+        self::$notify = Event::makeListenable($this);
         self::$interpreter = new Interpreter(static::class);
         self::$interpreter->asInstance($this);
         self::$interpreter->initialize($staticModel);
+        self::$notify->inform();
     }
 
 
@@ -62,6 +67,7 @@ class Model
         }
 
         $this->rehydrate($id);
+        self::$notify->inform();
         return $this;
     }
 
@@ -74,6 +80,7 @@ class Model
             $this->{$property} = $value;
         }
         $this->transactionMode = TransactionType::UPDATE;
+        self::$notify->inform();
     }
 
     /**
@@ -97,12 +104,18 @@ class Model
      */
     public static function retrieveOne(array $condition): ?Model
     {
-        return self::retrieve($condition, ['limit'=>[0,1]])[0] ?? null;
+        self::interpret();
+        $select = self::$tableName . '.' . self::$interpreter->getPrimaryKey();
+        $results = Database::easy($select, $condition, ['limit'=>[0,1]]);
+        if(!empty($results)){
+            return self::get($results[0][self::$interpreter->getPrimaryKey()]);
+        }
+        return null;
     }
 
     public function toArray(bool $flat = false): array
     {
-        $ignore = ['transactionMode'];
+        $ignore = ['transactionMode','notify'];
         $values = get_object_vars($this);
         foreach ($ignore as $key) {
             unset($values[$key]);
@@ -118,13 +131,20 @@ class Model
         return $values;
     }
 
+
+    /**
+     * @throws Exception
+     */
     public static function get($primaryValue): static
     {
         self::interpret();
+
         $generated = self::$interpreter->generateSelect();
         $result = Database::easy($generated['selectorString'], [self::$tableName . '.id' => $primaryValue], ['limit' => [0, 1]]);
+
         if (empty($result)) {
             // some exception
+            throw new Exception(static::class . '::get failed');
         }
         $pure = $result[0];
         /* Attachable: current primary value, current primary key */
@@ -149,11 +169,18 @@ class Model
 
     public function getTransactionMode(): TransactionType
     {
+        self::$notify->inform();
         return $this->transactionMode;
     }
 
     public function setTransactionMode(TransactionType $type): void
     {
+        self::$notify->inform();
         $this->transactionMode = $type;
     }
+
+
+
+
+
 }

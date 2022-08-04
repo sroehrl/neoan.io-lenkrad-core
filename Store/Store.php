@@ -7,7 +7,7 @@ class Store
     private static ?self $instance = null;
     private array $storage = [];
 
-    private static function getInstance(): ?Store
+    public static function getInstance(): ?Store
     {
         if(self::$instance == null){
             self::$instance = new Store();
@@ -41,6 +41,10 @@ class Dynamic
         $this->watchedVariable = $variableName;
     }
     public function __toString(): string
+    {
+        return $this->instance->readValue($this->watchedVariable);
+    }
+    public function get()
     {
         return $this->instance->readValue($this->watchedVariable);
     }

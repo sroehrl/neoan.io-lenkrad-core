@@ -22,7 +22,6 @@ class Interpreter
     {
         $this->reflection = new AttributeHelper($currentModelClass);
         $this->parsedModel = $this->reflection->parseClass();
-
     }
     public function asInstance(Model $currentModel): void
     {
@@ -100,6 +99,8 @@ class Interpreter
                         case AttributeType::MUTATE:
                             $this->addToSelectorString($selectorString, $property->getName());
                             $mutatable[$property->getName()] = $attributeInstance;
+                            break;
+                        case AttributeType::PRIVATE:
                             break;
                         case AttributeType::DECLARE:
                         default:

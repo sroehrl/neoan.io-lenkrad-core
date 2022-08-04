@@ -2,6 +2,8 @@
 
 namespace Neoan\Request;
 
+use Neoan\Enums\GenericEvent;
+use Neoan\Event\Event;
 use Neoan\Helper\VerifyJson;
 use Neoan\NeoanApp;
 
@@ -59,6 +61,7 @@ class Request
                 $instance->requestHeaders[] = $item;
             }
         }
+        Event::dispatch(GenericEvent::REQUEST_HEADERS_SET, $instance->requestHeaders);
     }
 
     private static function parseInput(): void
@@ -70,6 +73,7 @@ class Request
         } elseif (!empty($_POST)) {
             $instance->input = $_POST;
         }
+        Event::dispatch(GenericEvent::REQUEST_INPUT_PARSED, $instance->input);
     }
     private static function parseActualFile($publicPath): void
     {

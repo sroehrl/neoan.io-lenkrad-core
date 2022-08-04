@@ -3,8 +3,11 @@
 namespace Neoan\Database;
 
 use Exception;
+use Neoan\Enums\GenericEvent;
+use Neoan\Event\Event;
+use Neoan\Event\Listenable;
 
-class Database
+class Database implements Listenable
 {
     public static Adapter $client;
 
@@ -12,6 +15,7 @@ class Database
     public static function connect(Adapter $client): void
     {
         self::$client = $client;
+        Event::dispatch(GenericEvent::DATABASE_ADAPTER_CONNECTED, $client);
     }
 
     /**
@@ -19,7 +23,11 @@ class Database
      */
     public static function raw(string $sql, array $conditions = [], $extra = null)
     {
-        return self::$client->raw($sql, $conditions, $extra);
+        Event::dispatch(GenericEvent::BEFORE_DATABASE_TRANSACTION, [
+            'clientMethod' => __FUNCTION__,
+            'arguments' => func_get_args()
+        ]);
+        return self::respond(self::$client->raw($sql, $conditions, $extra));
     }
 
     /**
@@ -27,7 +35,11 @@ class Database
      */
     public static function easy(string $selectorString, array $conditions = [], array $extra = null)
     {
-        return self::$client->easy($selectorString, $conditions, $extra);
+        Event::dispatch(GenericEvent::BEFORE_DATABASE_TRANSACTION, [
+            'clientMethod' => __FUNCTION__,
+            'arguments' => func_get_args()
+        ]);
+        return self::respond(self::$client->easy($selectorString, $conditions, $extra));
     }
 
     /**
@@ -35,20 +47,37 @@ class Database
      */
     public static function insert($table, ?array $content = null)
     {
-        return self::$client->insert($table, $content);
+        Event::dispatch(GenericEvent::BEFORE_DATABASE_TRANSACTION, [
+            'clientMethod' => __FUNCTION__,
+            'arguments' => func_get_args()
+        ]);
+        return self::respond(self::$client->insert($table, $content));
     }
     /**
      * @throws Exception
      */
     public static function update($table, array $values, array $where)
     {
-        return self::$client->update($table, $values, $where);
+        Event::dispatch(GenericEvent::BEFORE_DATABASE_TRANSACTION, [
+            'clientMethod' => __FUNCTION__,
+            'arguments' => func_get_args()
+        ]);
+        return self::respond(self::$client->update($table, $values, $where));
     }
     /**
      * @throws Exception
      */
     public static function delete($table, string $id, bool $hard = false)
     {
-        return self::$client->delete($table, $id, $hard);
+        Event::dispatch(GenericEvent::BEFORE_DATABASE_TRANSACTION, [
+            'clientMethod' => __FUNCTION__,
+            'arguments' => func_get_args()
+        ]);
+        return self::respond(self::$client->delete($table, $id, $hard));
+    }
+    private static function respond($result)
+    {
+        Event::dispatch(GenericEvent::AFTER_DATABASE_TRANSACTION, $result);
+        return $result;
     }
 }

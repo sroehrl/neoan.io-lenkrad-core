@@ -2,6 +2,7 @@
 
 namespace Neoan\Helper;
 
+use Neoan\Enums\AttributeType;
 use Neoan\Model\Attributes\IsPrimaryKey;
 use ReflectionClass;
 use ReflectionClassConstant;
@@ -56,26 +57,31 @@ class AttributeHelper
         foreach ($this->properties as $i => $property){
             $attributes = $this->propertyMatchList[$property->getName()];
             $attributeList = [];
+            $ignore = false;
             foreach ($attributes as $attribute){
                 $instance = $attribute->newInstance();
                 $attributeList[] = [
                     'name' => $attribute->getName(),
                     'instance' => $instance,
-                    'type' => $instance->type ?? null,
+                    'type' => $instance->getType() ?? null,
                     'reflection' => $attribute
                 ];
+                $ignore = $instance->getType() === AttributeType::PRIVATE;
             }
-            $this->parsedClass[$i] = [
-                'name' => $property->getName(),
-                'type' => $property->getType()->getName(),
-                'isBuiltIn' => $property->getType()->isBuiltin(),
-                'nullable' => $property->getType()->allowsNull(),
-                'isPrimary' => !empty($property->getAttributes(IsPrimaryKey::class)),
-                'attributes' => $attributeList,
-            ];
-            if($property->hasDefaultValue()){
-                $this->parsedClass[$i]['defaultValue'] = $property->getDefaultValue();
+            if(!$ignore){
+                $this->parsedClass[$i] = [
+                    'name' => $property->getName(),
+                    'type' => $property->getType()->getName(),
+                    'isBuiltIn' => $property->getType()->isBuiltin(),
+                    'nullable' => $property->getType()->allowsNull(),
+                    'isPrimary' => !empty($property->getAttributes(IsPrimaryKey::class)),
+                    'attributes' => $attributeList,
+                ];
+                if($property->hasDefaultValue()){
+                    $this->parsedClass[$i]['defaultValue'] = $property->getDefaultValue();
+                }
             }
+
 
         }
         return $this->parsedClass;

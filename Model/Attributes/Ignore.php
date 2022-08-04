@@ -11,14 +11,13 @@ use Neoan\Model\Interfaces\ModelAttribute;
 class Ignore implements ModelAttribute
 {
 
-    function __invoke(array $result, Direction $direction, string $property)
+    public function __invoke(array $result, Direction $direction, string $property)
     {
-        unset($result[$property]);
-        return $result;
+
     }
 
     public function getType(): AttributeType
     {
-        return AttributeType::ATTACH;
+        return AttributeType::PRIVATE;
     }
 }

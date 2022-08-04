@@ -8,5 +8,6 @@ enum AttributeType: string
     case MUTATE = 'mutate';
     case DECLARE = 'declare';
     case INITIAL = 'initial';
+    case PRIVATE = 'private';
 
 }

@@ -2,7 +2,9 @@
 
 namespace Neoan\Response;
 
+use Neoan\Enums\GenericEvent;
 use Neoan\Enums\ResponseOutput;
+use Neoan\Event\Event;
 use Neoan\Helper\VerifyJson;
 use Neoan\Render\RenderEngine;
 use Neoan\Render\Renderer;
@@ -38,6 +40,10 @@ class Response
 
     public function respond(string $dataStream): void
     {
+        Event::dispatch(GenericEvent::BEFORE_RESPONSE, [
+            'handler' => self::getInstance()->defaultOutput,
+            'dataStream' => $dataStream,
+        ]);
         foreach ($this->responseHeaders as $header) {
             header($header);
         }
@@ -63,7 +69,7 @@ class Response
         self::getInstance()->defaultRenderer = $renderer;
     }
 
-    static public function output($data, array $renderOptions)
+    static public function output($data, array $renderOptions): void
     {
         self::{self::getInstance()->defaultOutput}($data, ...$renderOptions);
     }

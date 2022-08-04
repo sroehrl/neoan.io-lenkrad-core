@@ -3,9 +3,12 @@
 namespace Neoan\Render;
 
 
+use Neoan\Enums\GenericEvent;
+use Neoan\Event\Event;
+use Neoan\Event\Listenable;
 use Neoan3\Apps\Template;
 
-class Renderer implements RenderEngine
+class Renderer implements RenderEngine, Listenable
 {
     private static ?self $instance = null;
     protected string $templatePath;
@@ -34,6 +37,7 @@ class Renderer implements RenderEngine
     public static function render(array $data = [], $view = null)
     {
         $instance = self::getInstance();
+        Event::dispatch(GenericEvent::BEFORE_RENDERING, ['data'=>$data, 'view'=>$view, 'instance' => $instance]);
         if($instance->htmlSkeletonPath){
             $data = [...$data, ...$instance->skeletonVariables];
             $data[$instance->htmlComponentPlacement] = Template::embraceFromFile($instance->templatePath . $view, $data);
