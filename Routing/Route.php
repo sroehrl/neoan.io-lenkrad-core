@@ -147,7 +147,6 @@ class Route
     }
     private function lastRoutable(array $route, $result): void
     {
-        var_dump($result);
         if(!empty($route['response'])){
             $route['response'][0]::{$route['response'][1]}($result, $route['view'] ?? null);
         } else {
