@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: brokeyourbike/codeclimate-action@v0.1
+      - name: Code Climate Test Reporter
+        uses: icalia-actions/cc-test-reporter-base@v0.0.1
         with:
-          token: ${{ secrets.CC_TEST_REPORTER_ID }}
-          files: ./clover.xml
+          command: before-build
