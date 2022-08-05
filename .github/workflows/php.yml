@@ -74,10 +74,7 @@ jobs:
           path: '.github/badges/test-badge.svg'
           if-no-files-found: error
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_BASE_REF#refs/heads/})"
-        id: extract_branch
+
       - name: Commit badge
         env:
           BADGE: '.github/badges/test-badge.svg'
@@ -90,4 +87,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.extract_branch.outputs.branch }}
+          branch: 'badges'
