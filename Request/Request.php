@@ -47,7 +47,7 @@ class Request implements RequestInterface
         return self::$instance;
     }
 
-    public function __invoke(NeoanApp $app): void
+    public function __invoke(NeoanApp $app = null, $additional = null): void
     {
         new FileParser($app->publicPath . $_SERVER['REQUEST_URI']);
         $instance = self::getInstance(null, $app->webPath);
@@ -59,9 +59,12 @@ class Request implements RequestInterface
     private function processQueryParametersFromRequestUri(): void
     {
         // extract query-params
-        parse_str($_SERVER['QUERY_STRING'], self::$instance->queryParts);
-        self::$instance->requestUri = mb_substr($_SERVER['REQUEST_URI'], 0, -1 * (mb_strlen('?' .$_SERVER['QUERY_STRING'])));
-
+        $query = $_SERVER['QUERY_STRING'] ?? '';
+        parse_str($query, self::$instance->queryParts);
+        if($query !== ''){
+            self::$instance->requestUri = mb_substr($_SERVER['REQUEST_URI'], 0, -1 * (mb_strlen($query)));
+        }
+        self::$instance->requestUri = $_SERVER['REQUEST_URI'];
     }
 
     private function processRequestUriSanitation(): void

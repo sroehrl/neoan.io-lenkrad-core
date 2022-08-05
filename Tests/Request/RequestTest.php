@@ -53,14 +53,25 @@ class RequestTest extends TestCase
     function testFileOutputGeneric()
     {
         $_SERVER['REQUEST_URI'] = '/test.txt';
-        $this->expectOutputString('test-me');
         $this->expectErrorMessage('Wanted to exit');
         $this->init();
+    }
+    function testQueries()
+    {
+        $_SERVER['REQUEST_URI'] = '/home?some=value';
+        $_SERVER['QUERY_STRING'] = 'some=value';
+        $this->init();
+        Request::setQueries([...Request::getQueries(),'another'=>'test']);
+        $this->assertSame(2, count(Request::getQueries()));
+        $this->assertSame('value', Request::getQuery('some'));
     }
 
     private function init()
     {
         Request::detachInstance();
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
         $r = Request::getInstance();
         $app = new NeoanApp(__DIR__,__DIR__);
         $r($app);

@@ -40,6 +40,11 @@ class ResponseTest extends TestCase
         $this->expectErrorMessage('Renderer not compatible!');
         Response::setDefaultRenderer(NotARenderer::class);
     }
+    function testJson()
+    {
+        $this->expectErrorMessage('Wanted to die');
+        Response::json(['hi' => 'there']);
+    }
 
 }
 class NotARenderer{}

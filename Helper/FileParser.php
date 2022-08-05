@@ -27,23 +27,23 @@ class FileParser
     {
         switch ($this->fileExtension) {
             case 'js':
-                header('Content-Type: text/javascript');
+                @header('Content-Type: text/javascript');
                 break;
             case 'css':
-                header('Content-Type: text/css');
+                @header('Content-Type: text/css');
                 break;
             case 'svg':
-                header('Content-Type: image/svg+xml');
+                @header('Content-Type: image/svg+xml');
                 break;
             case 'png':
             case 'jpg':
             case 'gif':
             case 'tiff':
             case 'jpeg':
-                header('Content-Type: image/' . $this->fileExtension);
+                @header('Content-Type: image/' . $this->fileExtension);
                 break;
             default:
-                header('Content-Type: text/html');
+                @header('Content-Type: text/html');
 
         }
     }
