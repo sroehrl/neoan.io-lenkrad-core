@@ -60,7 +60,7 @@ class Request implements RequestInterface
     {
         // extract query-params
         parse_str($_SERVER['QUERY_STRING'], self::$instance->queryParts);
-        self::$instance->requestUri = mb_substr($_SERVER['REQUEST_URI'], 0, -1 * (mb_strlen($_SERVER['QUERY_STRING'] + 1)));
+        self::$instance->requestUri = mb_substr($_SERVER['REQUEST_URI'], 0, -1 * (mb_strlen('?' .$_SERVER['QUERY_STRING'])));
 
     }
 
