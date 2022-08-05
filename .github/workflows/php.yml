@@ -47,8 +47,7 @@ jobs:
     name: coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Code Climate Test Reporter
-        uses: icalia-actions/cc-test-reporter-base@v0.0.1
-        with:
-          command: before-build
+      - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v3.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
