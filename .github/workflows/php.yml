@@ -48,6 +48,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+      - name: Run test suite
+        run: composer run-script test
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
         env:
