@@ -53,7 +53,6 @@ class RequestTest extends TestCase
     function testFileOutputGeneric()
     {
         $_SERVER['REQUEST_URI'] = '/test.txt';
-        $this->expectOutputString('test-me');
         $this->expectErrorMessage('Wanted to exit');
         $this->init();
     }
@@ -70,6 +69,9 @@ class RequestTest extends TestCase
     private function init()
     {
         Request::detachInstance();
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
         $r = Request::getInstance();
         $app = new NeoanApp(__DIR__,__DIR__);
         $r($app);
