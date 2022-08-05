@@ -12,12 +12,17 @@ class ErrorTest extends TestCase
     {
         NotFound::setTemplate(dirname(__DIR__). '/Request/test.txt');
         $this->expectErrorMessage('Wanted to die');
-        $this->expectOutputString('test-me');
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
         new NotFound('not here');
     }
     function testUnauthorized()
     {
         $this->expectErrorMessage('Wanted to die');
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
         new Unauthorized();
     }
 }

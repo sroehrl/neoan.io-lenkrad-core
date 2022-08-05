@@ -43,7 +43,9 @@ class RouteTest extends TestCase
     public function testNotFound()
     {
         $this->mockRequest('/some');
-
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
         $r = new Route();
         $this->expectException(\Exception::class);
         $r();
@@ -52,6 +54,9 @@ class RouteTest extends TestCase
     public function testRouteNotFound()
     {
         $this->mockRequest('/some');
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
         Route::get('/somewhere-else', Routing::class);
         $r = new Route();
 
