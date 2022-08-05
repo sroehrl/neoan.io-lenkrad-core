@@ -17,6 +17,7 @@ class Request implements RequestInterface
     public array $requestHeaders = [];
     public array $urlParts = [];
     public array $parameters = [];
+    public array $queryParts = [];
     public string $requestUri;
     public string $webPath;
     public array $files = [];
@@ -24,8 +25,9 @@ class Request implements RequestInterface
 
     public static function getInstance($mockMe = null, $webPath = ''): ?RequestInterface
     {
-        if($mockMe){
+        if ($mockMe) {
             self::$instance = $mockMe;
+            self::$instance->webPath = $webPath;
         }
         if (self::$instance === null) {
             self::$instance = new Request();
@@ -34,10 +36,9 @@ class Request implements RequestInterface
                 self::$instance->requestMethod = $_SERVER['REQUEST_METHOD'];
             }
             if (isset($_SERVER['REQUEST_URI'])) {
-                $sanitizedWebPath = str_replace('/','\\/',$webPath);
-                $pattern = "[a-z\d\/_.\-]*\/{$sanitizedWebPath}";
-                self::$instance->requestUri = preg_replace("/$pattern/i", '', $_SERVER['REQUEST_URI']);
-                self::$instance->urlParts = array_values(array_filter(explode('/', self::$instance->requestUri)));
+                self::$instance->processQueryParametersFromRequestUri();
+                self::$instance->processRequestUriSanitation();
+                self::$instance->createUrlParts();
             }
             if (!empty($_FILES)) {
                 self::$instance->files = $_FILES;
@@ -48,13 +49,32 @@ class Request implements RequestInterface
 
     public function __invoke(NeoanApp $app): void
     {
-        new FileParser($app->publicPath. $_SERVER['REQUEST_URI']);
+        new FileParser($app->publicPath . $_SERVER['REQUEST_URI']);
         $instance = self::getInstance(null, $app->webPath);
         self::parseInput();
         self::parseRequestHeaders();
 
     }
 
+    private function processQueryParametersFromRequestUri(): void
+    {
+        // extract query-params
+        parse_str($_SERVER['QUERY_STRING'], self::$instance->queryParts);
+        self::$instance->requestUri = mb_substr($_SERVER['REQUEST_URI'], 0, -1 * (mb_strlen($_SERVER['QUERY_STRING'] + 1)));
+
+    }
+
+    private function processRequestUriSanitation(): void
+    {
+        $sanitizedWebPath = str_replace('/', '\\/', self::$instance->webPath);
+        $pattern = "[a-z\d\/_.\-]*\/{$sanitizedWebPath}";
+        self::$instance->requestUri = preg_replace("/$pattern/i", '', self::$instance->requestUri);
+    }
+
+    private function createUrlParts(): void
+    {
+        self::$instance->urlParts = array_values(array_filter(explode('/', self::$instance->requestUri)));
+    }
 
     public static function setParameters(array $parameters): void
     {
@@ -85,6 +105,22 @@ class Request implements RequestInterface
         Event::dispatch(GenericEvent::REQUEST_INPUT_PARSED, $instance->input);
     }
 
+    public static function getQueries(): array
+    {
+        $instance = self::getInstance();
+        return $instance->queryParts;
+    }
+    public static function getQuery(string $name): ?string
+    {
+        $instance = self::getInstance();
+        return $instance->queryParts[$name] ?? null;
+    }
+    public static function setQueries(array $queryParameter ) :void
+    {
+        $instance = self::getInstance();
+        $instance->queryParts = $queryParameter;
+    }
+
     public static function getRequestMethod(): string
     {
         $instance = self::getInstance();
@@ -102,16 +138,19 @@ class Request implements RequestInterface
         $instance = self::getInstance();
         return $instance->input;
     }
+
     public static function getInput(string $which): ?string
     {
         $instance = self::getInstance();
         return $instance->input[$which] ?? null;
     }
+
     public static function getParameters(): array
     {
         $instance = self::getInstance();
         return $instance->parameters;
     }
+
     public static function getParameter(string $which): ?string
     {
         $instance = self::getInstance();

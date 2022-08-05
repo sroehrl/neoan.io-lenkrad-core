@@ -12,8 +12,10 @@ class MockRequest implements RequestInterface
     private static ?RequestInterface $instance = null;
 
     public string $requestMethod;
+    public string $webPath;
     public array $requestHeaders = [];
     public array $urlParts = [];
+    public array $queryParts = [];
     public array $parameters = [];
     public string $requestUri;
     public array $files = [];
