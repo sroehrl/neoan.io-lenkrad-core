@@ -59,6 +59,9 @@ jobs:
           output=$(composer run-script current-coverage)
           echo "::set-output name=percent::$output"
         id: pure-coverage
+      - uses: actions/checkout@v3
+        with:
+          ref: 'badges'
       - name: Generate the badge SVG image
         uses: emibcn/badge-action@v1
         id: badge
@@ -73,10 +76,6 @@ jobs:
           name: badge
           path: '.github/badges/test-badge.svg'
           if-no-files-found: error
-
-      - uses: actions/checkout@v3
-        with:
-          ref: 'badges'
       - name: Commit badge
         env:
           BADGE: '.github/badges/test-badge.svg'
