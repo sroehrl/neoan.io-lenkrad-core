@@ -47,6 +47,6 @@ jobs:
         run: composer install --prefer-dist --no-progress
       - uses: paambaati/codeclimate-action@v2.2.4
         env:
-          CC_TEST_REPORTER_ID: 178a2e005ef4135c18db1d1c2b4ba70df07a91a02e4f716477f6e638fd98fac5
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
           coverageCommand: composer run-script test
