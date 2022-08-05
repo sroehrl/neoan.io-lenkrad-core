@@ -3,6 +3,7 @@
 namespace Test\Mocks;
 
 use Neoan\CoreInterfaces\RequestInterface;
+use Neoan\NeoanApp;
 use Neoan\Request\Request;
 
 class MockRequest implements RequestInterface
@@ -33,5 +34,10 @@ class MockRequest implements RequestInterface
     public static function detachInstance(): void
     {
         // TODO: Implement detachInstance() method.
+    }
+
+    public function __invoke(NeoanApp $app = null, $additional = null)
+    {
+        // TODO: Implement __invoke() method.
     }
 }

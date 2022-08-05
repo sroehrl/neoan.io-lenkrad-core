@@ -57,6 +57,15 @@ class RequestTest extends TestCase
         $this->expectErrorMessage('Wanted to exit');
         $this->init();
     }
+    function testQueries()
+    {
+        $_SERVER['REQUEST_URI'] = '/home?some=value';
+        $_SERVER['QUERY_STRING'] = 'some=value';
+        $this->init();
+        Request::setQueries([...Request::getQueries(),'another'=>'test']);
+        $this->assertSame(2, count(Request::getQueries()));
+        $this->assertSame('value', Request::getQuery('some'));
+    }
 
     private function init()
     {

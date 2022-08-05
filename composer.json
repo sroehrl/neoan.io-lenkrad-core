@@ -1,6 +1,6 @@
 {
   "name": "neoan.io/core",
-  "description": "description",
+  "description": "Neoan.io Lenkrad Framework",
   "minimum-stability": "stable",
   "license": "proprietary",
   "authors": [
