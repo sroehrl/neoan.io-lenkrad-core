@@ -37,9 +37,16 @@ jobs:
 
     - name: Run test suite
       run: composer run-script test
-    - name: Generate test coverage badge
-      uses: timkrase/phpunit-coverage-badge@v1.2.0
-      with:
-        coverage_badge_path: 'badge-coverage.svg'
-        push_badge: true
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
+  coverage:
+    needs: [ build ]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+      - uses: paambaati/codeclimate-action@v2.2.4
+        env:
+          CC_TEST_REPORTER_ID: 178a2e005ef4135c18db1d1c2b4ba70df07a91a02e4f716477f6e638fd98fac5
+        with:
+          coverageCommand: composer run-script test
