@@ -22,7 +22,7 @@
             <directory suffix="Test.php">./</directory>
         </exclude>
         <report>
-            <clover outputFile="clover.xml"/>
+            <clover outputFile="Tests/clover.xml"/>
             <html outputDirectory="Tests/_report"/>
         </report>
     </coverage>
