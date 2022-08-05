@@ -43,10 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
-      - uses: paambaati/codeclimate-action@v2.2.4
-        env:
-          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+      - uses: brokeyourbike/codeclimate-action@v0.1
         with:
-          coverageCommand: composer run-script test
+          token: ${{ secrets.CODECLIMATE_TOKEN }}
+          files: ./clover.xml
