@@ -27,6 +27,6 @@
     "phpunit/phpunit": "9.5"
   },
   "scripts": {
-    "test": "phpunit"
+    "test": "phpunit --configuration phpunit.xml --teamcity"
   }
 }

@@ -32,8 +32,23 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-    - name: Run test suite
-      run: composer run-script test
+  test:
+    needs: [build]
+    runs-on: ubuntu-latest
+    name: test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+      - name: Run test suite
+        run: composer run-script test
+  coverage:
+    needs: [ build, test ]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Code Climate Test Reporter
+        uses: icalia-actions/cc-test-reporter-base@v0.0.1
+        with:
+          command: before-build

@@ -43,6 +43,9 @@ class ResponseTest extends TestCase
     function testJson()
     {
         $this->expectErrorMessage('Wanted to die');
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
         Response::json(['hi' => 'there']);
     }
 

@@ -54,6 +54,9 @@ class RequestTest extends TestCase
     {
         $_SERVER['REQUEST_URI'] = '/test.txt';
         $this->expectErrorMessage('Wanted to exit');
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
         $this->init();
     }
     function testQueries()
