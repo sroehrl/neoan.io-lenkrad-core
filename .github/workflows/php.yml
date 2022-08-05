@@ -41,7 +41,7 @@ jobs:
       - name: Run test suite
         run: composer run-script test
   coverage:
-    needs: [ build, test ]
+    needs: [ test ]
     name: coverage
     permissions: write-all
     runs-on: ubuntu-latest
@@ -49,8 +49,45 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
-      - name: Test & publish code coverage
+      - name: Comment code coverage
         uses: danhunsaker/clover-reporter-action@v0.2.17-clover
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           clover-file: ./Tests/clover.xml
+      - name: Store coverage output
+        run: |
+          output=$(composer run-script current-coverage)
+          echo "::set-output name=percent::$output"
+        id: pure-coverage
+      - name: Generate the badge SVG image
+        uses: emibcn/badge-action@v1
+        id: badge
+        with:
+          label: 'Test coverage'
+          status: ${{ steps.pure-coverage.outputs.percent }}
+          color: 'blue,555,daf'
+          path: '.github/badges/test-badge.svg'
+      - name: Upload badge as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: badge
+          path: ${{ steps.coverage.outputs.path }}
+          if-no-files-found: error
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Commit badge
+        env:
+          BADGE: ${{ steps.coverage.outputs.path }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add "${BADGE}"
+          git commit -m "Add/Update badge"
+      - name: Push badge commit
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.extract_branch.outputs.branch }}

@@ -27,6 +27,7 @@
     "phpunit/phpunit": "9.5"
   },
   "scripts": {
-    "test": "phpunit --configuration phpunit.xml --teamcity"
+    "test": ["phpunit --configuration phpunit.xml --teamcity","php -f Tests/get-coverage.php -- 91 verbose"],
+    "current-coverage": "php -f Tests/get-coverage.php -- 85"
   }
 }
