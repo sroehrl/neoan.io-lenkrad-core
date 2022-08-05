@@ -59,14 +59,15 @@ jobs:
           output=$(composer run-script current-coverage)
           echo "::set-output name=percent::$output"
         id: pure-coverage
-      - name: Set color perfect
-        id: color-perfect
-        if: steps.pure-coverage.outputs.percent > 95
-        run: echo "::set-output name=color::\#91f690"
-      - name: Set color ok
-        id: color-ok
-        if: steps.pure-coverage.outputs.percent < 96
-        run: echo "::set-output name=color::\#FFFFBF"
+      - name: Set color
+        id: color
+        run: |
+          if [[${{steps.pure-coverage.outputs.percent}} > 95]]; then 
+            output="#91f690"
+          else
+            output="yellow"
+          echo "::set-output name=color::$output"
+
       - uses: actions/checkout@v3
         with:
           ref: 'badges'
@@ -76,7 +77,7 @@ jobs:
         with:
           label: 'Test coverage'
           status: ${{ steps.pure-coverage.outputs.percent }}%
-          color: ${{steps.color-perfect.outputs.color || steps.color-ok.outputs.color}}
+          color: ${{steps.color.outputs.color}}
           path: '.github/badges/test-badge.svg'
       - name: Upload badge as artifact
         uses: actions/upload-artifact@v2
