@@ -66,6 +66,7 @@ jobs:
             output="#91f690"
           else
             output="yellow"
+          fi
           echo "::set-output name=color::$output"
 
       - uses: actions/checkout@v3
