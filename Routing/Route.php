@@ -123,7 +123,7 @@ class Route
     private function execute(array $route): void
     {
         if(empty($route['classes'])) {
-            Response::output($route['injections'], [$route['view']]);
+            Response::output($route['injections'], [$route['view']??null]);
         } else {
             $passIn = $route['injections'];
             foreach ($route['classes'] as $i => $class) {
