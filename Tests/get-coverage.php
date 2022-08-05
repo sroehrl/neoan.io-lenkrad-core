@@ -8,7 +8,7 @@ if($mode){
 } else {
     preg_match('/\d{1,3}\.\d{2}/', $output[0], $matches);
     $coverage = $matches[0] ?? '0.00';
-    echo $coverage . '%';
+    echo $coverage;
 }
 
 
