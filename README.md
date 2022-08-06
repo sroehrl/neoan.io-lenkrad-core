@@ -146,12 +146,14 @@ $user->save();
 ...
 // or e.g. when updating a password
 
-$password = $request->input('newPassword');
+$password = $request
+                ->input('newPassword');
 
 // I hope you don't forget to hash!
 $password = Hash::make($password);
 
-$user = User::where('email', 'some@email.com')->first();
+$user = User::where('email', 'some@email.com')
+            ->first();
 $user->password = $password;
 $user->save();
 ```
@@ -172,10 +174,15 @@ $user->store();
 ...
 // or e.g. when updating a password
 
-$user = User::retrieveOne(['email' => 'some@email.com']);
+$user = User::retrieveOne([
+            'email' => 'some@email.com'
+        ]);
 
-// Don't worry! Hashing for this property is always ensured by the model
-[ 'newPassword' => $user->password ] = Request::getInputs();
+// Don't worry! Hashing for this property 
+// is always ensured by the model
+[ 
+    'newPassword' => $user->password 
+] = Request::getInputs();
 $user->store();
 ```
 
