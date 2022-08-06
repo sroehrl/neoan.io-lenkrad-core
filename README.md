@@ -83,14 +83,15 @@ class CreateMyUsersTable extends Migration
 {
     public function up()
     {
-        Schema::create('Users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name')->nullable();
-            $table->string('email')->unique();
-            $table->string('job');
-            $table->string('password');
-            $table->timestamps();
-        });
+        Schema::create('Users', 
+            function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('name')->nullable();
+                $table->string('email')->unique();
+                $table->string('job');
+                $table->string('password');
+                $table->timestamps();
+            });
     }
  
     public function down()
