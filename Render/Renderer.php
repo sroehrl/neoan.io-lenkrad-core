@@ -11,7 +11,7 @@ use Neoan3\Apps\Template;
 class Renderer implements RenderEngine, Listenable
 {
     private static ?RenderEngine $instance = null;
-    protected string $templatePath;
+    protected string $templatePath = '/';
     protected ?string $htmlSkeletonPath = null;
     protected string $htmlComponentPlacement = 'main';
     protected ?array $skeletonVariables = [];
