@@ -1,5 +1,6 @@
 [![Build](https://github.com/sroehrl/neoan.io-lenkrad-core/actions/workflows/php.yml/badge.svg)](https://github.com/sroehrl/neoan.io-lenkrad-core/actions/workflows/php.yml)
 [![Coverage](https://raw.githubusercontent.com/sroehrl/neoan.io-lenkrad-core/badges/.github/badges/test-badge.svg)](https://github.com/sroehrl/neoan.io-lenkrad-core/actions/workflows/php.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/1f02189c2a759deecaa3/maintainability)](https://codeclimate.com/github/sroehrl/neoan.io-lenkrad-core/maintainability)
 # neoan.io Lenkrad core
 
 This is an experimental core rewrite of neoan and not (yet) meant for production. 
@@ -27,11 +28,10 @@ Do you realize what a framework could do for you, if it utilized
 - union types
 - ...
 
-?
 
 Let's compare:
 <table>
-<tr><th>Eloquent</th><th>Lenkrad</th></tr>
+<tr><th>Eloquent/Laravel</th><th>Lenkrad</th></tr>
 <tr><td>Define model:</td><td>Define model:</td></tr>
 <tr>
 <td>
@@ -45,6 +45,8 @@ Let's compare:
  * @property $email
  * @property $job
  * @property $password
+ * @property $createdAt
+ * @property $updatedAt
  */
 class User extends Model 
 {
@@ -100,6 +102,7 @@ class User extends Model
     public string $password;
     
     use TimeStamps;
+    use Setter;
 }
 ```
 
