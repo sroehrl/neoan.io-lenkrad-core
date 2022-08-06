@@ -87,7 +87,7 @@ class User extends Model
 {
     
     #[IsPrimary]
-    readonly $id;
+    public readonly $id;
     
     public ?string $name = null;
     
