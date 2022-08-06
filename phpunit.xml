@@ -19,6 +19,7 @@
             <directory>./Tests</directory>
             <directory>./vendor</directory>
             <directory>./Cli</directory>
+            <directory>./_playground</directory>
             <directory suffix="Test.php">./</directory>
         </exclude>
         <report>

@@ -71,13 +71,15 @@ class Model
         return $this;
     }
 
+
     public function rehydrate($id = null): void
     {
         $fromDisk = $this->get($id ?? $this->{self::$interpreter->getPrimaryKey()});
 
         self::$interpreter->asInstance($fromDisk);
+        $hasSetter = method_exists($this, 'set');
         foreach (self::$interpreter->initialize($fromDisk->toArray()) as $property => $value){
-            $this->{$property} = $value;
+            $hasSetter ? $this->set($property, $value) : $this->{$property} = $value;
         }
         $this->transactionMode = TransactionType::UPDATE;
         self::$notify->inform();
