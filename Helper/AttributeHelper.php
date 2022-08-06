@@ -73,6 +73,8 @@ class AttributeHelper
                     'name' => $property->getName(),
                     'type' => $property->getType()->getName(),
                     'isBuiltIn' => $property->getType()->isBuiltin(),
+                    'isReadOnly' => $property->isReadOnly(),
+                    'isWritable' => $property->isPublic() && !$property->isReadOnly(),
                     'nullable' => $property->getType()->allowsNull(),
                     'isPrimary' => !empty($property->getAttributes(IsPrimaryKey::class)),
                     'attributes' => $attributeList,
