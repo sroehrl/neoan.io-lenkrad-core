@@ -19,7 +19,7 @@ class RendererTest extends TestCase
     function testSetters()
     {
         Renderer::setHtmlSkeleton(__DIR__ . '/test.html');
-        Renderer::setTemplatePath('/Tests');
+        Renderer::setTemplatePath('/tests');
         $r = Renderer::getInstance();
         $this->assertIsString($r->getTemplatePath());
         $this->assertIsString($r->getHtmlSkeletonPath());
@@ -29,16 +29,16 @@ class RendererTest extends TestCase
     function testRender()
     {
         Renderer::detachInstance();
-        Renderer::setTemplatePath('Tests');
+        Renderer::setTemplatePath('tests');
         $output = Renderer::render(['main'=>'test'], '/Render/test.html');
         $this->assertIsString($output);
     }
     function testSkeleton()
     {
         Renderer::detachInstance();
-        Renderer::setTemplatePath('Tests');
+        Renderer::setTemplatePath('tests');
         $fromSkeleton = ['content' => 'works'];
-        Renderer::setHtmlSkeleton('Tests/Render/test.html', 'main',$fromSkeleton);
+        Renderer::setHtmlSkeleton('tests/Render/test.html', 'main',$fromSkeleton);
         $output = Renderer::render([], '/Render/subView.html');
         $this->assertSame('<section><p>works</p></section>', $output);
     }
