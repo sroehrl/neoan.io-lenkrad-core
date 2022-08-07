@@ -37,14 +37,10 @@ jobs:
           echo "::set-output name=percent::$output"
         id: pure-coverage
       - name: Set color
-        id: color
-        run: |
-          if [[${{steps.pure-coverage.outputs.percent}} -gt "90"]]; then 
-            output="#91f690"
-          else
-            output="yellow"
-          fi
-          echo "::set-output name=color::$output"
+        uses: marcdomain/set-variables@v1
+        with:
+          variables: |
+               BADGE_COLOR:  steps.pure-coverage.outputs.percent > 90 ? "#91f690" : "yellow"
       - uses: actions/checkout@v3
         with:
           ref: 'badges'
@@ -65,7 +61,7 @@ jobs:
         with:
           label: 'Test coverage'
           status: ${{ steps.pure-coverage.outputs.percent }}%
-          color: ${{steps.color.outputs.color}}
+          color: ${{ env.BADGE_COLOR }}
           path: '.github/badges/test-badge.svg'
       - name: Upload badge as artifact
         uses: actions/upload-artifact@v2
