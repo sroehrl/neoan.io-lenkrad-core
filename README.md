@@ -201,11 +201,11 @@ As you can see, a lot of overhead can be omitted while maintaining an approachab
 `composer require neoan.io/core`
 
 _index.php_
+
 ```php
 <?php
 
-use Neoan\NeoanApp;
-use Neoan\Routing\Route;
+use Neoan\NeoanApp;use Neoan\src\Routing\Route;
 
 require_once 'vendor/autoload.php';
 $app = new NeoanApp(__DIR__, __DIR__);
@@ -849,10 +849,15 @@ class MovieModel extends Model {
     // so we initialize a Datehelper instance on creation.
     
     #[
-        Type('date',null)
+        Type('date',null),
         Initialize(new DateHelper())
     ]
     public string $releaseDate; 
+    
+    // Just to lighten up the attribute-overload, let's create a regular field
+    // Since it has the type string it will default to a (short-)string data type (e.g. varchar(255)
+    
+    public string $studio;
     
     // What about relations?
     // there is more than one review for a given movie, so we attach ReviewModel instances in a
@@ -917,6 +922,11 @@ class ReviewModel extends Model{
     
     use TimeStamps;
     
+    // Want to make your despise for critics known to whoever has to write raw
+    // queries? Name your table however you like instead of being base on the model name.
+    
+    const tableName = 'ticks';
+    
 }
 ```
 We are going to jump ahead here to actually make this example work:
@@ -924,14 +934,141 @@ We are going to jump ahead here to actually make this example work:
 `php cli migrate:mysql App\Model\MovieModel` &
 `php cli migrate:mysql App\Model\ReviewModel` 
 #### Creation
-#### Manipulation / Update
-#### Retrieval
+To create a new record you simply store an instance of a model.
+```php 
+...
+// either initialte with an assoc array
+$movie = new MovieModel([
+    'name' => 'The Matrix'  
+]);
+
+// or set the individual property
+$movie->studio = 'Warner Bros.'; 
+
+// If you are ready to store the movie to the database (and rehydrate), run store()
+$movie->store();
+
+// This will now include an "id" 
+return $movie; 
+
+```
+**About security**: The combination of using prepared statements as well as assignment guards makes it
+secure (and convenient) to handle user input:
+
+```php 
+...
+$movie = new MovieModel(Request::getInputs());
+try{
+    $movie->store();
+} catch (\Exception $e) {
+    // required field missing || validation failed || etc
+}
+```
+Model classes automatically which modes between existing and new entries. If you run into edge-cases,
+you can change the mode manually:
+```php 
+...
+// The following is NOT recommended in our scenario!
+// This is only to show you the possibilities
+
+$movie = new MovieModel();
+
+// will return Neoan\Enums\TransactionType::INSERT
+$mode = $move->getTransactionMode(); 
+$movie->setTransactionType(TransactionType::UPDATE); 
+```
+#### Retrieve & update
+If you want to modify existing records, we want to get the existing record first:
+```php 
+// sometimes I know the primary id ...
+$matrix = MovieModel::get(1); 
+
+// ... but often I lookup based on what I know
+$matrix = MovieModel::retrieveOne([
+            'name' => 'The Matrix'
+          ]); 
+
+// Let's fix the name
+$matix->studio = 'Warner Bros. Pictures'
+
+// Then simply store again
+$matrix->store();
+```
+
 #### Collections
+Collections are a useful tool to manage multiple instances at once. Whenever you are retrieving more than one 
+record, a Collection will be returned.
+
+Collections are iterable and have the following additional capabilities:
+```php 
+...
+// First, lets retrieve multiple records
+// Instead of "retrieveOne" we will use "retrieve"
+// Additionally, we account for soft deleted records and 
+// want to ignore them by adding a condition to our retrieval 
+$allMovies = MovieModel::retrieve(['deletedAt' => null]);
+
+// Collections are iterable
+foreach($allMovies as $movie){
+    ...
+}
+
+// However, it would be a shame if our modern IDE couldn't 
+// help us with existing properties. So let's use "each" instead
+$allMovies->each(function(MovieModel $movie, int $iteration){
+    ...
+});
+
+// Did you do something to all the records there?
+// Let's save all selected movies at once
+$allMovies->store();
+
+// While you can return collections directly, 
+// you might need to convert them to an array
+$flat = $allMovies->toArray();
+
+// Didn't find what you are looking for?
+// Just add to the existing collection
+$allMovies->add(new MovieModel(['name' => 'Alien']))
+```
 ## Migrations
+You might have noticed that there aren't any files handling migrations.
+Instead, the cli compares the existing table with your model definition and makes 
+updates accordingly. However, what happens on the database does not have to be invisible to you.
+The basic command `migrate:mysql $modelQualifiedName` has additional options:
+
+- with-copy (c)
+- output-folder (o) 
+
+example:
+```shell 
+php cli migrate:mysql App\Models\MovieModel -o migrations -c movie_backup
+```
+This will output the database operations to a sql-file (in our case /src/migrations)
+and create a copy of the table named "movie_backup" before any altering commands are executed.
+
+_NOTE: the output folder must exist under the NeoanApp->appPath_
 
 ## Testing
-
+_soon_
 ## CLI
+The cli is based on symfony/console wrapped in a container which makes neoan.io lenkrad available to scripts.
+As such, you can add your own symfony console commands to the suggested file `cli` as you normally would:
+```php 
+#!/usr/bin/env php
+<?php
+...
+$console = new Application($app);
+$console->add(new MyOwnCommand($app));
+...
+```
+To see available commands:
+```shell 
+php cli list
+```
+
 ## Contribution
 
-
+For now we are looking for feedback only as marketplace rules and fundamentals aren't written
+in stone yet. However, please star, commend issue tickets to help us build out and improve this
+lightweight solution.

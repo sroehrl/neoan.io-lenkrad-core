@@ -3,7 +3,7 @@
          stderr="true"
          backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="Tests/bootstrap.php"
+         bootstrap="tests/bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -12,24 +12,23 @@
          stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">./</directory>
+            <directory suffix=".php">./src</directory>
         </include>
         <exclude>
-            <directory>./NeoanApp.php</directory>
-            <directory>./Tests</directory>
+            <directory>./tests</directory>
             <directory>./vendor</directory>
-            <directory>./Cli</directory>
+            <directory>./src/Cli</directory>
             <directory>./_playground</directory>
             <directory suffix="Test.php">./</directory>
         </exclude>
         <report>
-            <clover outputFile="Tests/clover.xml"/>
-            <html outputDirectory="Tests/_report"/>
+            <clover outputFile="tests/clover.xml"/>
+            <html outputDirectory="tests/_report"/>
         </report>
     </coverage>
     <testsuites>
         <testsuite name="unit">
-            <directory suffix="Test.php">./Tests</directory>
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
     <php>
