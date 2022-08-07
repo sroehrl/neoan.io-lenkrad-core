@@ -2,7 +2,7 @@
   "name": "neoan.io/core",
   "description": "Neoan.io Lenkrad Framework",
   "minimum-stability": "stable",
-  "license": "proprietary",
+  "license": "MIT",
   "authors": [
     {
       "name": "Stefan Roehrl",

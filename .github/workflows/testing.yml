@@ -56,7 +56,8 @@ jobs:
         with:
           path: '.github/badges/history'
           contents: |
-            \n${{steps.current-time.outputs.time}}
+            
+            ${{steps.current-time.outputs.time}}
           write-mode: append
       - name: Generate the badge SVG image
         uses: emibcn/badge-action@v1

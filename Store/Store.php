@@ -2,6 +2,8 @@
 
 namespace Neoan\Store;
 
+use Neoan\Event\Event;
+
 class Store
 {
     private static ?self $instance = null;
@@ -27,7 +29,7 @@ class Store
     public function readValue(string $variable)
     {
         $instance = self::getInstance();
-        return $instance->storage[$variable];
+        return $instance->storage[$variable] ?? null;
     }
 
 }

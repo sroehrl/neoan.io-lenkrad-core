@@ -221,6 +221,133 @@ $app->run();
 ## Setup
 _soon: working on create-project scripts_
 
+This readme will guide you to an understanding of your personal needs. For the impatient - and as a cheat sheet,
+find a basic setup script:
+
+`composer require neoan.io/core`
+
+`composer require neoan.io/legacy-db-adapter`
+
+You are free to chose your folder structure. For now, we will assume the following structure:
+
+```
+project
++-- public
+|   +-- index.php
++-- src
+|    +-- Attributes
+|    +-- Cli
+|    +-- Config
+|    |    +-- Setup.php
+|    +-- Controllers
+|    +-- Middleware
+|    +-- Models
+|    +-- Routes
+|    |   +-- HtmlRoutes.php
+|    +-- Views
+|        +-- main.html
+|        +-- home.html
++-- vendor
++-- cli
++-- composer.json
+```
+Utilizing the following PSR namespace definition in our `composer.json`:
+
+```json 
+"autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+```
+### /cli
+```php 
+#!/usr/bin/env php
+<?php
+// the first line is necessary if we don't use the extension ".php"!
+// this file load our cli capabilities and is exposed to
+// allow advanced users to integrate own commands (based on symfony console)
+
+use App\Config\Config;
+use Neoan\Cli\Application;
+use Neoan\NeoanApp;
+
+
+require_once 'vendor/autoload.php';
+
+$app = new NeoanApp(__DIR__, __DIR__);
+new Config($app);
+$console = new Application($app);
+$console->run();
+```
+### /public/index.php
+```php 
+use App\Config\Setup;
+use App\Routes\HtmlRoutes;
+use Neoan\NeoanApp;
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+$srcPath = dirname(__DIR__) . '/src';
+$publicPath = __DIR__; // where this very script runs
+
+$app =  new NeoanApp($srcPath, $publicPath);
+new Setup();
+new HtmlRoutes();
+$app->run();
+
+```
+### /src/Routes/HtmlRoutes.php
+```php 
+namespace App\Routes;
+
+
+class HtmlRoutes {
+    function __construct()
+    {
+        Routes::get('/')->view('home.html');
+    }
+}
+
+```
+
+### /src/Config/Setup.php
+```php 
+namespace App\Config;
+
+use Neoan\Database\Database;
+use NeoanIo\MarketPlace\DatabaseAdapter;
+use Neoan\Helper\Env;
+use Neoan\Response\Response;
+use Neoan\Render\Renderer;
+
+class Setup {
+    function __construct()
+    {
+        // Database setup
+        $dbClient = [
+            'host' => Env::get('DB_HOST', 'localhost'),
+            'name' => Env::get('DB_NAME', 'neoan_io'),
+            'port' => Env::get('DB_PORT', 3306),
+            'user' => Env::get('DB_USER', 'root'),
+            'password' => Env::get('DB_PASSWORD', ''),
+            'charset' => Env::get('DB_CHARSET', 'utf8mb4'),
+            'casing' => Env::get('DB_CASING', 'camel'),
+            'assumes_uuid' => Env::get('DB_UUID', false)
+        ];
+        Database::connect(new DatabaseAdapter($dbClient));
+        
+        // Defaults
+        Response::setDefaultOutput(ResponseOutput::HTML)
+        Renderer::setTemplatePath('src/Views');
+    
+    }
+}
+
+```
+
+
+
 ## Routing
 Registering routes is easy and intuitive:
 
@@ -647,16 +774,164 @@ A few pointers for common tasks, assuming the following PHP output
 </table>
 
 ## Events
+_soon_
 
 ## Dynamic Store
+The static store object is an integral part of the design decision. 
+It functions as a "free-for-all" global memory used by the core itself and is 
+fully exposed to user land.
+One of it's core competencies is the ability to use not yet initiated values
+without the syntactical overhead of event listeners.
 
+```php 
+use Neoan\Store\Store;
+$totalRuntime = Store::dynamic('totalRuntime');
+$start = time();
+for($i = 0; $i <2; $i++){
+    echo $totalRuntime; // first iteration: null, second iteration: ~ 1
+    sleep(1);
+    Store::write('totalRuntime', time() - $start);
+}
+echo $totalRuntime; // ~ 2
+```
+In practice, this allows us to use variables that will be set eventually to be used in code,
+creating a promise-like structure without the requirement for actual asynchronous behavior. 
 ## Models
+Modern MVC frameworks use object-relational mapping (ORM) to interact with data.
+While neoan.io lenkrad is no different, the possibilities of PHP have finally grown to the point where
+manual mappings of database-structure and runtime-object are no longer required if done correctly. 
 
+### Database setup
+This package does not yet ship with a default database adapter. 
+For now, mysql & mariadb connectivity is created with the package neoan.io/legacy-db-adapter.
+
+`composer require neoan.io/legacy-db-adapter`
+
+Please refer to [Setup](#setup) in this readme or to [neoan3-apps/db](https://github.com/sroehrl/neoan3-db) for
+setup instructions and deeper understanding.
+
+### Model basics
+At its core, a model is a single object that inherits the capabilities of the core model class.
+
+example:
+```PHP 
+namespace App\Models;
+
+use Neoan\Model\Model;
+use Neoan\Helper\DateHelper;
+use Neoan\Model\Attributes\Initialize;
+use Neoan\Model\Attributes\IsPrimaryKey;
+use Neoan\Model\Attributes\IsUnique;
+use Neoan\Model\Attributes\Ignore;
+use Neoan\Model\Attributes\Type;
+use Neoan\Model\Collection;
+use Neoan\Model\Traits\TimeStamps;
+
+class MovieModel extends Model {
+    // primary keys can either be UUIDS or auto-incremented integers
+    // as our database setup refused the assumption of UUIDS, integers it is! 
+    // every model needs a primary key, which is indicated by the attribute "IsPrimaryKey"
+    
+    #[IsPrimaryKey]
+    public int $id;
+    
+    // Can there be two movies with the same name? Let's decide no:
+    // The "IsUnique" attribute let's the auto-migration know that we are serious about this decision.
+    
+    #[IsUnique]
+    public string $name;
+    
+    // Let's go crazy: What if wanted a type that cannot be inferred as it isn't built in?
+    // We are going to need to worry about two things: 
+    // First, the database type shouldn't default to string (or varchar, in our case), 
+    // so we define it using the "Type" attribute
+    // Additionally, we would like our model to assume the current date when a model is created,
+    // so we initialize a Datehelper instance on creation.
+    
+    #[
+        Type('date',null)
+        Initialize(new DateHelper())
+    ]
+    public string $releaseDate; 
+    
+    // What about relations?
+    // there is more than one review for a given movie, so we attach ReviewModel instances in a
+    // collection (see Collections) to the property $reviews based on the ReviewModel's foreign key
+    // "movieId" which points to our primary key "id"
+    
+    #[HasMany(ReviewModel::class, ['movieId' => 'id'])]
+    public Collection $reviews;
+    
+    // I don't know what I need it for, but the following property is ignored by database transactions
+    // and only serves for us to store values.
+    
+    #[Ignore]
+    public string $aProperty = 'new';
+    
+    // Traits can be useful to fight repetition. This packaged trait delivers us the properties
+    // - createdAt (a timestamp filled at creation of the Model)
+    // - updatedAt (a timestamp that is filled whenever a Model is stored to the database) and
+    // - deletedAt (a timestamp allowing soft deletion)
+    use TimeStamps;
+}    
+```
+Just to be complete, this is how our ReviewModel would look like:
+```php 
+namespace App\Models;
+
+Neoan\Model\Traits\Setter;
+Neoan\Model\Model;
+use Neoan\Model\Attributes\IsPrimaryKey;
+use Neoan\Model\Attributes\IsForeignKey;
+use Neoan\Model\Traits\TimeStamps;
+
+class ReviewModel extends Model{
+    
+    // Young devs in your team?
+    // It's probably smart to set the primary key to "readonly" to protect your padawans
+    // from stupid ideas. However, this requires the model itself to initialize the 
+    // property after database hydration. To automate this process, use the trait "Setter"
+    
+    use Setter;
+    
+    #[IsPrimaryKey]
+    public readonly int $id;
+    
+    // Who cares about critics?
+    // Let's make this field nullable
+    
+    public ?string $author = null;
+    
+    // We are using the attribute "Type" again.
+    // this time, we skip the length but nclude a default
+    
+    #[Type('MEDIUMTEXT', null, 'Awesome')]
+    public string $content;
+    
+    // Remember our model "Movie"? 
+    // While we don't need to declare this as foreign key,
+    // we might want to speed up database queries once our cinema bursts with visitors
+    
+    #[IsForeignKey]
+    public int $movieId;
+    
+    use TimeStamps;
+    
+}
+```
+We are going to jump ahead here to actually make this example work:
+
+`php cli migrate:mysql App\Model\MovieModel` &
+`php cli migrate:mysql App\Model\ReviewModel` 
+#### Creation
+#### Manipulation / Update
+#### Retrieval
+#### Collections
 ## Migrations
 
 ## Testing
 
-
+## CLI
 ## Contribution
 
 
