@@ -20,7 +20,9 @@ class NeoanApp
         $this->webPath = $this->findWebPath();
         if(isset($_SERVER["SERVER_PROTOCOL"])){
             $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,strpos( $_SERVER["SERVER_PROTOCOL"],'/'))).'://';
-            define('base',$protocol . $_SERVER['HTTP_HOST']);
+            if(!defined('base')){
+                define('base',$protocol . $_SERVER['HTTP_HOST']);
+            }
         }
 
 

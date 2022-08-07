@@ -4,6 +4,7 @@ namespace Test\Event;
 
 use Neoan\Event\Event;
 use PHPUnit\Framework\TestCase;
+use Test\Mocks\Listenable;
 
 class EventTest extends TestCase
 {
@@ -20,6 +21,14 @@ class EventTest extends TestCase
             }
         });
         Event::dispatch('generic-test-event', 'generic-event-content');
+    }
+    public function testClassSubscription()
+    {
+        $listenable = new Listenable();
+        Event::subscribeToClass(Listenable::class, function($a, $b,$c,$event){
+            $this->assertSame('test', $event);
+        });
+        $listenable->inform();
     }
 
 
