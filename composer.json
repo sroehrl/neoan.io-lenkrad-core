@@ -33,7 +33,7 @@
     "phpunit/phpunit": "9.5"
   },
   "scripts": {
-    "test": ["phpunit --configuration phpunit.xml --teamcity","php -f Tests/get-coverage.php -- 80 verbose"],
-    "current-coverage": "php -f Tests/get-coverage.php -- 80"
+    "test": ["phpunit --configuration phpunit.xml --teamcity","php -f tests/get-coverage.php -- 80 verbose"],
+    "current-coverage": "php -f tests/get-coverage.php -- 80"
   }
 }
