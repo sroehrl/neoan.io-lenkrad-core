@@ -3,7 +3,7 @@
          stderr="true"
          backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="Tests/bootstrap.php"
+         bootstrap="tests/bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -15,12 +15,10 @@
             <directory suffix=".php">./src</directory>
         </include>
         <exclude>
-            <directory>./src/NeoanApp.php</directory>
             <directory>./tests</directory>
             <directory>./vendor</directory>
-            <directory>./Cli</directory>
-            <directory>./_playground</directory>
             <directory>./src/Cli</directory>
+            <directory>./_playground</directory>
             <directory suffix="Test.php">./</directory>
         </exclude>
         <report>
@@ -30,7 +28,7 @@
     </coverage>
     <testsuites>
         <testsuite name="unit">
-            <directory suffix="Test.php">./Tests</directory>
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
     <php>

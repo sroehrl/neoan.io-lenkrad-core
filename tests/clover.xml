@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1659890644">
-  <project timestamp="1659890644">
+<coverage generated="1659890811">
+  <project timestamp="1659890811">
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\CoreInterfaces\RequestInterface.php">
       <metrics loc="11" ncloc="11" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
@@ -714,6 +714,34 @@
       <line num="20" type="stmt" count="11"/>
       <metrics loc="22" ncloc="22" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
+    <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\NeoanApp.php">
+      <class name="Neoan\NeoanApp" namespace="global">
+        <metrics complexity="8" methods="5" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="17" coveredstatements="12" elements="22" coveredelements="14"/>
+      </class>
+      <line num="15" type="method" name="__construct" visibility="public" complexity="2" crap="2.09" count="5"/>
+      <line num="17" type="stmt" count="5"/>
+      <line num="18" type="stmt" count="5"/>
+      <line num="19" type="stmt" count="5"/>
+      <line num="20" type="stmt" count="5"/>
+      <line num="21" type="stmt" count="5"/>
+      <line num="22" type="stmt" count="0"/>
+      <line num="23" type="stmt" count="0"/>
+      <line num="28" type="method" name="invoke" visibility="public" complexity="1" crap="2" count="0"/>
+      <line num="30" type="stmt" count="0"/>
+      <line num="32" type="method" name="normalizePath" visibility="private" complexity="1" crap="1" count="5"/>
+      <line num="34" type="stmt" count="5"/>
+      <line num="36" type="method" name="findWebPath" visibility="private" complexity="3" crap="3" count="5"/>
+      <line num="38" type="stmt" count="5"/>
+      <line num="39" type="stmt" count="5"/>
+      <line num="40" type="stmt" count="5"/>
+      <line num="41" type="stmt" count="5"/>
+      <line num="42" type="stmt" count="5"/>
+      <line num="45" type="stmt" count="5"/>
+      <line num="48" type="method" name="run" visibility="public" complexity="1" crap="2" count="0"/>
+      <line num="50" type="stmt" count="0"/>
+      <line num="51" type="stmt" count="0"/>
+      <metrics loc="53" ncloc="53" classes="1" methods="5" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="17" coveredstatements="12" elements="22" coveredelements="14"/>
+    </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Render\RenderEngine.php">
       <metrics loc="9" ncloc="9" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
@@ -1014,6 +1042,6 @@
       <line num="49" type="stmt" count="14"/>
       <metrics loc="51" ncloc="51" classes="2" methods="7" coveredmethods="6" conditionals="0" coveredconditionals="0" statements="13" coveredstatements="12" elements="20" coveredelements="18"/>
     </file>
-    <metrics files="45" loc="2097" ncloc="2001" classes="33" methods="167" coveredmethods="139" conditionals="0" coveredconditionals="0" statements="609" coveredstatements="560" elements="776" coveredelements="699"/>
+    <metrics files="46" loc="2150" ncloc="2054" classes="34" methods="172" coveredmethods="141" conditionals="0" coveredconditionals="0" statements="626" coveredstatements="572" elements="798" coveredelements="713"/>
   </project>
 </coverage>
