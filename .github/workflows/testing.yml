@@ -39,7 +39,7 @@ jobs:
       - name: Set color
         id: color
         run: |
-          if [[${{steps.pure-coverage.outputs.percent}} > 90]]; then 
+          if [[${{steps.pure-coverage.outputs.percent}} -gt "90"]]; then 
             output="#91f690"
           else
             output="yellow"
