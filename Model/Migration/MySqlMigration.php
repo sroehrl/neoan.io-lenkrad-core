@@ -10,11 +10,15 @@ class MySqlMigration
     private array $declaration;
     private array $existingTable;
     public string $sql = '';
-    function __construct(string $model)
+    public string $backupSql = '';
+    function __construct(string $model, string $backup = null)
     {
         $this->declaration = $model::declare();
         $this->initTable();
         $this->getExistingTable();
+        if($backup){
+            $this->writeBackupCopy($backup);
+        }
         $this->updateTable();
     }
     function getTableName(): string
@@ -60,6 +64,17 @@ class MySqlMigration
             }
         } catch (Exception $e){}
 
+    }
+
+    /**
+     * @throws Exception
+     */
+    function writeBackupCopy(string $name): void
+    {
+        if(!isset($this->existingTable)) {
+            throw new Exception("Failed: Cannot create backup copy of non-existing table");
+        }
+        $this->backupSql = "CREATE TABLE `$name` SELECT * FROM `{$this->getTableName()}`;";
     }
     function updateTable():void
     {

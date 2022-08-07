@@ -41,6 +41,12 @@ class MigrateCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Output to file? You can specify the a folder.',
                 false
+            )->addOption(
+                'with-copy',
+            'c',
+            InputOption::VALUE_OPTIONAL,
+                'Creates a backup of the existing table with the specified name',
+                false
             );
     }
 
@@ -64,9 +70,21 @@ class MigrateCommand extends Command
             $output->writeln("Writing to " . $full);
 
             @file_put_contents($full, $migrate->sql);
-            sleep(1);
+            usleep(200);
         }
         $output->writeln($migrate->sql);
+
+        // backup?
+        $backupOption = $input->getOption('with-copy');
+        if(false !== $backupOption){
+            try{
+                Database::raw($migrate->backupSql,[]);
+            } catch (\Exception $exception) {
+                $output->writeln($exception->getMessage());
+                $output->writeln($migrate->backupSql);
+            }
+        }
+        // execute migration
         foreach ($migrate->sqlAsSingleCommands() as $singleCommand){
             if(trim($singleCommand) !== ''){
                 try{
