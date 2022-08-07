@@ -28,8 +28,9 @@ class Interpreter
     }
     public function initialize(array $staticModel = []): Model
     {
-
         foreach ($this->parsedModel as $property){
+
+
             // Custom Type?
             if(!$property['isBuiltIn']){
                 $this->currentModel->{$property['name']} = new $property['type']();
@@ -40,13 +41,20 @@ class Interpreter
             }
             // fill from input
             if($property['isBuiltIn'] && isset($staticModel[$property['name']])){
-                try{
-                    $this->currentModel->{$property['name']} = $staticModel[$property['name']];
-                } catch (\TypeError $e) {
-                    // some day...
-                    var_dump($e->getMessage());
+                ['isReadOnly' => $readonly] = $property;
+                if($readonly && !isset($this->currentModel->{$property['name']})) {
+                    $this->currentModel->set($property['name'],  $staticModel[$property['name']]);
+                } elseif(!$readonly) {
+                    try{
+                        $this->currentModel->{$property['name']} = $staticModel[$property['name']];
+                    } catch (\TypeError $e) {
+                        // some day...
+                        var_dump($e->getMessage());
+                    }
                 }
             }
+
+
             // initialization attributes
             $this->executeAttributes($property['attributes'], $property['name'], AttributeType::INITIAL, Direction::IN);
         }

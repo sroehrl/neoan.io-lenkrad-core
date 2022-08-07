@@ -8,9 +8,9 @@ class DatabaseTestAdapter implements \Neoan\Database\Adapter
 {
     private PDO $db;
 
-    public function __construct($credentials = [])
+    public function __construct($credentials = ['location' => __DIR__.'/database.db'])
     {
-        $this->db =  new PDO('sqlite:'.__DIR__.'/database.db');
+        $this->db =  new PDO('sqlite:'.$credentials['location']);
     }
 
     private function removeVars(string $sqlString):string

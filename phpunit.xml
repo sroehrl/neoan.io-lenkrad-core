@@ -18,6 +18,8 @@
             <directory>./src/NeoanApp.php</directory>
             <directory>./tests</directory>
             <directory>./vendor</directory>
+            <directory>./Cli</directory>
+            <directory>./_playground</directory>
             <directory>./src/Cli</directory>
             <directory suffix="Test.php">./</directory>
         </exclude>
