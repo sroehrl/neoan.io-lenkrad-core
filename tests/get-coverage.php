@@ -2,7 +2,7 @@
 
 list($util, $percentage, $mode) = $argv + array(null,90,null);
 
-exec('php -f Tests/coverage-checker.php -- tests/clover.xml ' . ($percentage??90), $output, $resultCode);
+exec('php -f tests/coverage-checker.php -- tests/clover.xml ' . ($percentage??90), $output, $resultCode);
 if($mode){
     echo $output[0] . "\n";
 } else {
