@@ -201,11 +201,11 @@ As you can see, a lot of overhead can be omitted while maintaining an approachab
 `composer require neoan.io/core`
 
 _index.php_
+
 ```php
 <?php
 
-use Neoan\NeoanApp;
-use Neoan\Routing\Route;
+use Neoan\NeoanApp;use Neoan\src\Routing\Route;
 
 require_once 'vendor/autoload.php';
 $app = new NeoanApp(__DIR__, __DIR__);

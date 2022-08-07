@@ -12,18 +12,18 @@
          stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">./</directory>
+            <directory suffix=".php">./src</directory>
         </include>
         <exclude>
-            <directory>./NeoanApp.php</directory>
-            <directory>./Tests</directory>
+            <directory>./src/NeoanApp.php</directory>
+            <directory>./tests</directory>
             <directory>./vendor</directory>
-            <directory>./Cli</directory>
+            <directory>./src/Cli</directory>
             <directory suffix="Test.php">./</directory>
         </exclude>
         <report>
-            <clover outputFile="Tests/clover.xml"/>
-            <html outputDirectory="Tests/_report"/>
+            <clover outputFile="tests/clover.xml"/>
+            <html outputDirectory="tests/_report"/>
         </report>
     </coverage>
     <testsuites>

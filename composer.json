@@ -1,7 +1,8 @@
 {
   "name": "neoan.io/core",
   "description": "Neoan.io Lenkrad Framework",
-  "minimum-stability": "stable",
+  "type": "package",
+  "minimum-stability": "dev",
   "license": "MIT",
   "authors": [
     {
@@ -19,11 +20,14 @@
   },
   "autoload": {
     "psr-4": {
-      "Neoan\\": "./"
+      "Neoan\\": "src/"
     }
+
   },
   "autoload-dev": {
-    "Test\\": "./Tests/"
+    "psr-4": {
+      "Test\\": "tests/"
+    }
   },
   "require-dev": {
     "phpunit/phpunit": "9.5"
