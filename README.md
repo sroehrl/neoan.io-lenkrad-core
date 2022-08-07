@@ -23,6 +23,9 @@ You will need PHP 8.1 & composer2 to run this
 - - [Injection](#inject)
 - - [Views](#views)
 - [Inputs & Outputs](#handling-inputs--outputs)
+- [Templating](#templating)
+- - [HTML skeleton](#skeleton)
+- - [Templating basics](#templating-basics)
 - [Events](#events)
 - [Dynamic Store](#dynamic-store)
 - [Models](#models)
@@ -437,6 +440,211 @@ public function __invoke(array $provided): array
 ...
 ```
 ## Templating
+The default templating engine is attached to the default Renderer. Both can be exchanged,
+but for now let's focus on the built-in tooling.
+
+We will only cover basics of the templating engine here, please refer to [the repository of neoan3-apps/template](https://github.com/sroehrl/neoan3-template#neoan3-appstemplate)
+for deeper understanding.
+
+To set your default template path, use
+
+```php 
+use Neoan\Render\Renderer;
+
+Renderer::setTemplatePath(string $path);
+```
+Note: By default, the template engine uses project path.
+Using "setTemplatePath" overwrites that value. This means you have to declare the path relative to your project-root.
+Let's look at a setup example:
+
+```shell
+/public_html 
+  /index.php    
+/src
+  /Models
+  /Views      <- This is where we want to store our views
+  /Controller
+/vendor       <- Hint: always define from the "vendor" folder's parent on
+...           
+```
+In the above scenario, setting our template path would be:
+```php 
+use Neoan\Render\Renderer;
+
+Renderer::setTemplatePath('src/Views');
+```
+### Skeleton
+
+```php 
+use Neoan\Render\Renderer;
+
+Renderer::setHtmlSkeleton(string $templatePath, string $routePlacement, array $renderVariables)
+```
+To simplify the most common scenario, the Renderer uses a "skeleton" to surround your component specific views.
+This skeleton can be seen as a shell or frame and often includes header & footer.
+
+example:
+
+```html
+<!-- /src/Views/main.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}}</title>
+</head>
+<body>
+<header>
+    <nav><!--...--></nav>
+</header>
+{{routePlacement}}
+</body>
+</html>
+```
+We can now set this file to be our skeleton:
+
+```php 
+use Neoan\Render\Renderer;
+use Neoan\Store\Store;
+
+Renderer::setHtmlSkeleton('src/Views/main.html','routePlacement',[
+    'title' => Store::dynamic('title'), // 'title' isn't set at this point, so we use the dynamic store
+    'webPath' => $app->webPath          // neoan instance relative webPath in case we need it
+])
+```
+To complete the example, we'll create a view & route
+```html 
+<!-- /src/Views/you.html -->
+
+<p>I am here with <strong>{{you}}</strong></p>
+```
+```php 
+use Neoan\Routing\Route;
+use Neoan\Response\Response;
+use Neoan\Enums\ResponseOutput;
+use App\YouClass;
+
+Response::setDefaultOutput(ResponseOutput::HTML);
+Route::get('/test/:you', YouClass::class)->view('/you.html');
+```
+```php 
+use Neoan\Store\Store;
+use Neoan\Routing\Routable;
+use Neoan\Request\Request;
+
+class YouClass implements Routable{
+
+    public function __invoke($injected = []): array
+    {
+        Store::write('title','you-route');  // write to dynamic store
+        return Request::getParams();        // we know this includes "you"
+    }
+
+}
+```
+The output when visiting **/test/Eve** would be
+```html 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>you-route</title>
+</head>
+<body>
+<header>
+    <nav><!--...--></nav>
+</header>
+<p>I am here with <strong>Eve</strong></p>
+</body>
+</html>
+```
+
+### Templating basics
+You have already seen the general markup with curly brackets `{{var}}`. 
+A few pointers for common tasks, assuming the following PHP output
+```php 
+ ...
+ return [
+    'deep' => [
+        'key' => 'one'
+    ],
+    'iterateMe' => [
+        ['name' => 'Sam'],
+        ['name' => 'Adam']
+    ]
+ ];
+ ...
+```
+
+#### Nested variables
+<table>
+<tr>
+<td>
+
+```html 
+<p>{{deep.key}}</p>
+```
+</td>
+<td>
+
+```html 
+<p>one</p>
+```
+
+</td>
+</tr>
+</table>
+
+#### Iterations
+<table>
+<tr>
+<td>
+
+```html 
+<div>
+    <p n-for="iterateMe as item">{{item.name}}</p>
+</div>
+```
+</td>
+<td>
+
+```html 
+<div>
+    <p>Sam</p>
+    <p>Adam</p>
+</div>
+```
+
+</td>
+</tr>
+</table>
+
+#### Conditionals
+<table>
+<tr>
+<td>
+
+```html 
+<div>
+    <p n-if="deep.key !== 'one'">Show me</p>
+</div>
+```
+</td>
+<td>
+
+```html 
+<div>
+    
+</div>
+```
+</td>
+</tr>
+</table>
 
 ## Events
 

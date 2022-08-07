@@ -45,10 +45,19 @@ jobs:
             output="yellow"
           fi
           echo "::set-output name=color::$output"
-
       - uses: actions/checkout@v3
         with:
           ref: 'badges'
+      - name: generate current time
+        uses: gerred/current-time@v1.0.0
+        id: current-time
+      - name: amend to history
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: '.github/badges/history'
+          contents: |
+            \n${{steps.current-time.outputs.time}}
+          write-mode: append
       - name: Generate the badge SVG image
         uses: emibcn/badge-action@v1
         id: badge
