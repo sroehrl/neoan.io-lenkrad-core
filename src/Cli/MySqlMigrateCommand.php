@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'migrate:mysql', description: 'Syncs a model declaration to the database')]
-class MigrateCommand extends Command
+class MySqlMigrateCommand extends Command
 {
     protected static $defaultName = 'migrate:mysql';
     protected static $defaultDescription = 'Syncs a model declaration to the database';
