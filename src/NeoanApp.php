@@ -25,7 +25,6 @@ class NeoanApp
             }
         }
 
-
     }
     public function invoke($instance): void
     {

@@ -2,146 +2,80 @@
 
 namespace Neoan\Database;
 
+use Neoan\Helper\DateHelper;
 use PDO;
 
 class SqLiteAdapter implements Adapter
 {
     private PDO $db;
-    public function __construct($credentials = ['location' => __DIR__.'/database.db'])
-    {
-        $this->db =  new PDO('sqlite:'.$credentials['location']);
-    }
+    private NeoanSQLTranslator $translator;
+    private array $rawSubstitutions;
 
-    private function removeVars(string $sqlString):string
+    public function __construct($credentials = ['location' => __DIR__ . '/database.db'])
     {
-        return preg_replace('/{{[a-z.]}}/i','?', $sqlString);
+        $this->db = new PDO('sqlite:' . $credentials['location']);
+        $this->translator = new NeoanSQLTranslator();
     }
-    private function parseConditions(array $conditions = [], $mode = 'update'):array
+    private function execute($sql): \PDOStatement
     {
-        match($mode){
-            'select' => $sql = ' WHERE ',
-            'update',
-            'insert' => $sql = ''
-        };
-        $params = [];
-        $columns = '';
-        if(!empty($conditions)){
-            $sql .= '';
-            $i = 0;
-            foreach ($conditions as $key => $condition){
-                $sql .= ($i>0? ', ': '') . "$key = ? ";
-                $columns .= ($i>0? ', ': '') . "$key";
-
-                $params[] = $key;
-                $i++;
-            }
-        }
-        return [
-            'conditionSql' => $sql,
-            'params' => $params,
-            'columns' => $columns
-        ];
-    }
-    private function stripCondition(array $allowedKeys = [], array $conditionsArray = []):array
-    {
-        $params = [];
-        foreach ($allowedKeys as $allowed){
-
-            if(isset($conditionsArray[$allowed])){
-                $params[] = $conditionsArray[$allowed];
-            }
-        }
-        return $params;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function raw(string $sql, array $conditions, mixed $extra = null)
-    {
-        if($this->nextMockedResult){
-            $store = $this->nextMockedResult;
-            $this->nextMockedResult = null;
-            return $store;
-        }
-        $exec = $this->db->prepare($this->removeVars($sql));
-        if(empty($conditions)){
+        $exec = $this->db->prepare($sql);
+        if(empty($this->rawSubstitutions)){
             $exec->execute();
         } else {
-            $exec->execute(array_values($conditions));
+            $exec->execute($this->rawSubstitutions);
         }
-        return $exec->fetchAll(PDO::FETCH_ASSOC);
+        return $exec;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function easy(string $selectorString, array $conditions = [], mixed $extra = null)
+
+    public function raw(string $sql, array $conditions, mixed $extra = null): bool|array
     {
-        $selections = explode(' ', $selectorString);
-        $sql = 'SELECT ';
-        $from = [];
-        foreach ($selections as $i => $selection) {
-            preg_match('/([^.]+)\.([^$]+)/',$selection, $matches);
-            if(!in_array($matches[1], $from)){
-                $from[] = $matches[1];
-            }
-            $sql .= ($i>0? ', ': '') . "`$matches[1]`.`$matches[2]`";
-        }
-        $sql .= ' FROM ' . $from[0];
-        [
-            'conditionSql' => $conditionSql,
-            'params' => $allowedParams
-        ] = $this->parseConditions($conditions, 'select');
-        return $this->raw($sql . $conditionSql, $this->stripCondition($allowedParams, $conditions));
-
+        $this->rawSubstitutions = [];
+        $cleanedSql = preg_replace_callback('/{{([a-z.]+)}}/', function($matches) use($conditions){
+            $this->rawSubstitutions[] = $conditions[$matches[1]];
+            return '?';
+        }, $sql);
+        $result = $this->execute($cleanedSql);
+        return $result->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * @inheritDoc
-     */
+    public function easy(string $selectorString, array $conditions = [], mixed $extra = null): array
+    {
+        $selectorArray = $this->translator->parseEasy($selectorString);
+        $sql = "SELECT " . implode(', ', $selectorArray) . " FROM ".$this->translator->tableName;
+        if(!empty($conditions)){
+            $this->translator->parseWhere($conditions);
+            $sql .= " WHERE " . $this->translator->whereString;
+        }
+        $this->rawSubstitutions = array_values($conditions);
+        $result = $this->execute($sql, array_values($conditions));
+        return $result->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function insert($table, array $content)
     {
-        $sql = "INSERT INTO `$table` (";
-        [
-            'params' => $allowedParams,
-            'columns' => $columns
-        ] = $this->parseConditions($content, 'insert');
-        $question = array_fill(0, count($content),'?');
-
-        $sql .= $columns . ') VALUES (' . implode(', ', $question) . ')';
-
-        $this->raw($sql, $this->stripCondition($allowedParams, $content));
+        $this->translator->setTableName($table);
+        $sql = $this->translator->generateInsert($content);
+        $this->rawSubstitutions = $this->translator->statementParameter;
+        $this->execute($sql);
         return $this->db->lastInsertId();
-
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function update($table, array $values, array $where)
+    public function update($table, array $values, array $where): int
     {
-        $sql = "UPDATE `$table` SET ";
-        [
-            'params' => $allowedParams,
-            'conditionSql' => $conditionSql
-        ] = $this->parseConditions($values, 'update');
-        $sql .= $conditionSql;
-        $setParams = $this->stripCondition($allowedParams, $values);
-        [
-            'params' => $allowedParams,
-            'conditionSql' => $conditionSql
-        ] = $this->parseConditions($where, 'select');
-        $sql .= $conditionSql;
-        $whereParams = $this->stripCondition($allowedParams, $values);
-        return $this->raw($sql, array_merge($setParams,$whereParams));
+        $this->translator->setTableName($table);
+        $sql = $this->translator->generateUpdate($values, $where);
+        $this->rawSubstitutions = $this->translator->statementParameter;
+        $result = $this->execute($sql);
+        return $result->rowCount();
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function delete($table, string $id, bool $hard = false)
+    public function delete($table, string $id, bool $hard = false): array|bool|int
     {
-        return $this->raw("DELETE FROM `$table` WHERE id = ?",['id'=>$id]);
+        if($hard){
+            return $this->raw('DELETE FROM ' . $table . ' WHERE id = {{id}}',['id'=>$id]);
+        }
+        $now = new DateHelper();
+        return $this->update($table, ['deletedAt' => (string) $now],['id'=> $id]);
     }
 }

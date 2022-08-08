@@ -10,6 +10,7 @@ use Neoan\Enums\Direction;
 use Neoan\Enums\TransactionType;
 use Neoan\Event\Event;
 use Neoan\Event\EventNotification;
+use Neoan\Helper\DateHelper;
 
 
 class Model
@@ -175,6 +176,21 @@ class Model
     }
 
 
+    public function delete($hard = false)
+    {
+        $primaryKey = self::$interpreter->getPrimaryKey();
+
+        if($hard || !isset($this->deletedAt)) {
+            Database::raw("DELETE FROM `" . self::$tableName ."` WHERE `$primaryKey` = {{id}}",[
+                'id' => $this->{$primaryKey}
+            ]);
+        } else {
+            $newDate = new DateHelper();
+            Database::update(self::$tableName, ['deletedAt' => (string) $newDate],[
+                $primaryKey => $this->{$primaryKey}
+            ]);
+        }
+    }
 
 
 
