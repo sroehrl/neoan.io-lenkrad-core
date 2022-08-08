@@ -10,11 +10,14 @@ use Neoan\Model\Attributes\Ignore;
 use Neoan\Model\Attributes\Initialize;
 use Neoan\Model\Attributes\IsForeignKey;
 use Neoan\Model\Attributes\Transform;
+use Neoan\Model\Traits\Setter;
 use PHPUnit\Framework\TestCase;
 use Test\Mocks\MockModel;
 
 class AttributeTest extends TestCase
 {
+    use Setter;
+    private string $testVariable;
     function testTransform()
     {
         $attribute = new Transform(NotImplemented::class);
@@ -48,6 +51,11 @@ class AttributeTest extends TestCase
     {
         $helper = new AttributeHelper(MockModel::class);
         $this->assertIsArray($helper->findAttributesByProperty('id'));
+    }
+    function testTraits()
+    {
+        $this->set('testVariable', 'works');
+        $this->assertSame('works', $this->testVariable);
     }
 }
 

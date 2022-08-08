@@ -8,6 +8,8 @@ class DatabaseTestAdapter implements \Neoan\Database\Adapter
 {
     private PDO $db;
 
+    public ?array $nextMockedResult = null;
+
     public function __construct($credentials = ['location' => __DIR__.'/database.db'])
     {
         $this->db =  new PDO('sqlite:'.$credentials['location']);
@@ -60,6 +62,11 @@ class DatabaseTestAdapter implements \Neoan\Database\Adapter
      */
     public function raw(string $sql, array $conditions, mixed $extra = null)
     {
+        if($this->nextMockedResult){
+            $store = $this->nextMockedResult;
+            $this->nextMockedResult = null;
+            return $store;
+        }
         $exec = $this->db->prepare($this->removeVars($sql));
         if(empty($conditions)){
             $exec->execute();
