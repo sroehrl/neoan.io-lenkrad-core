@@ -17,13 +17,13 @@ class NeoanApp
         Env::initialize($appPath);
         $this->appPath = $appPath;
         $this->publicPath = $publicPath;
-        $this->webPath = $this->findWebPath();
         if(isset($_SERVER["SERVER_PROTOCOL"])){
             $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,strpos( $_SERVER["SERVER_PROTOCOL"],'/'))).'://';
             if(!defined('base')){
                 define('base',$protocol . $_SERVER['HTTP_HOST']);
             }
         }
+        $this->webPath = $this->findWebPath();
 
 
     }
@@ -44,7 +44,7 @@ class NeoanApp
                 unset($publicPathParts[$i]);
             }
         }
-        return '/' . implode('/', $publicPathParts);
+        return base . '/' . implode('/', $publicPathParts);
 
     }
     public function run(): void
