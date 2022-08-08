@@ -14,7 +14,7 @@ class Application
     function __construct(NeoanApp $app)
     {
         $this->app = new SymfonyApplication();
-        $this->app->add(new MigrateCommand($app));
+        $this->app->add(new MySqlMigrateCommand($app));
         $this->app->add(new CreateControllerCommand($app));
         $this->app->add(new CreateModelCommand($app));
     }
