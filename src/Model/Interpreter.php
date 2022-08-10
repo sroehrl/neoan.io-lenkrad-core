@@ -6,6 +6,7 @@ use Neoan\Enums\AttributeType;
 use Neoan\Enums\Direction;
 use Neoan\Helper\AttributeHelper;
 use Neoan\Model\Attributes\IsPrimaryKey;
+use Neoan\Model\Interfaces\ModelAttribute;
 use ReflectionException;
 
 class Interpreter
@@ -41,17 +42,7 @@ class Interpreter
             }
             // fill from input
             if($property['isBuiltIn'] && isset($staticModel[$property['name']])){
-                ['isReadOnly' => $readonly] = $property;
-                if($readonly && !isset($this->currentModel->{$property['name']})) {
-                    $this->currentModel->set($property['name'],  $staticModel[$property['name']]);
-                } elseif(!$readonly) {
-                    try{
-                        $this->currentModel->{$property['name']} = $staticModel[$property['name']];
-                    } catch (\TypeError $e) {
-                        // some day...
-                        var_dump($e->getMessage());
-                    }
-                }
+                $this->fillWithReadOnlyGuard($property, $property['isReadOnly'], $staticModel[$property['name']]);
             }
 
 
@@ -59,6 +50,19 @@ class Interpreter
             $this->executeAttributes($property['attributes'], $property['name'], AttributeType::INITIAL, Direction::IN);
         }
         return $this->currentModel;
+    }
+    public function fillWithReadOnlyGuard(array $property, bool $readOnly, string $value): void
+    {
+        if($readOnly && !isset($this->currentModel->{$property['name']})) {
+            $this->currentModel->set($property['name'],  $value);
+        } elseif(!$readOnly) {
+            try{
+                $this->currentModel->{$property['name']} = $value;
+            } catch (\TypeError $e) {
+                // some day...
+                var_dump($e->getMessage());
+            }
+        }
     }
     public function executeAttributes(array $attributes, string $propertyName, AttributeType $type, Direction $direction): void
     {
@@ -97,27 +101,8 @@ class Interpreter
                 $this->addToSelectorString($selectorString, $property->getName());
             } else {
                 foreach ($attributes as $attribute){
-                    $attributeInstance = $attribute->newInstance();
-                    switch($attributeInstance->getType()) {
-                        case AttributeType::ATTACH:
-                            $attachable[$property->getName()] = $attributeInstance;
-                            break;
-
-                        case AttributeType::MUTATE:
-                            $this->addToSelectorString($selectorString, $property->getName());
-                            $mutatable[$property->getName()] = $attributeInstance;
-                            break;
-                        case AttributeType::PRIVATE:
-                            break;
-                        case AttributeType::DECLARE:
-                        default:
-                        $this->addToSelectorString($selectorString, $property->getName());
-                            break;
-                    }
-
-
+                    $mutatable = [...$mutatable, ...$this->attributeCheck($attribute->newInstance(), $property)];
                 }
-
             }
         }
         return [
@@ -129,6 +114,27 @@ class Interpreter
     public function getPrimaryKey() :string
     {
         return $this->reflection->findPropertiesByAttribute(IsPrimaryKey::class)[0] ?? 'id';
+    }
+    private function attributeCheck(ModelAttribute $attributeInstance, \ReflectionProperty$property): array
+    {
+        $mutatable = [];
+        switch($attributeInstance->getType()) {
+            case AttributeType::ATTACH:
+                $attachable[$property->getName()] = $attributeInstance;
+                break;
+
+            case AttributeType::MUTATE:
+                $this->addToSelectorString($selectorString, $property->getName());
+                $mutatable[$property->getName()] = $attributeInstance;
+                break;
+            case AttributeType::PRIVATE:
+                break;
+            case AttributeType::DECLARE:
+            default:
+                $this->addToSelectorString($selectorString, $property->getName());
+                break;
+        }
+        return $mutatable;
     }
     private function addToSelectorString(&$selectorString, $columnName): void
     {
