@@ -9,49 +9,6 @@ problems regarding mocking & injectablility and testability.
 
 ## It's modern!
 
-You will need PHP 8.1 & composer2 to run this
-
-- [Why yet another framework?](#why)
-- [Getting Started](#getting-started)
-- [Setup](#setup)
-- [Routing](#routing)
-- - [Methods](#http-methods)
-- - [Endpoint Parameters](#endpoint-parameters)
-- - [Routable classes](#routables)
-- - [Middleware / Chaining](#chained-routes)
-- - [Response Handling](#response-handler)
-- - [Injection](#inject)
-- - [Views](#views)
-- [Inputs & Outputs](#handling-inputs--outputs)
-- [Templating](#templating)
-- - [HTML skeleton](#skeleton)
-- - [Templating basics](#templating-basics)
-- [Events](#events)
-- [Dynamic Store](#dynamic-store)
-- [Models](#models)
-- [Migrations](#migrations)
-- [Testing](#testing)
-- [Contribution](#contribution)
-
-## Why?
-
-PHP has come a long way. Most frameworks focus on backward-compatability to allow
-existing code-bases to securely update framework security patches without breaking changes.
-However, if you are starting a project, **why would you forgo the power of modern PHP?**
-
-Do you realize what a framework could do for you, if it utilized
-
-- attributes
-- enums
-- intersection types
-- match expressions
-- named parameters
-- readonly properties
-- union types
-- ...
-
-Execution time would be way faster, but could it make your life easier?
-
 At a glance:
 
 ```php
@@ -110,6 +67,51 @@ $user->store();
 
 
 As you can see, a lot of overhead can be omitted while maintaining an approachable style.
+
+You will need PHP 8.1 & composer2 to run this
+
+- [Why yet another framework?](#why)
+- [Getting Started](#getting-started)
+- [Setup](#setup)
+- [Routing](#routing)
+- - [Methods](#http-methods)
+- - [Endpoint Parameters](#endpoint-parameters)
+- - [Routable classes](#routables)
+- - [Middleware / Chaining](#chained-routes)
+- - [Response Handling](#response-handler)
+- - [Injection](#inject)
+- - [Views](#views)
+- [Inputs & Outputs](#handling-inputs--outputs)
+- [Templating](#templating)
+- - [HTML skeleton](#skeleton)
+- - [Templating basics](#templating-basics)
+- [Events](#events)
+- [Dynamic Store](#dynamic-store)
+- [Models](#models)
+- [Migrations](#migrations)
+- [Testing](#testing)
+- [Contribution](#contribution)
+
+## Why?
+
+PHP has come a long way. Most frameworks focus on backward-compatability to allow
+existing code-bases to securely update framework security patches without breaking changes.
+However, if you are starting a project, **why would you forgo the power of modern PHP?**
+
+Do you realize what a framework could do for you, if it utilized
+
+- attributes
+- enums
+- intersection types
+- match expressions
+- named parameters
+- readonly properties
+- union types
+- ...
+
+Execution time would be way faster, but could it make your life easier?
+
+
 
 ## Getting Started
 
