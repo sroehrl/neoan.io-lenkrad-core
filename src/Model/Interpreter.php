@@ -14,6 +14,9 @@ class Interpreter
     private AttributeHelper $reflection;
     public array $parsedModel;
     private Model $currentModel;
+    private array $mutationAttributes;
+    private array $attachableAttributes;
+    private string $selectorString = '';
 
     /**
      * @throws ReflectionException
@@ -92,53 +95,50 @@ class Interpreter
     }
     public function generateSelect(): array
     {
-        $selectorString = '';
-        $attachable = [];
-        $mutatable = [];
+        $this->selectorString = '';
+        $this->mutationAttributes = [];
         foreach ($this->reflection->properties as $i => $property) {
             $attributes = $property->getAttributes();
             if(empty($attributes)){
-                $this->addToSelectorString($selectorString, $property->getName());
+                $this->addToSelectorString($property->getName());
             } else {
                 foreach ($attributes as $attribute){
-                    $mutatable = [...$mutatable, ...$this->attributeCheck($attribute->newInstance(), $property)];
+                    $this->attributeCheck($attribute->newInstance(), $property);
                 }
             }
         }
         return [
-            'selectorString' => $selectorString,
-            'attachable' => $attachable,
-            'mutatable' => $mutatable
+            'selectorString' => $this->selectorString,
+            'attachable' => $this->attachableAttributes,
+            'mutatable' => $this->mutationAttributes
         ];
     }
     public function getPrimaryKey() :string
     {
         return $this->reflection->findPropertiesByAttribute(IsPrimaryKey::class)[0] ?? 'id';
     }
-    private function attributeCheck(ModelAttribute $attributeInstance, \ReflectionProperty$property): array
+    private function attributeCheck($attributeInstance, \ReflectionProperty $property): void
     {
-        $mutatable = [];
         switch($attributeInstance->getType()) {
             case AttributeType::ATTACH:
-                $attachable[$property->getName()] = $attributeInstance;
+                $this->attachableAttributes[$property->getName()] = $attributeInstance;
                 break;
 
             case AttributeType::MUTATE:
-                $this->addToSelectorString($selectorString, $property->getName());
-                $mutatable[$property->getName()] = $attributeInstance;
+                $this->addToSelectorString($property->getName());
+                $this->mutationAttributes[$property->getName()] = $attributeInstance;
                 break;
             case AttributeType::PRIVATE:
                 break;
             case AttributeType::DECLARE:
             default:
-                $this->addToSelectorString($selectorString, $property->getName());
+                $this->addToSelectorString($property->getName());
                 break;
         }
-        return $mutatable;
     }
-    private function addToSelectorString(&$selectorString, $columnName): void
+    private function addToSelectorString($columnName): void
     {
-        $selectorString .= (strlen($selectorString) > 1 ? ' ' : ''). $this->getTableName() . '.' . $columnName;
+        $this->selectorString .= (strlen($this->selectorString) > 1 ? ' ' : ''). $this->getTableName() . '.' . $columnName;
     }
 
 }
