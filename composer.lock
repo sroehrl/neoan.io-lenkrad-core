@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "971d6fa20b8d344150391a12634d58e9",
+    "content-hash": "2763eb3412ef6f56bf0ebaa1d77602b9",
     "packages": [
         {
             "name": "graham-campbell/result-type",
@@ -67,6 +67,49 @@
                 }
             ],
             "time": "2022-07-30T15:56:11+00:00"
+        },
+        {
+            "name": "neoan.io/legacy-db-adapter",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sroehrl/Neoan3IoDatabaseAdapter.git",
+                "reference": "d212ef72f838018790e198dcd242c72c29d650e3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sroehrl/Neoan3IoDatabaseAdapter/zipball/d212ef72f838018790e198dcd242c72c29d650e3",
+                "reference": "d212ef72f838018790e198dcd242c72c29d650e3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-mysqli": "*",
+                "neoan3-apps/db": "^0.3.6",
+                "php": "~8.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NeoanIo\\MarketPlace\\": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stefan Roehrl",
+                    "homepage": "http://neoan.us"
+                }
+            ],
+            "description": "neoan3/db adapter for neoanIo",
+            "support": {
+                "issues": "https://github.com/sroehrl/Neoan3IoDatabaseAdapter/issues",
+                "source": "https://github.com/sroehrl/Neoan3IoDatabaseAdapter/tree/v1.0.1"
+            },
+            "time": "2022-08-02T01:14:55+00:00"
         },
         {
             "name": "neoan3-apps/db",
