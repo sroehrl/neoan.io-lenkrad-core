@@ -255,7 +255,7 @@ class Setup {
         Database::connect(new DatabaseAdapter($dbClient));
         
         // Defaults
-        Response::setDefaultOutput(ResponseOutput::HTML)
+        Response::setDefaultOutput(ResponseOutput::HTML);
         Renderer::setTemplatePath('src/Views');
     
     }
