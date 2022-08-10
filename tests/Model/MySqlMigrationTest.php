@@ -2,8 +2,8 @@
 
 namespace Test\Model;
 
+use Neoan\Cli\MigrationHelper\MySqlMigration;
 use Neoan\Database\Database;
-use Neoan\Model\Migration\MySqlMigration;
 use PHPUnit\Framework\TestCase;
 use Test\Mocks\DatabaseTestAdapter;
 use Test\Mocks\MockModel;

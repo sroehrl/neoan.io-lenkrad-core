@@ -1,51 +1,47 @@
 <?php
 
-namespace Neoan\Model\Migration;
+namespace Neoan\Cli\MigrationHelper;
 
 use Exception;
 use Neoan\Database\Database;
 
 class MySqlMigration
 {
-    private array $declaration;
+    private ModelInterpreter $interpreter;
+
+
     private array $existingTable;
     public string $sql = '';
     public string $backupSql = '';
-    function __construct(string $model, string $backup = null)
+
+    /**
+     * @throws Exception
+     */
+    function __construct(ModelInterpreter $modelInterpreter, string $backup = null)
     {
-        $this->declaration = $model::declare();
+        $this->interpreter = $modelInterpreter;
+
+        // ensure table existence
         $this->initTable();
+
+        // parse and normalize existing table
         $this->getExistingTable();
+
         if($backup){
             $this->writeBackupCopy($backup);
         }
         $this->updateTable();
     }
-    function getTableName(): string
-    {
-        return array_key_first($this->declaration);
-    }
+
 
     /**
      * @throws Exception
      */
-    function getPrimaryField(): ?array
+    public function initTable():void
     {
-        $primaryField = null;
-        foreach ($this->declaration[$this->getTableName()] as $property) {
-            $primaryField = $property['isPrimary'] ? $property : $primaryField;
-        }
-        if(!$primaryField){
-            throw new Exception('No Primary key set in Model!');
-        }
-        return $primaryField;
-    }
-    function initTable():void
-    {
-        $primaryField = $this->getPrimaryField();
-        $sql = "CREATE TABLE IF NOT EXISTS `{$this->getTableName()}` (\n";
-        $sql .= $this->getFieldSql($primaryField);
-        $sql .= ",\nPRIMARY KEY ({$primaryField['name']})\n);\n";
+        $sql = "CREATE TABLE IF NOT EXISTS `{$this->interpreter->getTableName()}` (\n";
+        $sql .= $this->getFieldSql($this->interpreter->getPrimaryField());
+        $sql .= ",\nPRIMARY KEY ({$this->interpreter->getPrimaryField()['name']})\n);\n";
         $this->sql .= $sql;
     }
     function getFieldSql($field): string
@@ -58,7 +54,7 @@ class MySqlMigration
     function getExistingTable(): void
     {
         try{
-            $result = Database::raw("DESCRIBE `{$this->getTableName()}`",[]);
+            $result = Database::raw("DESCRIBE `{$this->interpreter->getTableName()}`",[]);
             foreach ($result as $field) {
                 $this->existingTable[$field['Field']] = $field;
             }
@@ -74,15 +70,15 @@ class MySqlMigration
         if(!isset($this->existingTable)) {
             throw new Exception("Failed: Cannot create backup copy of non-existing table");
         }
-        $this->backupSql = "CREATE TABLE `$name` SELECT * FROM `{$this->getTableName()}`;";
+        $this->backupSql = "CREATE TABLE `$name` SELECT * FROM `{$this->interpreter->getTableName()}`;";
     }
     function updateTable():void
     {
         $sql = '';
-        foreach ($this->filteredProperties() as $i => $property) {
+        foreach ($this->interpreter->filteredProperties() as $i => $property) {
 
             $keyword = isset($this->existingTable[$property['name']]) || $property['isPrimary'] ? 'MODIFY' : 'ADD';
-            $sql .= "ALTER TABLE `{$this->getTableName()}` $keyword {$this->getFieldSql($property)};\n";
+            $sql .= "ALTER TABLE `{$this->interpreter->getTableName()}` $keyword {$this->getFieldSql($property)};\n";
             $sql .= $this->createUniqueConstraint($property);
         }
         $this->sql .= $sql;
@@ -91,8 +87,9 @@ class MySqlMigration
     {
         $type = match ($property['type']) {
             'int' => 'int(11)',
-            'string' => 'varchar(255)',
-            'float' => 'decimal(10,3)'
+            'float' => 'decimal(10,3)',
+            'Neoan\Helper\DateHelper' => 'datetime',
+            default => 'varchar(255)',
         };
         foreach ($property['attributes'] as $attribute) {
             if($attribute['name'] === "Neoan\\Model\\Attributes\\Type"){
@@ -109,39 +106,18 @@ class MySqlMigration
         $sql = '';
         $name = $property['name'];
         $existingIsUnique = isset($this->existingTable[$name]) && str_starts_with(strtolower($this->existingTable[$name]['Key']),'uni');
-        $newIsUnique = $this->isUnique($property);
-        if($existingIsUnique && !$newIsUnique) {
+        if($existingIsUnique && !$this->interpreter->isUnique($property)) {
             // remove
-            $sql .= "ALTER TABLE `{$this->getTableName()}` DROP $name;\n";
+            $sql .= "ALTER TABLE `{$this->interpreter->getTableName()}` DROP $name;\n";
         }
-        if(!$existingIsUnique && $newIsUnique) {
+        if(!$existingIsUnique && $this->interpreter->isUnique($property)) {
             // add
-            $sql .= "ALTER TABLE `{$this->getTableName()}` ADD UNIQUE ($name);\n";
+            $sql .= "ALTER TABLE `{$this->interpreter->getTableName()}` ADD UNIQUE ($name);\n";
         }
         return $sql;
     }
     public function sqlAsSingleCommands(): array
     {
         return array_values(explode(';', $this->sql));
-    }
-    private function isUnique(array $property): bool
-    {
-        foreach ($property['attributes'] as $attribute) {
-            if($attribute['name'] === "Neoan\\Model\\Attributes\\IsUnique"){
-                return true;
-            }
-        }
-        return false;
-    }
-    private function filteredProperties():array
-    {
-        return array_filter($this->declaration[$this->getTableName()], function(array $property){
-            foreach ($property['attributes'] as $attribute){
-                if($attribute['type'] === \Neoan\Enums\AttributeType::ATTACH){
-                    return false;
-                }
-            }
-            return true;
-        });
     }
 }

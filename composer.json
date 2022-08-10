@@ -16,7 +16,8 @@
     "neoan3-apps/db": "^0.3.6",
     "vlucas/phpdotenv": "^5.4",
     "symfony/console": "^6.1",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "neoan.io/legacy-db-adapter": "^1.0"
   },
   "autoload": {
     "psr-4": {
@@ -26,7 +27,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Test\\": "tests/"
+      "Test\\": "tests/",
+      "Playground\\": "_playground/"
     }
   },
   "require-dev": {

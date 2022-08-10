@@ -2,9 +2,11 @@
 
 namespace Neoan\Cli;
 
-use Neoan\NeoanApp;
+use Neoan\Cli\MigrationHelper\ModelInterpreter;
+use Neoan\Cli\MigrationHelper\MySqlMigration;
+use Neoan\Cli\MigrationHelper\SqLiteMigration;
 use Neoan\Database\Database;
-use Neoan\Model\Migration\MySqlMigration;
+use Neoan\NeoanApp;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,10 +14,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'migrate:mysql', description: 'Syncs a model declaration to the database')]
-class MySqlMigrateCommand extends Command
+#[AsCommand(name: 'migrate:model', description: 'Syncs a model declaration to the database')]
+class MigrateCommand extends Command
 {
-    protected static $defaultName = 'migrate:mysql';
+    protected static $defaultName = 'migrate:model';
     protected static $defaultDescription = 'Syncs a model declaration to the database';
     private string $appPath;
 
@@ -29,6 +31,11 @@ class MySqlMigrateCommand extends Command
     {
         $this
             ->setHelp('Syncs a model declaration to the database')
+            ->addArgument(
+                'dialect',
+                InputArgument::REQUIRED,
+                'sqlite | mysql'
+            )
             ->addArgument(
                 'model',
                 InputArgument::REQUIRED,
@@ -58,7 +65,11 @@ class MySqlMigrateCommand extends Command
             $output->writeln("The requested model does not exist");
             return Command::FAILURE;
         }
-        $migrate = new MySqlMigration($modelName);
+        if($input->getArgument('dialect') === 'sqlite'){
+            $migrate = new SqLiteMigration(new ModelInterpreter($modelName), $input->getOption('with-copy'));
+        } else {
+            $migrate = new MySqlMigration(new ModelInterpreter($modelName), $input->getOption('with-copy'));
+        }
 
         $fileOption = $input->getOption('output-folder');
         if(false !== $fileOption){
@@ -71,6 +82,7 @@ class MySqlMigrateCommand extends Command
             @file_put_contents($full, $migrate->sql);
             usleep(200);
         }
+        $output->writeln("/****** Generated SQL ******/");
         $output->writeln($migrate->sql);
 
         // backup?
@@ -89,12 +101,17 @@ class MySqlMigrateCommand extends Command
                 try{
                     Database::raw($singleCommand,[]);
                 } catch (\Exception $exception) {
+                    $output->writeln("/***** ERROR *****/");
                     $output->writeln($exception->getMessage());
-                    $output->writeln($singleCommand);
+                    $output->writeln("Failed command:");
+                    $output->writeln(trim($singleCommand));
+                    $output->writeln("aborting...");
+                    $output->writeln("Check your database.");
+                    return Command::FAILURE;
                 }
             }
         }
-
+        $output->writeln("/**** SUCCESS ****/");
         return Command::SUCCESS;
     }
 }

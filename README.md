@@ -52,61 +52,10 @@ Do you realize what a framework could do for you, if it utilized
 
 Execution time would be way faster, but could it make your life easier?
 
-Let's compare:
-<table>
-<tr><th>Eloquent/Laravel</th><th>Lenkrad</th></tr>
-<tr><td>Define model:</td><td>Define model:</td></tr>
-<tr>
-<td>
+At a glance:
 
 ```php
-<?php
-...
-/**
- * @property $id
- * @property $name
- * @property $email
- * @property $job
- * @property $password
- * @property $createdAt
- * @property $updatedAt
- */
-class User extends Model 
-{
-    protected $primaryKey = 'id';
-    protected $attributes = [
-        'job' => 'employee'
-    ];
-}
-```
-```php
-<?php
-...
-class CreateMyUsersTable extends Migration
-{
-    public function up()
-    {
-        Schema::create('Users', 
-            function (Blueprint $table) {
-                $table->increments('id');
-                $table->string('name')->nullable();
-                $table->string('email')->unique();
-                $table->string('job');
-                $table->string('password');
-                $table->timestamps();
-            });
-    }
- 
-    public function down()
-    {
-        Schema::dropIfExists('Users');
-    }
-}
-```
-</td>
-<td>
-
-```php
+// A MODEL
 <?php
 ...
 class User extends Model 
@@ -130,42 +79,11 @@ class User extends Model
 }
 ```
 
-</td>
-
-</tr>
-<tr><td>Create & modify entry:</td><td>Create & modify entry:</td></tr>
-<tr>
-<td>
 
 ```php 
-$user = User::create([
-    'email'=> 'some@mail.com', 
-    'name' => 'Someone',
-    'password' => '123123'
-]);
-// reconsider name?
-$user->name = 'Adam';
-$user->save();
-
+// A CONTROLLER
+<?php
 ...
-// or e.g. when updating a password
-
-$password = $request
-                ->input('newPassword');
-
-// I hope you don't forget to hash!
-$password = Hash::make($password);
-
-$user = User::where('email', 'some@email.com')
-            ->first();
-$user->password = $password;
-$user->save();
-```
-
-</td>
-<td>
-
-```php 
 $user = new User([
     'email'=> 'some@mail.com', 
     'name' => 'Someone',
@@ -190,9 +108,6 @@ $user = User::retrieveOne([
 $user->store();
 ```
 
-</td>
-</tr>
-</table>
 
 As you can see, a lot of overhead can be omitted while maintaining an approachable style.
 
@@ -226,7 +141,7 @@ find a basic setup script:
 
 `composer require neoan.io/core`
 
-`composer require neoan.io/legacy-db-adapter`
+`composer require neoan.io/legacy-db-adapter` (optional: You can also use Neoan\Database\SqLiteAdapter while developing)
 
 You are free to chose your folder structure. For now, we will assume the following structure:
 
