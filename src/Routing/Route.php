@@ -11,7 +11,7 @@ use Neoan\Response\Response;
 class Route
 {
     private static ?Route $instance = null;
-    private array $paths = [];
+    public array $paths = [];
     private string $currentPath;
     private string $currentMethod;
 

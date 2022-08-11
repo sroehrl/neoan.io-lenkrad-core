@@ -14,8 +14,8 @@ class Interpreter
     private AttributeHelper $reflection;
     public array $parsedModel;
     private Model $currentModel;
-    private array $mutationAttributes;
-    private array $attachableAttributes;
+    private array $mutationAttributes = [];
+    private array $attachableAttributes = [];
     private string $selectorString = '';
 
     /**
