@@ -53,8 +53,10 @@ class SqLiteMigration
     {
         try{
             $result = Database::raw("SELECT sql FROM sqlite_master WHERE name = '{$this->interpreter->getTableName()}'",[]);
-            preg_match('/\(([^)]+)/', $result[0]['sql'], $matches);
-            $result = explode(',',$matches[1]);
+            if(!empty($result)){
+                preg_match('/\(([^)]+)/', $result[0]['sql'], $matches);
+                $result = explode(',',$matches[1]);
+            }
 
 
             foreach ($result as $field) {
@@ -91,7 +93,7 @@ class SqLiteMigration
         }
         $this->sql .= $sql . ");\n";
         // copy old data?
-        if($this->existingTable){
+        if(isset($this->existingTable)){
             $fields = [];
             foreach($this->existingTable as $existing){
                 $fields[] = $existing['name'] . (isset($doubleDown[$existing['name']]) ? ' as ' . $doubleDown[$existing['name']] : '');
