@@ -399,9 +399,9 @@ use Neoan\Routing\Route;
 use Neoan\Response\Response;
 use App\Controllers\Controller;
 
-Route::get('/', Controller::class)->respond([Response::class,'html']);
+Route::get('/', Controller::class)->response([Response::class,'html']);
 // or whatever handler you want:
-Route::get('/my-handler', Controller::class)->respond([App\Own\MyResponseHandler::class,'answerMethod'])
+Route::get('/my-handler', Controller::class)->response([App\Own\MyResponseHandler::class,'answerMethod'])
 ```
 ### Inject
 To make life easy where it can be, you can directly inject values into a route:

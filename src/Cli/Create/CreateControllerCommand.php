@@ -14,11 +14,11 @@ class CreateControllerCommand extends Command
 {
     protected static $defaultName = 'create:model';
     protected static $defaultDescription = 'create controller command';
-    private string $appPath;
+    private NeoanApp $neoanApp;
 
     public function __construct(NeoanApp $neoanApp, string $name = null)
     {
-        $this->appPath = $neoanApp->appPath;
+        $this->neoanApp = $neoanApp;
         parent::__construct($name);
     }
 
@@ -35,7 +35,7 @@ class CreateControllerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        FileCreator::process('controller', $input->getArgument('name'), $this->appPath, $output);
+        FileCreator::process('controller', $input->getArgument('name'), $this->neoanApp, $output);
 
         return Command::SUCCESS;
     }

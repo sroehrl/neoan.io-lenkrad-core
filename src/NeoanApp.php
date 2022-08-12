@@ -11,12 +11,14 @@ class NeoanApp
     public string $appPath;
     public string $publicPath;
     public string $webPath;
+    public string $cliPath;
 
-    public function __construct(string $appPath, string $publicPath)
+    public function __construct(string $appPath, string $publicPath, string $cliPath = __DIR__)
     {
         Env::initialize($appPath);
         $this->appPath = $appPath;
         $this->publicPath = $publicPath;
+        $this->cliPath = $cliPath;
         $this->webPath = Env::get('WEB_PATH', '/');
         if(isset($_SERVER["SERVER_PROTOCOL"])){
             $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,strpos( $_SERVER["SERVER_PROTOCOL"],'/'))).'://';

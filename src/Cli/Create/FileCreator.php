@@ -2,6 +2,7 @@
 
 namespace Neoan\Cli\Create;
 
+use Neoan\NeoanApp;
 use Neoan3\Apps\Template;
 use Symfony\Component\Console\Output\Output;
 
@@ -11,16 +12,16 @@ class FileCreator
     public static string $folder;
     public static string $fileContent;
     public static array $path;
-    public static string $appPath;
+    public static NeoanApp $neoanApp;
     public static Output $output;
 
-    public static function process($type, $name, $appPath, $output)
+    public static function process($type, $name, $neoanApp, $output)
     {
         self::$output = $output;
         self::parse($type);
         self::getPath($name);
         self::$fileContent = self::getFileContent($name);
-        self::$appPath = $appPath;
+        self::$neoanApp = $neoanApp;
         self::readComposer();
         self::ensureDirectory();
         self::writeFile();
@@ -52,7 +53,7 @@ class FileCreator
     private static function readComposer(): void
     {
         // read composer
-        $composerFile = json_decode(file_get_contents(self::$appPath . '/composer.json'), true);
+        $composerFile = json_decode(file_get_contents(self::$neoanApp->cliPath . '/composer.json'), true);
         if (isset($composerFile['autoload']['psr-4'])) {
             foreach ($composerFile['autoload']['psr-4'] as $ns => $loadPath) {
                 if ((self::$path[0] . '\\') === $ns) {
@@ -63,7 +64,7 @@ class FileCreator
     }
     private static function ensureDirectory(): void
     {
-        $directoryExplorer = self::$appPath;
+        $directoryExplorer = self::$neoanApp->cliPath;
         foreach (self::$path as $i => $folder) {
             $directoryExplorer = $directoryExplorer . DIRECTORY_SEPARATOR . $folder;
             if ($i + 1 < count(self::$path) && !file_exists($directoryExplorer)) {
