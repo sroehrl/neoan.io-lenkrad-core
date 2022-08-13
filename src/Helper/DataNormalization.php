@@ -68,7 +68,7 @@ class DataNormalization implements Iterator
 
     public function valid(): bool
     {
-        return array_key_exists($this->converted, $this->key());
+        return array_key_exists($this->key(), $this->converted);
     }
 
     public function rewind(): void
