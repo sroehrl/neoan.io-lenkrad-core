@@ -151,6 +151,7 @@ class Route
         // Store: it happens here, at the point of no return
         // TODO: move to appropriate place or abstract
         foreach($result as $key => $value){
+            echo "<pre>";
             var_dump($key);
             var_dump($value);
             if($value instanceof Dynamic){
