@@ -8,6 +8,8 @@ use Neoan\Enums\ResponseOutput;
 use Neoan\Event\Event;
 use Neoan\Helper\Terminate;
 use Neoan\Helper\VerifyJson;
+use Neoan\Model\Collection;
+use Neoan\Model\Model;
 use Neoan\Render\RenderEngine;
 use Neoan\Render\Renderer;
 use Neoan\Store\Dynamic;
@@ -93,12 +95,26 @@ class Response implements ResponseInterface
             ->respond($json->jsonSerialize());
     }
 
-    static public function html($data, ?string $view = null): void
+    static public function html(mixed $data, ?string $view = null): void
     {
         $instance = self::getInstance();
-//        $renderer = preg_replace('/::class/','', $instance->defaultRenderer);
+        $data = self::normalizeData($data);
+
         $instance->setResponseHeaders('Content-type: text/html')
             ->respond($instance->defaultRenderer::render($data, $view));
+    }
+    public static function normalizeData(mixed $data): array
+    {
+        if($data instanceof Model || $data instanceof Collection) {
+            $data = $data->toArray();
+        } elseif ($data instanceof Dynamic){
+            $data = $data->get();
+        } elseif(is_array($data)) {
+            foreach ($data as $key => $value){
+                $data[$key] = self::normalizeData($data);
+            }
+        }
+        return $data;
     }
 
     public static function detachInstance(): void
