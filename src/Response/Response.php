@@ -111,7 +111,7 @@ class Response implements ResponseInterface
             $data = $data->get();
         } elseif(is_array($data)) {
             foreach ($data as $key => $value){
-                $data[$key] = self::normalizeData($data);
+                $data[$key] = self::normalizeData($value);
             }
         }
         return $data;
