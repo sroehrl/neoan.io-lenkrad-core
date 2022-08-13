@@ -80,7 +80,7 @@ class SqLiteMigration
             $sql .= ($i > 0 ?  ",\n" : "\n") . $this->getFieldSql($property);
             $key = $this->addKey($property);
             $sql .= ' ' . $key;
-            if($key === 'UNIQUE' && !$this->existingTablePropertyIsUnique($property['name'])){
+            if($key === 'UNIQUE' && isset($this->existingTable) && !$this->existingTablePropertyIsUnique($property['name'])){
                 $doubleDown[$property['name']] = $property['name'] . '_non_unique';
                 $secureProperty = [
                     'name' => $property['name'] . '_non_unique',
