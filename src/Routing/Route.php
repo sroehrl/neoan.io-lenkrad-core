@@ -148,16 +148,6 @@ class Route
     }
     private function lastRoutable(array $route, $result): void
     {
-        // Store: it happens here, at the point of no return
-        // TODO: move to appropriate place or abstract
-        foreach($result as $key => $value){
-            echo "<pre>";
-            var_dump($key);
-            var_dump($value);
-            if($value instanceof Dynamic){
-                $result[$key] = $value->get();
-            }
-        }
         if(!empty($route['response'])){
             $route['response'][0]::{$route['response'][1]}($result, $route['view'] ?? null);
         } else {

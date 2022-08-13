@@ -10,6 +10,7 @@ use Neoan\Helper\Terminate;
 use Neoan\Helper\VerifyJson;
 use Neoan\Render\RenderEngine;
 use Neoan\Render\Renderer;
+use Neoan\Store\Dynamic;
 
 class Response implements ResponseInterface
 {

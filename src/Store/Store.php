@@ -42,7 +42,11 @@ class Dynamic
     }
     public function __toString(): string
     {
-        return $this->instance->readValue($this->watchedVariable);
+        $value = $this->instance->readValue($this->watchedVariable);
+        if(is_array($value)){
+            $value = json_encode($value);
+        }
+        return $value;
     }
     public function get()
     {

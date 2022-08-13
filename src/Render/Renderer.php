@@ -6,6 +6,7 @@ namespace Neoan\Render;
 use Neoan\Enums\GenericEvent;
 use Neoan\Event\Event;
 use Neoan\Event\Listenable;
+use Neoan\Store\Dynamic;
 use Neoan3\Apps\Template;
 
 class Renderer implements RenderEngine, Listenable
@@ -89,11 +90,24 @@ class Renderer implements RenderEngine, Listenable
     private static function compressData($data, $view): array
     {
         $instance = self::getInstance();
+
         $data = [
             ...$data,
             ...$instance->skeletonVariables
         ];
+        $data = self::captureStoreInstances($data);
         $data[$instance->htmlComponentPlacement] = Template::embraceFromFile($instance->templatePath . $view, $data);
+        return $data;
+    }
+    private static function captureStoreInstances($data)
+    {
+        // Store: it happens here, at the point of no return
+        // TODO: move to appropriate place or abstract
+        foreach($data as $key => $value){
+            if($value instanceof Dynamic){
+                $data[$key] = $value->get();
+            }
+        }
         return $data;
     }
 
