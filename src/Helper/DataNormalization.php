@@ -11,11 +11,9 @@ class DataNormalization implements Iterator
 {
     private static ?self $instance = null;
     public array $converted = [];
-    private int $position;
 
     public function __construct(mixed $data = null)
     {
-        $this->position = 0;
         if($data){
             $this->converted = $this->convert($data);
         }
@@ -55,26 +53,26 @@ class DataNormalization implements Iterator
 
     public function current(): mixed
     {
-        return $this->converted[$this->position];
+        return current($this->converted);
     }
 
     public function next(): void
     {
-        ++$this->position;
+        next($this->converted);
     }
 
     public function key(): mixed
     {
-        return $this->position;
+        return key($this->converted);
     }
 
     public function valid(): bool
     {
-        return isset($this->converted[$this->position]);
+        return array_key_exists($this->converted, $this->key());
     }
 
     public function rewind(): void
     {
-        $this->position = 0;
+        reset($this->converted);
     }
 }
