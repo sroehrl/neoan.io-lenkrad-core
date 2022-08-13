@@ -103,7 +103,7 @@ class Response implements ResponseInterface
         $instance->setResponseHeaders('Content-type: text/html')
             ->respond($instance->defaultRenderer::render($data, $view));
     }
-    public static function normalizeData(mixed $data): array
+    public static function normalizeData(mixed $data): mixed
     {
         if($data instanceof Model || $data instanceof Collection) {
             $data = $data->toArray();
