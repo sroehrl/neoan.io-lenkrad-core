@@ -7,6 +7,7 @@ use Neoan\Errors\NotFound;
 use Neoan\Event\Event;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
+use Neoan\Store\Dynamic;
 
 class Route
 {
@@ -147,6 +148,13 @@ class Route
     }
     private function lastRoutable(array $route, $result): void
     {
+        // Store: it happens here, at the point of no return
+        // TODO: move to appropriate place or abstract
+        foreach($result as $key => $value){
+            if($value instanceof Dynamic){
+                $result[$key] = $value->get();
+            }
+        }
         if(!empty($route['response'])){
             $route['response'][0]::{$route['response'][1]}($result, $route['view'] ?? null);
         } else {
