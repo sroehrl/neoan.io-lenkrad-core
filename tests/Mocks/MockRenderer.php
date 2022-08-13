@@ -2,6 +2,7 @@
 
 namespace Test\Mocks;
 
+use Neoan\Helper\DataNormalization;
 use Neoan\Render\RenderEngine;
 
 class MockRenderer implements RenderEngine
@@ -13,7 +14,7 @@ class MockRenderer implements RenderEngine
     /**
      * @throws \Exception
      */
-    public static function render(array $data = [], string $view = null): array
+    public static function render(array | DataNormalization $data = [], string $view = null): array
     {
         throw new \Exception('renderer');
     }
