@@ -102,7 +102,6 @@ class Renderer implements RenderEngine, Listenable
     private static function captureStoreInstances($data)
     {
         // Store: it happens here, at the point of no return
-        // TODO: move to appropriate place or abstract
         foreach($data as $key => $value){
             if($value instanceof Dynamic){
                 $data[$key] = $value->get();
