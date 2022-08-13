@@ -6,6 +6,7 @@ use Neoan\CoreInterfaces\ResponseInterface;
 use Neoan\Enums\GenericEvent;
 use Neoan\Enums\ResponseOutput;
 use Neoan\Event\Event;
+use Neoan\Helper\DataNormalization;
 use Neoan\Helper\Terminate;
 use Neoan\Helper\VerifyJson;
 use Neoan\Model\Collection;
@@ -98,23 +99,10 @@ class Response implements ResponseInterface
     static public function html(mixed $data, ?string $view = null): void
     {
         $instance = self::getInstance();
-        $data = self::normalizeData($data);
+        $data = new DataNormalization($data);
 
         $instance->setResponseHeaders('Content-type: text/html')
             ->respond($instance->defaultRenderer::render($data, $view));
-    }
-    public static function normalizeData(mixed $data): mixed
-    {
-        if($data instanceof Model || $data instanceof Collection) {
-            $data = $data->toArray();
-        } elseif ($data instanceof Dynamic){
-            $data = $data->get();
-        } elseif(is_array($data)) {
-            foreach ($data as $key => $value){
-                $data[$key] = self::normalizeData($value);
-            }
-        }
-        return $data;
     }
 
     public static function detachInstance(): void
