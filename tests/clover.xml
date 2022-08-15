@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1660409444">
-  <project timestamp="1660409444">
+<coverage generated="1660588234">
+  <project timestamp="1660588234">
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\CoreInterfaces\RequestInterface.php">
       <metrics loc="11" ncloc="11" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>

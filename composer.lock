@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "76958a2f38fb43b4160db87eb5750c8b",
+    "content-hash": "e5c6331493d4876b6a9d54ed58e57830",
     "packages": [
         {
             "name": "graham-campbell/result-type",
@@ -158,16 +158,16 @@
         },
         {
             "name": "neoan3-apps/template",
-            "version": "1.2.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroehrl/neoan3-template.git",
-                "reference": "bfd1c040395e16e432f6d9abdc46423e8b26bf9e"
+                "reference": "9519601f177b8f79e727b3183dadfe1fbac7579b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroehrl/neoan3-template/zipball/bfd1c040395e16e432f6d9abdc46423e8b26bf9e",
-                "reference": "bfd1c040395e16e432f6d9abdc46423e8b26bf9e",
+                "url": "https://api.github.com/repos/sroehrl/neoan3-template/zipball/9519601f177b8f79e727b3183dadfe1fbac7579b",
+                "reference": "9519601f177b8f79e727b3183dadfe1fbac7579b",
                 "shasum": ""
             },
             "require": {
@@ -183,19 +183,19 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Neoan3\\Apps\\": "./"
+                    "Neoan3\\Apps\\Template\\": "./"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "neoan3 minimal template engine",
+            "description": "PHP DOMDocument-based minimal template engine",
             "support": {
                 "issues": "https://github.com/sroehrl/neoan3-template/issues",
-                "source": "https://github.com/sroehrl/neoan3-template/tree/v1.2.0"
+                "source": "https://github.com/sroehrl/neoan3-template/tree/v2.0.0"
             },
-            "time": "2022-03-11T14:04:49+00:00"
+            "time": "2022-08-15T18:04:38+00:00"
         },
         {
             "name": "phpoption/phpoption",

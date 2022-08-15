@@ -9,7 +9,7 @@ use Neoan\Event\Listenable;
 use Neoan\Helper\DataNormalization;
 use Neoan\Response\Response;
 use Neoan\Store\Dynamic;
-use Neoan3\Apps\Template;
+use Neoan3\Apps\Template\Template;
 
 class Renderer implements RenderEngine, Listenable
 {

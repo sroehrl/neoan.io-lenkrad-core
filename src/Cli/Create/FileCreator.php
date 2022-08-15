@@ -3,7 +3,7 @@
 namespace Neoan\Cli\Create;
 
 use Neoan\NeoanApp;
-use Neoan3\Apps\Template;
+use Neoan3\Apps\Template\Template;
 use Symfony\Component\Console\Output\Output;
 
 class FileCreator
