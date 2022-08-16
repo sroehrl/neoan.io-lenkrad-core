@@ -4,7 +4,7 @@ namespace Neoan\Errors;
 
 use Neoan\Helper\Terminate;
 use Neoan\Response\Response;
-use Neoan3\Apps\Template;
+use Neoan3\Apps\Template\Template;
 
 class NotFound
 {

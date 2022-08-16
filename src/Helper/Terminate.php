@@ -6,6 +6,7 @@ class Terminate
 {
     /**
      * @throws \Exception
+     * @codeCoverageIgnore
      */
     public static function exit(): void
     {
@@ -19,6 +20,7 @@ class Terminate
 
     /**
      * @throws \Exception
+     * @codeCoverageIgnore
      */
     public static function die(): void{
         if (defined('TEST_MODE')) {
