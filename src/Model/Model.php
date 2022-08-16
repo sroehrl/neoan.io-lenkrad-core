@@ -98,7 +98,7 @@ class Model
     /**
      * @throws Exception
      */
-    public static function retrieveOne(array $condition): ?Model
+    public static function retrieveOne(array $condition): ?static
     {
         self::interpret();
         $select = self::$tableName . '.' . self::$interpreter->getPrimaryKey();

@@ -7,6 +7,7 @@ use Neoan\Errors\NotFound;
 use Neoan\Event\Event;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
+use Neoan\Store\Dynamic;
 
 class Route
 {
