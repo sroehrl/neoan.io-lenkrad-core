@@ -691,7 +691,72 @@ A few pointers for common tasks, assuming the following PHP output
 </table>
 
 ## Events
-_soon_
+Events are a useful tool to control and abstract logic and offer a clean way of adding custom functionality.
+The core itself uses system events (GenericEvents) for debugging & testing, so listening or dispatching them
+does not yield side effects during runtime:
+
+- DATABASE_ADAPTER_CONNECTED
+- BEFORE_DATABASE_TRANSACTION
+- AFTER_DATABASE_TRANSACTION
+- BEFORE_RENDERING
+- REQUEST_HANDLER_INITIALIZED
+- REQUEST_HEADERS_SET
+- REQUEST_INPUT_PARSED
+- ROUTE_HANDLER_INITIALIZED
+- ROUTE_REGISTERED
+- RESPONSE_HANDLER_SET
+- BEFORE_RESPONSE
+- ROUTE_INJECTION
+- BEFORE_ROUTABLE_EXECUTION
+
+We use common terminology for the methods:
+
+```php 
+use Neoan\Event\Event;
+
+Event::on('log', function($event){
+    $data = [
+        'time' => time(),
+        'event' => $event
+    ];
+    file_put_contents(dirname(__DIR__,2) . '/log.txt', json_encode($data), FILE_APPEND);
+});
+
+...
+// somewhere else
+try{
+    ...code
+} catch(\Exception $e){
+    Event::dispatch('log', $e->getMessage());
+}
+
+```
+
+In addition to this functionality, you can listen to notifications fired by Routable & Model classes with
+`Event::subscribeToClass(string $className, callable $closureOrInvokable)`.
+
+If you want to extend what classes you can listen to, simply implement Neoan\Event\Listenable in this way:
+
+```php 
+use Neoan\Event\Event;
+use Neoan\Event\Listenable;
+use Neoan\Event\EventNotification;
+
+class AnyClass implements Listenable
+{
+    private EventNotification $notifier;
+    function __construct()
+    {
+        $this->notifier = Event::makeListenable($this);
+    }
+    function doSomething(string $value)
+    {
+        ...
+        $this->notifier->inform($value);
+    }
+}
+```
+This is useful especially when chaining middleware and you want to react to outcomes that haven't happened yet.
 
 ## Dynamic Store
 The static store object is an integral part of the design decision. 
