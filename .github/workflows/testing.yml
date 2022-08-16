@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     name: test
     steps:
+      - name: Setup PHP Action
+        uses: shivammathur/setup-php@2.21.1
+        with:
+          php-version: '8.1'
+          coverage: xdebug2
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
