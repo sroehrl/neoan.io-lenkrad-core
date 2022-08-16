@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1660668737">
-  <project timestamp="1660668737">
+<coverage generated="1660670377">
+  <project timestamp="1660670377">
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\CoreInterfaces\RequestInterface.php">
       <metrics loc="11" ncloc="11" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
@@ -394,17 +394,9 @@
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Helper\Terminate.php">
       <class name="Neoan\Helper\Terminate" namespace="global">
-        <metrics complexity="4" methods="2" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="6" coveredstatements="4" elements="8" coveredelements="4"/>
+        <metrics complexity="4" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
       </class>
-      <line num="10" type="method" name="exit" visibility="public" complexity="2" crap="2.15" count="1"/>
-      <line num="12" type="stmt" count="1"/>
-      <line num="13" type="stmt" count="1"/>
-      <line num="15" type="stmt" count="0"/>
-      <line num="23" type="method" name="die" visibility="public" complexity="2" crap="2.15" count="5"/>
-      <line num="24" type="stmt" count="5"/>
-      <line num="25" type="stmt" count="5"/>
-      <line num="27" type="stmt" count="0"/>
-      <metrics loc="31" ncloc="25" classes="1" methods="2" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="6" coveredstatements="4" elements="8" coveredelements="4"/>
+      <metrics loc="33" ncloc="25" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Helper\VerifyJson.php">
       <class name="Neoan\Helper\VerifyJson" namespace="global">
@@ -779,7 +771,7 @@
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\NeoanApp.php">
       <class name="Neoan\NeoanApp" namespace="global">
-        <metrics complexity="6" methods="4" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="13" coveredstatements="9" elements="17" coveredelements="10"/>
+        <metrics complexity="5" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="10" coveredstatements="9" elements="12" coveredelements="10"/>
       </class>
       <line num="16" type="method" name="__construct" visibility="public" complexity="3" crap="3.01" count="6"/>
       <line num="18" type="stmt" count="6"/>
@@ -793,12 +785,7 @@
       <line num="26" type="stmt" count="0"/>
       <line num="31" type="method" name="invoke" visibility="public" complexity="1" crap="1" count="1"/>
       <line num="33" type="stmt" count="1"/>
-      <line num="35" type="method" name="normalizePath" visibility="private" complexity="1" crap="2" count="0"/>
-      <line num="37" type="stmt" count="0"/>
-      <line num="40" type="method" name="run" visibility="public" complexity="1" crap="2" count="0"/>
-      <line num="42" type="stmt" count="0"/>
-      <line num="43" type="stmt" count="0"/>
-      <metrics loc="45" ncloc="45" classes="1" methods="4" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="13" coveredstatements="9" elements="17" coveredelements="10"/>
+      <metrics loc="44" ncloc="41" classes="1" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="10" coveredstatements="9" elements="12" coveredelements="10"/>
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Render\RenderEngine.php">
       <metrics loc="9" ncloc="9" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
@@ -1077,33 +1064,33 @@
         <metrics complexity="5" methods="4" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="9" coveredstatements="9" elements="13" coveredelements="13"/>
       </class>
       <class name="Neoan\Store\Dynamic" namespace="global">
-        <metrics complexity="4" methods="3" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="7" coveredstatements="3" elements="10" coveredelements="5"/>
+        <metrics complexity="4" methods="3" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="7" coveredstatements="7" elements="10" coveredelements="10"/>
       </class>
-      <line num="10" type="method" name="getInstance" visibility="public" complexity="2" crap="2" count="15"/>
-      <line num="12" type="stmt" count="15"/>
+      <line num="10" type="method" name="getInstance" visibility="public" complexity="2" crap="2" count="16"/>
+      <line num="12" type="stmt" count="16"/>
       <line num="13" type="stmt" count="1"/>
-      <line num="15" type="stmt" count="15"/>
-      <line num="17" type="method" name="write" visibility="public" complexity="1" crap="1" count="2"/>
-      <line num="19" type="stmt" count="2"/>
-      <line num="20" type="stmt" count="2"/>
-      <line num="22" type="method" name="dynamic" visibility="public" complexity="1" crap="1" count="15"/>
-      <line num="24" type="stmt" count="15"/>
-      <line num="25" type="stmt" count="15"/>
-      <line num="27" type="method" name="readValue" visibility="public" complexity="1" crap="1" count="15"/>
-      <line num="29" type="stmt" count="15"/>
-      <line num="30" type="stmt" count="15"/>
-      <line num="38" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="15"/>
-      <line num="40" type="stmt" count="15"/>
-      <line num="41" type="stmt" count="15"/>
-      <line num="43" type="method" name="__toString" visibility="public" complexity="2" crap="6" count="0"/>
-      <line num="45" type="stmt" count="0"/>
-      <line num="46" type="stmt" count="0"/>
-      <line num="47" type="stmt" count="0"/>
-      <line num="49" type="stmt" count="0"/>
+      <line num="15" type="stmt" count="16"/>
+      <line num="17" type="method" name="write" visibility="public" complexity="1" crap="1" count="3"/>
+      <line num="19" type="stmt" count="3"/>
+      <line num="20" type="stmt" count="3"/>
+      <line num="22" type="method" name="dynamic" visibility="public" complexity="1" crap="1" count="16"/>
+      <line num="24" type="stmt" count="16"/>
+      <line num="25" type="stmt" count="16"/>
+      <line num="27" type="method" name="readValue" visibility="public" complexity="1" crap="1" count="16"/>
+      <line num="29" type="stmt" count="16"/>
+      <line num="30" type="stmt" count="16"/>
+      <line num="38" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="16"/>
+      <line num="40" type="stmt" count="16"/>
+      <line num="41" type="stmt" count="16"/>
+      <line num="43" type="method" name="__toString" visibility="public" complexity="2" crap="2" count="1"/>
+      <line num="45" type="stmt" count="1"/>
+      <line num="46" type="stmt" count="1"/>
+      <line num="47" type="stmt" count="1"/>
+      <line num="49" type="stmt" count="1"/>
       <line num="51" type="method" name="get" visibility="public" complexity="1" crap="1" count="15"/>
       <line num="53" type="stmt" count="15"/>
-      <metrics loc="55" ncloc="55" classes="2" methods="7" coveredmethods="6" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="12" elements="23" coveredelements="18"/>
+      <metrics loc="55" ncloc="55" classes="2" methods="7" coveredmethods="7" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="16" elements="23" coveredelements="23"/>
     </file>
-    <metrics files="48" loc="2273" ncloc="2183" classes="36" methods="186" coveredmethods="164" conditionals="0" coveredconditionals="0" statements="662" coveredstatements="614" elements="848" coveredelements="778"/>
+    <metrics files="48" loc="2274" ncloc="2179" classes="35" methods="182" coveredmethods="165" conditionals="0" coveredconditionals="0" statements="653" coveredstatements="614" elements="835" coveredelements="779"/>
   </project>
 </coverage>
