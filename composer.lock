@@ -158,16 +158,16 @@
         },
         {
             "name": "neoan3-apps/template",
-            "version": "2.0.0",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroehrl/neoan3-template.git",
-                "reference": "9519601f177b8f79e727b3183dadfe1fbac7579b"
+                "reference": "c756488855d8f9d99dfecded5f97c118f90c5a11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroehrl/neoan3-template/zipball/9519601f177b8f79e727b3183dadfe1fbac7579b",
-                "reference": "9519601f177b8f79e727b3183dadfe1fbac7579b",
+                "url": "https://api.github.com/repos/sroehrl/neoan3-template/zipball/c756488855d8f9d99dfecded5f97c118f90c5a11",
+                "reference": "c756488855d8f9d99dfecded5f97c118f90c5a11",
                 "shasum": ""
             },
             "require": {
@@ -193,9 +193,9 @@
             "description": "PHP DOMDocument-based minimal template engine",
             "support": {
                 "issues": "https://github.com/sroehrl/neoan3-template/issues",
-                "source": "https://github.com/sroehrl/neoan3-template/tree/v2.0.0"
+                "source": "https://github.com/sroehrl/neoan3-template/tree/v2.0.2"
             },
-            "time": "2022-08-15T18:04:38+00:00"
+            "time": "2022-08-16T00:51:23+00:00"
         },
         {
             "name": "phpoption/phpoption",

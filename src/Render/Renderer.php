@@ -77,7 +77,7 @@ class Renderer implements RenderEngine, Listenable
         $instance->skeletonVariables = $skeletonVariables;
     }
 
-    public static function render(array|DataNormalization $data = [], $view = null)
+    public static function render(array|DataNormalization $data = [], $view = null): string
     {
         $instance = self::getInstance();
         Event::dispatch(GenericEvent::BEFORE_RENDERING, ['data' => $data, 'view' => $view, 'instance' => $instance]);
