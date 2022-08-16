@@ -55,7 +55,7 @@ class SqLiteMigration
             $result = Database::raw("SELECT sql FROM sqlite_master WHERE name = '{$this->interpreter->getTableName()}'",[]);
             if(!empty($result)){
                 preg_match('/\(([^)]+)/', $result[0]['sql'], $matches);
-                $result = explode(',',$matches[1]);
+                $result = explode(',',str_replace('`','',$matches[1]));
             }
 
 
@@ -95,8 +95,18 @@ class SqLiteMigration
         // copy old data?
         if(isset($this->existingTable)){
             $fields = [];
-            foreach($this->existingTable as $existing){
-                $fields[] = $existing['name'] . (isset($doubleDown[$existing['name']]) ? ' as ' . $doubleDown[$existing['name']] : '');
+            foreach($this->interpreter->filteredProperties() as $i => $requested){
+                if(isset($this->existingTable[$requested['name']])){
+                    if(isset($doubleDown[$requested['name']])){
+                        $fields[] = $i . ' as ' . $requested['name'];
+                        $fields[] = $requested['name'] . ' as ' . $doubleDown[$requested['name']];
+                    } else {
+                        $fields[] = $requested['name'];
+                    }
+                } else {
+                    $fields[] = "null as ". $requested['name'];
+                }
+
             }
 
             $this->sql .= "INSERT INTO `{$this->interimTableName}`";
@@ -107,10 +117,6 @@ class SqLiteMigration
                 $this->sql .= "ALTER TABLE `{$this->interimTableName}` DROP COLUMN `$value`;\n";
             }
             $this->sql .= "DROP TABLE `{$this->interpreter->getTableName()}`;\n";
-
-
-
-
 
         }
         $this->sql .= "ALTER TABLE `{$this->interimTableName}` RENAME TO `{$this->interpreter->getTableName()}`;\n";
