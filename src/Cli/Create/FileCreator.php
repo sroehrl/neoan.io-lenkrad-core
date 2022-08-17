@@ -3,7 +3,6 @@
 namespace Neoan\Cli\Create;
 
 use Neoan\NeoanApp;
-use Neoan3\Apps\Template;
 use Symfony\Component\Console\Output\Output;
 
 class FileCreator
@@ -45,10 +44,10 @@ class FileCreator
     }
     private static function getFileContent($name):string
     {
-        return Template::embrace(file_get_contents(self::$folder .self::$template), [
+        return str_replace(['{{namespace}}','{{name}}'], [
             'namespace' => preg_replace('/\\\[a-z]+$/i', '', $name),
             'name' => end(self::$path)
-        ]);
+        ],file_get_contents(self::$folder .self::$template));
     }
     private static function readComposer(): void
     {
