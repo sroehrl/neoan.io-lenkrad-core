@@ -6,8 +6,10 @@ namespace Neoan\Render;
 use Neoan\Enums\GenericEvent;
 use Neoan\Event\Event;
 use Neoan\Event\Listenable;
+use Neoan\Helper\DataNormalization;
+use Neoan\Response\Response;
 use Neoan\Store\Dynamic;
-use Neoan3\Apps\Template;
+use Neoan3\Apps\Template\Template;
 
 class Renderer implements RenderEngine, Listenable
 {
@@ -75,7 +77,7 @@ class Renderer implements RenderEngine, Listenable
         $instance->skeletonVariables = $skeletonVariables;
     }
 
-    public static function render(array $data = [], $view = null)
+    public static function render(array|DataNormalization $data = [], $view = null): string
     {
         $instance = self::getInstance();
         Event::dispatch(GenericEvent::BEFORE_RENDERING, ['data' => $data, 'view' => $view, 'instance' => $instance]);
@@ -93,20 +95,9 @@ class Renderer implements RenderEngine, Listenable
 
         $data = [
             ...$data,
-            ...$instance->skeletonVariables
+            ...new DataNormalization($instance->skeletonVariables)
         ];
-        $data = self::captureStoreInstances($data);
         $data[$instance->htmlComponentPlacement] = Template::embraceFromFile($instance->templatePath . $view, $data);
-        return $data;
-    }
-    private static function captureStoreInstances($data)
-    {
-        // Store: it happens here, at the point of no return
-        foreach($data as $key => $value){
-            if($value instanceof Dynamic){
-                $data[$key] = $value->get();
-            }
-        }
         return $data;
     }
 

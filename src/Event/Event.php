@@ -47,12 +47,12 @@ class Event
             $all($name, $event, $from, $marksman['args']);
         }
     }
-    public static function on(string|GenericEvent $eventName, Callable $callable): void
+    public static function on(string|GenericEvent $eventName, callable $callable): void
     {
         $eventName = $name = self::eventNameConversion($eventName);
         self::$registeredClosures[$eventName][] = $callable;
     }
-    public static function subscribeToClass(string $class, Callable $closureOrInvokable): void
+    public static function subscribeToClass(string $class, callable $closureOrInvokable): void
     {
         Store::write(self::$runtimeIdentifier,[
             ...Store::getInstance()->readValue(self::$runtimeIdentifier),

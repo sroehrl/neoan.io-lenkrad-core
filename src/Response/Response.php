@@ -6,8 +6,11 @@ use Neoan\CoreInterfaces\ResponseInterface;
 use Neoan\Enums\GenericEvent;
 use Neoan\Enums\ResponseOutput;
 use Neoan\Event\Event;
+use Neoan\Helper\DataNormalization;
 use Neoan\Helper\Terminate;
 use Neoan\Helper\VerifyJson;
+use Neoan\Model\Collection;
+use Neoan\Model\Model;
 use Neoan\Render\RenderEngine;
 use Neoan\Render\Renderer;
 use Neoan\Store\Dynamic;
@@ -93,10 +96,11 @@ class Response implements ResponseInterface
             ->respond($json->jsonSerialize());
     }
 
-    static public function html($data, ?string $view = null): void
+    static public function html(mixed $data, ?string $view = null): void
     {
         $instance = self::getInstance();
-//        $renderer = preg_replace('/::class/','', $instance->defaultRenderer);
+        $data = new DataNormalization($data);
+
         $instance->setResponseHeaders('Content-type: text/html')
             ->respond($instance->defaultRenderer::render($data, $view));
     }

@@ -32,11 +32,10 @@ class NeoanApp
     {
         $instance($this);
     }
-    private function normalizePath(string $path):string
-    {
-        return str_replace(DIRECTORY_SEPARATOR,'/',$path);
-    }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function run(): void
     {
         $this->invoke(new Request());
