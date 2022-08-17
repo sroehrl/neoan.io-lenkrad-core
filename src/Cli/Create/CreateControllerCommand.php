@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand('create:controller', 'Creates file implementing Routable')]
 class CreateControllerCommand extends Command
 {
-    protected static $defaultName = 'create:model';
+    protected static $defaultName = 'create:controller';
     protected static $defaultDescription = 'create controller command';
     private NeoanApp $neoanApp;
 
