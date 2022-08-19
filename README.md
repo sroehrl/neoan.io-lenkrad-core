@@ -1,7 +1,11 @@
-[![Build](https://github.com/sroehrl/neoan.io-lenkrad-core/actions/workflows/php.yml/badge.svg)](https://github.com/sroehrl/neoan.io-lenkrad-core/actions/workflows/php.yml)
+# neoan.io Lenkrad core
+[![Build](https://github.com/sroehrl/neoan.io-lenkrad-core/actions/workflows/php.yml/badge.svg?branch=master)](https://github.com/sroehrl/neoan.io-lenkrad-core/actions/workflows/php.yml)
 [![Coverage](https://raw.githubusercontent.com/sroehrl/neoan.io-lenkrad-core/badges/.github/badges/test-badge.svg)](https://github.com/sroehrl/neoan.io-lenkrad-core/actions/workflows/php.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/1f02189c2a759deecaa3/maintainability)](https://codeclimate.com/github/sroehrl/neoan.io-lenkrad-core/maintainability)
-# neoan.io Lenkrad core
+[![php](https://img.shields.io/static/v1?label=PHP&message=With%20Love&color=777BB4&logo=php)](https://php.net)
+[![vegan](https://img.shields.io/static/v1?label=100%&message=vegan&color=47a244&logo=mongodb)](https://www.whyveganism.com/)
+
+
 
 This is an experimental core rewrite of neoan and not (yet) meant for production. 
 Using modern PHP, we believe it's possible to create easy & static internal APIs without the usual 
