@@ -2,16 +2,18 @@
 
 namespace Neoan\Helper;
 
+use Exception;
+
 class Terminate
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      * @codeCoverageIgnore
      */
     public static function exit(): void
     {
         if (defined('TEST_MODE')) {
-            throw new \Exception('Wanted to exit');
+            throw new Exception('Wanted to exit');
         } else {
             exit();
         }
@@ -19,12 +21,13 @@ class Terminate
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      * @codeCoverageIgnore
      */
-    public static function die(): void{
+    public static function die(): void
+    {
         if (defined('TEST_MODE')) {
-            throw new \Exception('Wanted to die');
+            throw new Exception('Wanted to die');
         } else {
             die();
         }

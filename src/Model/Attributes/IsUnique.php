@@ -9,8 +9,13 @@ use Neoan\Model\Interfaces\ModelAttribute;
 #[Attribute]
 class IsUnique implements ModelAttribute
 {
-    public function __construct(){}
-    public function __invoke(){}
+    public function __construct()
+    {
+    }
+
+    public function __invoke()
+    {
+    }
 
     public function getType(): AttributeType
     {

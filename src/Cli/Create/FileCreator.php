@@ -2,6 +2,7 @@
 
 namespace Neoan\Cli\Create;
 
+use Exception;
 use Neoan\NeoanApp;
 use Symfony\Component\Console\Output\Output;
 
@@ -25,30 +26,34 @@ class FileCreator
         self::ensureDirectory();
         self::writeFile();
     }
+
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    private static function  parse($type): array
+    private static function parse($type): array
     {
         self::$folder = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR;
         self::$template = ucfirst($type) . 'Template.txt';
-        if (!file_exists( self::$folder .  self::$template)) {
+        if (!file_exists(self::$folder . self::$template)) {
             self::$output->writeln(["No template for `{$type}`", "Try `model` or `controller`"]);
-            throw new \Exception('Template not found');
+            throw new Exception('Template not found');
         }
-        return [ self::$folder,  self::$template];
+        return [self::$folder, self::$template];
     }
+
     private static function getPath($name): void
     {
         self::$path = explode('\\', $name);
     }
-    private static function getFileContent($name):string
+
+    private static function getFileContent($name): string
     {
-        return str_replace(['{{namespace}}','{{name}}'], [
+        return str_replace(['{{namespace}}', '{{name}}'], [
             'namespace' => preg_replace('/\\\[a-z]+$/i', '', $name),
             'name' => end(self::$path)
-        ],file_get_contents(self::$folder .self::$template));
+        ], file_get_contents(self::$folder . self::$template));
     }
+
     private static function readComposer(): void
     {
         // read composer
@@ -61,6 +66,7 @@ class FileCreator
             }
         }
     }
+
     private static function ensureDirectory(): void
     {
         $directoryExplorer = self::$neoanApp->cliPath;
@@ -71,6 +77,7 @@ class FileCreator
             }
         }
     }
+
     private static function writeFile(): void
     {
         $filePath = implode(DIRECTORY_SEPARATOR, self::$path);

@@ -1,6 +1,7 @@
 <?php
 
 namespace Neoan\Model\Attributes;
+
 use Attribute;
 use Neoan\Enums\AttributeType;
 use Neoan\Model\Interfaces\ModelAttribute;
@@ -16,11 +17,12 @@ class HasMany implements ModelAttribute
         $this->modelClass = $modelClass;
         $this->matching = $matching;
     }
+
     function __invoke($primaryValue, $primaryKey)
     {
         $matching = [];
-        foreach($this->matching as $key => $value){
-            if($value === $primaryKey) {
+        foreach ($this->matching as $key => $value) {
+            if ($value === $primaryKey) {
                 $matching[$key] = $primaryValue;
             } else {
                 $matching[$key] = $value;

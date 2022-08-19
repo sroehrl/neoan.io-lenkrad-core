@@ -7,8 +7,6 @@ use Neoan\Enums\GenericEvent;
 use Neoan\Event\Event;
 use Neoan\Event\Listenable;
 use Neoan\Helper\DataNormalization;
-use Neoan\Response\Response;
-use Neoan\Store\Dynamic;
 use Neoan3\Apps\Template\Template;
 
 class Renderer implements RenderEngine, Listenable
@@ -18,6 +16,12 @@ class Renderer implements RenderEngine, Listenable
     protected ?string $htmlSkeletonPath = null;
     protected string $htmlComponentPlacement = 'main';
     protected ?array $skeletonVariables = [];
+
+    public static function setTemplatePath(string $path): void
+    {
+        $instance = self::getInstance();
+        $instance->templatePath = $path;
+    }
 
     public static function getInstance($mockMe = null): ?RenderEngine
     {
@@ -29,45 +33,6 @@ class Renderer implements RenderEngine, Listenable
         }
         return self::$instance;
     }
-
-    public static function setTemplatePath(string $path): void
-    {
-        $instance = self::getInstance();
-        $instance->templatePath = $path;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTemplatePath(): string
-    {
-        return $this->templatePath;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getHtmlSkeletonPath(): ?string
-    {
-        return $this->htmlSkeletonPath;
-    }
-
-    /**
-     * @return string
-     */
-    public function getHtmlComponentPlacement(): string
-    {
-        return $this->htmlComponentPlacement;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getSkeletonVariables(): ?array
-    {
-        return $this->skeletonVariables;
-    }
-
 
     public static function setHtmlSkeleton(string $fileLocation, string $componentPlacement = 'main', array $skeletonVariables = ['skeletonKey' => 'value']): void
     {
@@ -104,5 +69,37 @@ class Renderer implements RenderEngine, Listenable
     public static function detachInstance()
     {
         self::$instance = null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplatePath(): string
+    {
+        return $this->templatePath;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHtmlSkeletonPath(): ?string
+    {
+        return $this->htmlSkeletonPath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHtmlComponentPlacement(): string
+    {
+        return $this->htmlComponentPlacement;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getSkeletonVariables(): ?array
+    {
+        return $this->skeletonVariables;
     }
 }

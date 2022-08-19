@@ -2,6 +2,7 @@
 
 namespace Neoan\Cli;
 
+use Exception;
 use Neoan\Cli\MigrationHelper\ModelInterpreter;
 use Neoan\Cli\MigrationHelper\MySqlMigration;
 use Neoan\Cli\MigrationHelper\SqLiteMigration;
@@ -49,8 +50,8 @@ class MigrateCommand extends Command
                 false
             )->addOption(
                 'with-copy',
-            'c',
-            InputOption::VALUE_OPTIONAL,
+                'c',
+                InputOption::VALUE_OPTIONAL,
                 'Creates a backup of the existing table with the specified name',
                 false
             );
@@ -60,23 +61,23 @@ class MigrateCommand extends Command
     {
 
         $modelName = $input->getArgument('model');
-        $sanitizedModelName = preg_replace('/[\/\\\]/','_', $modelName);
+        $sanitizedModelName = preg_replace('/[\/\\\]/', '_', $modelName);
         if (!class_exists($modelName)) {
             $output->writeln("The requested model does not exist");
             return Command::FAILURE;
         }
-        if($input->getArgument('dialect') === 'sqlite'){
+        if ($input->getArgument('dialect') === 'sqlite') {
             $migrate = new SqLiteMigration(new ModelInterpreter($modelName), $input->getOption('with-copy'));
         } else {
             $migrate = new MySqlMigration(new ModelInterpreter($modelName), $input->getOption('with-copy'));
         }
 
         $fileOption = $input->getOption('output-folder');
-        if(false !== $fileOption){
+        if (false !== $fileOption) {
 
             $fileName = $sanitizedModelName . '-' . time() . '.sql';
             $directory = $this->appPath . DIRECTORY_SEPARATOR . $fileOption . DIRECTORY_SEPARATOR;
-            $full = $directory .$fileName;
+            $full = $directory . $fileName;
             $output->writeln("Writing to " . $full);
 
             @file_put_contents($full, $migrate->sql);
@@ -87,20 +88,20 @@ class MigrateCommand extends Command
 
         // backup?
         $backupOption = $input->getOption('with-copy');
-        if(false !== $backupOption){
-            try{
-                Database::raw($migrate->backupSql,[]);
-            } catch (\Exception $exception) {
+        if (false !== $backupOption) {
+            try {
+                Database::raw($migrate->backupSql, []);
+            } catch (Exception $exception) {
                 $output->writeln($exception->getMessage());
                 $output->writeln($migrate->backupSql);
             }
         }
         // execute migration
-        foreach ($migrate->sqlAsSingleCommands() as $singleCommand){
-            if(trim($singleCommand) !== ''){
-                try{
-                    Database::raw($singleCommand,[]);
-                } catch (\Exception $exception) {
+        foreach ($migrate->sqlAsSingleCommands() as $singleCommand) {
+            if (trim($singleCommand) !== '') {
+                try {
+                    Database::raw($singleCommand, []);
+                } catch (Exception $exception) {
                     $output->writeln("/***** ERROR *****/");
                     $output->writeln($exception->getMessage());
                     $output->writeln("Failed command:");

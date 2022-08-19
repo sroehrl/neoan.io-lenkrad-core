@@ -20,17 +20,13 @@ class NeoanApp
         $this->publicPath = $publicPath;
         $this->cliPath = $cliPath;
         $this->webPath = Env::get('WEB_PATH', '/');
-        if(isset($_SERVER["SERVER_PROTOCOL"])){
-            $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,strpos( $_SERVER["SERVER_PROTOCOL"],'/'))).'://';
-            if(!defined('base')){
-                define('base',$protocol . $_SERVER['HTTP_HOST'] . $this->webPath);
+        if (isset($_SERVER["SERVER_PROTOCOL"])) {
+            $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, strpos($_SERVER["SERVER_PROTOCOL"], '/'))) . '://';
+            if (!defined('base')) {
+                define('base', $protocol . $_SERVER['HTTP_HOST'] . $this->webPath);
             }
         }
 
-    }
-    public function invoke($instance): void
-    {
-        $instance($this);
     }
 
     /**
@@ -40,5 +36,10 @@ class NeoanApp
     {
         $this->invoke(new Request());
         $this->invoke(new Route());
+    }
+
+    public function invoke($instance): void
+    {
+        $instance($this);
     }
 }

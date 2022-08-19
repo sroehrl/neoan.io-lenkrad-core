@@ -14,27 +14,9 @@ class DataNormalization implements Iterator
 
     public function __construct(mixed $data = null)
     {
-        if($data){
+        if ($data) {
             $this->converted = $this->convert($data);
         }
-    }
-
-    static function getInstance($mockMe = null)
-    {
-        if ($mockMe) {
-            self::$instance = $mockMe;
-        }
-        if (!self::$instance) {
-            self::$instance = new DataNormalization();
-        }
-        return self::$instance;
-    }
-
-    static function normalize(mixed $data): self
-    {
-        $instance = self::getInstance();
-        $instance->converted = $instance->convert($data);
-        return $instance;
     }
 
     private function convert(mixed $data): mixed
@@ -51,6 +33,24 @@ class DataNormalization implements Iterator
         return $data;
     }
 
+    static function normalize(mixed $data): self
+    {
+        $instance = self::getInstance();
+        $instance->converted = $instance->convert($data);
+        return $instance;
+    }
+
+    static function getInstance($mockMe = null)
+    {
+        if ($mockMe) {
+            self::$instance = $mockMe;
+        }
+        if (!self::$instance) {
+            self::$instance = new DataNormalization();
+        }
+        return self::$instance;
+    }
+
     public function current(): mixed
     {
         return current($this->converted);
@@ -61,14 +61,14 @@ class DataNormalization implements Iterator
         next($this->converted);
     }
 
-    public function key(): mixed
-    {
-        return key($this->converted);
-    }
-
     public function valid(): bool
     {
         return array_key_exists($this->key(), $this->converted);
+    }
+
+    public function key(): mixed
+    {
+        return key($this->converted);
     }
 
     public function rewind(): void

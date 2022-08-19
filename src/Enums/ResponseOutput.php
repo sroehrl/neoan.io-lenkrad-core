@@ -6,10 +6,10 @@ enum ResponseOutput
 {
     case HTML;
     case JSON;
+
     public function output(): string
     {
-        return match($this)
-        {
+        return match ($this) {
             self::HTML => 'html',
             self::JSON => 'json'
         };

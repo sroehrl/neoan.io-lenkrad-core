@@ -15,10 +15,10 @@ use Neoan\Helper\DateHelper;
 
 class Model
 {
-    private TransactionType $transactionMode = TransactionType::INSERT;
     private static string $tableName;
     private static Interpreter $interpreter;
     private static EventNotification $notify;
+    private TransactionType $transactionMode = TransactionType::INSERT;
 
     public function __construct(array $staticModel = [])
     {
@@ -29,12 +29,40 @@ class Model
         self::$notify->inform();
     }
 
-
-    private static function interpret(): void
+    /**
+     * @throws Exception
+     */
+    public static function retrieve(array $condition = [], array $filter = []): Collection
     {
+        self::interpret();
+        $select = self::$tableName . '.' . self::$interpreter->getPrimaryKey();
+        $results = Database::easy($select, $condition, $filter);
 
-        self::$interpreter = new Interpreter(static::class);
-        self::$tableName = self::$interpreter->getTableName();
+        $collection = new Collection();
+        foreach ($results as $item) {
+            $collection->add(self::get($item[self::$interpreter->getPrimaryKey()]));
+        }
+        return $collection;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function retrieveOne(array $condition): ?static
+    {
+        self::interpret();
+        $select = self::$tableName . '.' . self::$interpreter->getPrimaryKey();
+        $results = Database::easy($select, $condition, ['limit' => [0, 1]]);
+        if (!empty($results)) {
+            return self::get($results[0][self::$interpreter->getPrimaryKey()]);
+        }
+        return null;
+    }
+
+    public static function declare(): array
+    {
+        self::interpret();
+        return [self::$tableName => self::$interpreter->parsedModel];
     }
 
     /**
@@ -65,53 +93,16 @@ class Model
         return $this;
     }
 
-
-    public function rehydrate($id = null): void
+    private static function interpret(): void
     {
-        $fromDisk = $this->get($id ?? $this->{self::$interpreter->getPrimaryKey()});
 
-        self::$interpreter->asInstance($fromDisk);
-        $hasSetter = method_exists($this, 'set');
-        foreach (self::$interpreter->initialize($fromDisk->toArray()) as $property => $value){
-            $hasSetter ? $this->set($property, $value) : $this->{$property} = $value;
-        }
-        $this->transactionMode = TransactionType::UPDATE;
-        self::$notify->inform();
-    }
-
-    /**
-     * @throws Exception
-     */
-    public static function retrieve(array $condition = [], array $filter = []): Collection
-    {
-        self::interpret();
-        $select = self::$tableName . '.' . self::$interpreter->getPrimaryKey();
-        $results = Database::easy($select, $condition, $filter);
-
-        $collection = new Collection();
-        foreach ($results as $item) {
-            $collection->add(self::get($item[self::$interpreter->getPrimaryKey()]));
-        }
-        return $collection;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public static function retrieveOne(array $condition): ?static
-    {
-        self::interpret();
-        $select = self::$tableName . '.' . self::$interpreter->getPrimaryKey();
-        $results = Database::easy($select, $condition, ['limit'=>[0,1]]);
-        if(!empty($results)){
-            return self::get($results[0][self::$interpreter->getPrimaryKey()]);
-        }
-        return null;
+        self::$interpreter = new Interpreter(static::class);
+        self::$tableName = self::$interpreter->getTableName();
     }
 
     public function toArray(bool $flat = false): array
     {
-        $ignore = ['transactionMode','notify'];
+        $ignore = ['transactionMode', 'notify'];
         $values = get_object_vars($this);
         foreach ($ignore as $key) {
             unset($values[$key]);
@@ -127,6 +118,18 @@ class Model
         return $values;
     }
 
+    public function rehydrate($id = null): void
+    {
+        $fromDisk = $this->get($id ?? $this->{self::$interpreter->getPrimaryKey()});
+
+        self::$interpreter->asInstance($fromDisk);
+        $hasSetter = method_exists($this, 'set');
+        foreach (self::$interpreter->initialize($fromDisk->toArray()) as $property => $value) {
+            $hasSetter ? $this->set($property, $value) : $this->{$property} = $value;
+        }
+        $this->transactionMode = TransactionType::UPDATE;
+        self::$notify->inform();
+    }
 
     /**
      * @throws Exception
@@ -157,12 +160,6 @@ class Model
         return $model;
     }
 
-    public static function declare(): array
-    {
-        self::interpret();
-        return [self::$tableName => self::$interpreter->parsedModel];
-    }
-
     public function getTransactionMode(): TransactionType
     {
         self::$notify->inform();
@@ -180,18 +177,17 @@ class Model
     {
         $primaryKey = self::$interpreter->getPrimaryKey();
 
-        if($hard || !isset($this->deletedAt)) {
-            Database::raw("DELETE FROM `" . self::$tableName ."` WHERE `$primaryKey` = {{id}}",[
+        if ($hard || !isset($this->deletedAt)) {
+            Database::raw("DELETE FROM `" . self::$tableName . "` WHERE `$primaryKey` = {{id}}", [
                 'id' => $this->{$primaryKey}
             ]);
         } else {
             $newDate = new DateHelper();
-            Database::update(self::$tableName, ['deletedAt' => (string) $newDate],[
+            Database::update(self::$tableName, ['deletedAt' => (string)$newDate], [
                 $primaryKey => $this->{$primaryKey}
             ]);
         }
     }
-
 
 
 }

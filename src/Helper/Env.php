@@ -8,9 +8,10 @@ use Dotenv\Exception\InvalidPathException;
 class Env
 {
     private static ?self $instance = null;
+
     function __construct(string $path)
     {
-        try{
+        try {
             $dotenv = Dotenv::createMutable($path);
             $dotenv->load();
         } catch (InvalidPathException $pathException) {
@@ -18,13 +19,15 @@ class Env
         }
 
     }
+
     public static function initialize(string $path = null): ?Env
     {
-        if(self::$instance === null){
+        if (self::$instance === null) {
             self::$instance = new Env($path);
         }
         return self::$instance;
     }
+
     public static function get(string $key, mixed $default = null): mixed
     {
         return $_ENV[$key] ?? $default;

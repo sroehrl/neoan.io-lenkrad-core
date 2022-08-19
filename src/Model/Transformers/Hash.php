@@ -12,9 +12,9 @@ class Hash implements Transformation
 
     public function __invoke(array $inputOutput, Direction $direction, string $property): array
     {
-        if($direction === Direction::OUT && !empty($inputOutput[$property])){
+        if ($direction === Direction::OUT && !empty($inputOutput[$property])) {
             $inputOutput[$property] = $this->fakePassword;
-        } elseif($direction === Direction::IN && isset($inputOutput[$property]) && $inputOutput[$property] !== $this->fakePassword) {
+        } elseif ($direction === Direction::IN && isset($inputOutput[$property]) && $inputOutput[$property] !== $this->fakePassword) {
             $inputOutput[$property] = password_hash($inputOutput['password'], PASSWORD_DEFAULT);
         }
         return $inputOutput;

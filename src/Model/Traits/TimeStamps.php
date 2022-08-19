@@ -11,7 +11,7 @@ use Neoan\Model\Transformers\CurrentTimeIn;
 trait TimeStamps
 {
     #[
-        Type('datetime',null,'CURRENT_TIMESTAMP'),
+        Type('datetime', null, 'CURRENT_TIMESTAMP'),
         Initialize(new DateHelper())
     ]
     public string $createdAt;

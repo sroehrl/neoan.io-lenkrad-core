@@ -10,13 +10,14 @@ class Collection implements Iterator
 
     private array $modelInstances = [];
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->position = 0;
     }
 
     function each(callable $callback): self
     {
-        foreach ($this->modelInstances as $i => $modelInstance){
+        foreach ($this->modelInstances as $i => $modelInstance) {
             $callback($modelInstance, $i);
         }
         return $this;
@@ -27,21 +28,24 @@ class Collection implements Iterator
         $this->modelInstances[] = $modelInstance;
         return $this;
     }
+
     function toArray(): array
     {
         $output = [];
-        foreach ($this->modelInstances as $modelInstance){
+        foreach ($this->modelInstances as $modelInstance) {
             $output[] = $modelInstance->toArray();
         }
         return $output;
     }
+
     function store(): self
     {
-        foreach ($this->modelInstances as $modelInstance){
+        foreach ($this->modelInstances as $modelInstance) {
             $modelInstance->store();
         }
         return $this;
     }
+
     function count(): int
     {
         return count($this->modelInstances);

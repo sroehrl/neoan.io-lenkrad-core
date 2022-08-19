@@ -30,6 +30,12 @@ class Database implements Listenable
         return self::respond(self::$client->raw($sql, $conditions, $extra));
     }
 
+    private static function respond($result)
+    {
+        Event::dispatch(GenericEvent::AFTER_DATABASE_TRANSACTION, $result);
+        return $result;
+    }
+
     /**
      * @throws Exception
      */
@@ -53,6 +59,7 @@ class Database implements Listenable
         ]);
         return self::respond(self::$client->insert($table, $content));
     }
+
     /**
      * @throws Exception
      */
@@ -64,6 +71,7 @@ class Database implements Listenable
         ]);
         return self::respond(self::$client->update($table, $values, $where));
     }
+
     /**
      * @throws Exception
      */
@@ -74,10 +82,5 @@ class Database implements Listenable
             'arguments' => func_get_args()
         ]);
         return self::respond(self::$client->delete($table, $id, $hard));
-    }
-    private static function respond($result)
-    {
-        Event::dispatch(GenericEvent::AFTER_DATABASE_TRANSACTION, $result);
-        return $result;
     }
 }

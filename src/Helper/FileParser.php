@@ -47,6 +47,7 @@ class FileParser
 
         }
     }
+
     function readFile(): void
     {
         echo file_get_contents($this->potentialFile);

@@ -6,13 +6,14 @@ use Neoan\Enums\AttributeType;
 use Neoan\Enums\Direction;
 use Neoan\Helper\AttributeHelper;
 use Neoan\Model\Attributes\IsPrimaryKey;
-use Neoan\Model\Interfaces\ModelAttribute;
 use ReflectionException;
+use ReflectionProperty;
+use TypeError;
 
 class Interpreter
 {
-    private AttributeHelper $reflection;
     public array $parsedModel;
+    private AttributeHelper $reflection;
     private Model $currentModel;
     private array $mutationAttributes = [];
     private array $attachableAttributes = [];
@@ -26,25 +27,27 @@ class Interpreter
         $this->reflection = new AttributeHelper($currentModelClass);
         $this->parsedModel = $this->reflection->parseClass();
     }
+
     public function asInstance(Model $currentModel): void
     {
         $this->currentModel = $currentModel;
     }
+
     public function initialize(array $staticModel = []): Model
     {
-        foreach ($this->parsedModel as $property){
+        foreach ($this->parsedModel as $property) {
 
 
             // Custom Type?
-            if(!$property['isBuiltIn']){
+            if (!$property['isBuiltIn']) {
                 $this->currentModel->{$property['name']} = new $property['type']();
             }
             // has default value?
-            if(isset($property['defaultValue'])){
+            if (isset($property['defaultValue'])) {
                 $this->currentModel->{$property['name']} = $property['defaultValue'];
             }
             // fill from input
-            if($property['isBuiltIn'] && isset($staticModel[$property['name']])){
+            if ($property['isBuiltIn'] && isset($staticModel[$property['name']])) {
                 $this->fillWithReadOnlyGuard($property, $property['isReadOnly'], $staticModel[$property['name']]);
             }
 
@@ -54,37 +57,31 @@ class Interpreter
         }
         return $this->currentModel;
     }
+
     public function fillWithReadOnlyGuard(array $property, bool $readOnly, string $value): void
     {
-        if($readOnly && !isset($this->currentModel->{$property['name']})) {
-            $this->currentModel->set($property['name'],  $value);
-        } elseif(!$readOnly) {
-            try{
+        if ($readOnly && !isset($this->currentModel->{$property['name']})) {
+            $this->currentModel->set($property['name'], $value);
+        } elseif (!$readOnly) {
+            try {
                 $this->currentModel->{$property['name']} = $value;
-            } catch (\TypeError $e) {
+            } catch (TypeError $e) {
                 // some day...
                 var_dump($e->getMessage());
             }
         }
     }
+
     public function executeAttributes(array $attributes, string $propertyName, AttributeType $type, Direction $direction): void
     {
-        foreach ($attributes as $attribute){
-            if($attribute['type'] === $type){
+        foreach ($attributes as $attribute) {
+            if ($attribute['type'] === $type) {
                 $interim = $attribute['instance']($this->currentModel->toArray(), $direction, $propertyName);
                 $this->currentModel->{$propertyName} = $interim[$propertyName];
             }
         }
     }
-    public function getTableName(): string
-    {
-        if($this->reflection->findConstant('tableName')) {
-            return $this->reflection->findConstant('tableName');
-        } else {
-            preg_match('/[a-z]+$/i',$this->reflection->className, $from);
-            return lcfirst($from[0]);
-        }
-    }
+
     public function generateInsertUpdate(Model $model): array
     {
         $this->currentModel = $model;
@@ -93,16 +90,17 @@ class Interpreter
         }
         return $this->currentModel->toArray(true);
     }
+
     public function generateSelect(): array
     {
         $this->selectorString = '';
         $this->mutationAttributes = [];
         foreach ($this->reflection->properties as $i => $property) {
             $attributes = $property->getAttributes();
-            if(empty($attributes)){
+            if (empty($attributes)) {
                 $this->addToSelectorString($property->getName());
             } else {
-                foreach ($attributes as $attribute){
+                foreach ($attributes as $attribute) {
                     $this->attributeCheck($attribute->newInstance(), $property);
                 }
             }
@@ -113,13 +111,25 @@ class Interpreter
             'mutatable' => $this->mutationAttributes
         ];
     }
-    public function getPrimaryKey() :string
+
+    private function addToSelectorString($columnName): void
     {
-        return $this->reflection->findPropertiesByAttribute(IsPrimaryKey::class)[0] ?? 'id';
+        $this->selectorString .= (strlen($this->selectorString) > 1 ? ' ' : '') . $this->getTableName() . '.' . $columnName;
     }
-    private function attributeCheck($attributeInstance, \ReflectionProperty $property): void
+
+    public function getTableName(): string
     {
-        switch($attributeInstance->getType()) {
+        if ($this->reflection->findConstant('tableName')) {
+            return $this->reflection->findConstant('tableName');
+        } else {
+            preg_match('/[a-z]+$/i', $this->reflection->className, $from);
+            return lcfirst($from[0]);
+        }
+    }
+
+    private function attributeCheck($attributeInstance, ReflectionProperty $property): void
+    {
+        switch ($attributeInstance->getType()) {
             case AttributeType::ATTACH:
                 $this->attachableAttributes[$property->getName()] = $attributeInstance;
                 break;
@@ -136,9 +146,10 @@ class Interpreter
                 break;
         }
     }
-    private function addToSelectorString($columnName): void
+
+    public function getPrimaryKey(): string
     {
-        $this->selectorString .= (strlen($this->selectorString) > 1 ? ' ' : ''). $this->getTableName() . '.' . $columnName;
+        return $this->reflection->findPropertiesByAttribute(IsPrimaryKey::class)[0] ?? 'id';
     }
 
 }

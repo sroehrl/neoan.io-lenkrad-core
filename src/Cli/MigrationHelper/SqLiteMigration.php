@@ -7,13 +7,11 @@ use Neoan\Database\Database;
 
 class SqLiteMigration
 {
-    private ModelInterpreter $interpreter;
-
-
-    private array $existingTable;
     public string $sql = '';
     public string $backupSql = '';
     public string $interimTableName;
+    private ModelInterpreter $interpreter;
+    private array $existingTable;
 
     /**
      * @throws Exception
@@ -23,39 +21,19 @@ class SqLiteMigration
         $this->interpreter = $modelInterpreter;
         $this->interimTableName = $this->interpreter->getTableName() . date('_d_m_H_i');
         $this->getExistingTable();
-        if($backup){
+        if ($backup) {
             $this->writeBackupCopy($backup);
         }
         $this->updateTable();
     }
 
-    function getFieldSql($field): string
-    {
-
-        return "`{$field['name']}` {$this->getType($field)}";
-    }
-    function getType(array $property): string
-    {
-        $type = match ($property['type']) {
-            'int' => 'INTEGER',
-            'float' => 'REAL',
-            default => 'TEXT',
-        };
-        foreach ($property['attributes'] as $attribute) {
-            if($attribute['name'] === "Neoan\\Model\\Attributes\\Type"){
-                $instance = $attribute['instance'];
-                $type .= ($instance->default ? " DEFAULT {$instance->default} " : '');
-            }
-        }
-        return $type;
-    }
     function getExistingTable(): void
     {
-        try{
-            $result = Database::raw("SELECT sql FROM sqlite_master WHERE name = '{$this->interpreter->getTableName()}'",[]);
-            if(!empty($result)){
+        try {
+            $result = Database::raw("SELECT sql FROM sqlite_master WHERE name = '{$this->interpreter->getTableName()}'", []);
+            if (!empty($result)) {
                 preg_match('/\(([^)]+)/', $result[0]['sql'], $matches);
-                $result = explode(',',str_replace('`','',$matches[1]));
+                $result = explode(',', str_replace('`', '', $matches[1]));
             }
 
 
@@ -69,23 +47,36 @@ class SqLiteMigration
                 ];
             }
 
-        } catch (Exception $e){}
+        } catch (Exception $e) {
+        }
 
     }
-    function updateTable():void
+
+    /**
+     * @throws Exception
+     */
+    private function writeBackupCopy(string $destination): void
+    {
+        if (!isset($this->existingTable)) {
+            throw new Exception("Failed: Cannot create backup copy of non-existing table");
+        }
+        $this->backupSql = "CREATE TABLE `$destination` as SELECT * FROM `{$this->interpreter->getTableName()}`;";
+    }
+
+    function updateTable(): void
     {
         $doubleDown = [];
         $sql = "CREATE TABLE `{$this->interimTableName}`(";
         foreach ($this->interpreter->filteredProperties() as $i => $property) {
-            $sql .= ($i > 0 ?  ",\n" : "\n") . $this->getFieldSql($property);
+            $sql .= ($i > 0 ? ",\n" : "\n") . $this->getFieldSql($property);
             $key = $this->addKey($property);
             $sql .= ' ' . $key;
-            if($key === 'UNIQUE' && isset($this->existingTable) && !$this->existingTablePropertyIsUnique($property['name'])){
+            if ($key === 'UNIQUE' && isset($this->existingTable) && !$this->existingTablePropertyIsUnique($property['name'])) {
                 $doubleDown[$property['name']] = $property['name'] . '_non_unique';
                 $secureProperty = [
                     'name' => $property['name'] . '_non_unique',
                     'type' => $property['type'],
-                    'key'  => null,
+                    'key' => null,
                     'attributes' => []
                 ];
                 $sql .= ",\n" . $this->getFieldSql($secureProperty);
@@ -93,18 +84,18 @@ class SqLiteMigration
         }
         $this->sql .= $sql . ");\n";
         // copy old data?
-        if(isset($this->existingTable)){
+        if (isset($this->existingTable)) {
             $fields = [];
-            foreach($this->interpreter->filteredProperties() as $i => $requested){
-                if(isset($this->existingTable[$requested['name']])){
-                    if(isset($doubleDown[$requested['name']])){
+            foreach ($this->interpreter->filteredProperties() as $i => $requested) {
+                if (isset($this->existingTable[$requested['name']])) {
+                    if (isset($doubleDown[$requested['name']])) {
                         $fields[] = $i . ' as ' . $requested['name'];
                         $fields[] = $requested['name'] . ' as ' . $doubleDown[$requested['name']];
                     } else {
                         $fields[] = $requested['name'];
                     }
                 } else {
-                    $fields[] = "null as ". $requested['name'];
+                    $fields[] = "null as " . $requested['name'];
                 }
 
             }
@@ -112,7 +103,7 @@ class SqLiteMigration
             $this->sql .= "INSERT INTO `{$this->interimTableName}`";
             $this->sql .= " SELECT " . implode(', ', $fields) . " FROM `{$this->interpreter->getTableName()}`;\n";
             // try to copy
-            foreach ($doubleDown as $key => $value){
+            foreach ($doubleDown as $key => $value) {
                 $this->sql .= "UPDATE `{$this->interimTableName}` SET `$value` = `$key`;\n";
                 $this->sql .= "ALTER TABLE `{$this->interimTableName}` DROP COLUMN `$value`;\n";
             }
@@ -122,34 +113,48 @@ class SqLiteMigration
         $this->sql .= "ALTER TABLE `{$this->interimTableName}` RENAME TO `{$this->interpreter->getTableName()}`;\n";
 
     }
-    function sqlAsSingleCommands(): array
+
+    function getFieldSql($field): string
     {
-        return array_values(explode(';', $this->sql));
+
+        return "`{$field['name']}` {$this->getType($field)}";
     }
-    private function existingTablePropertyIsUnique(string $propertyName):bool
+
+    function getType(array $property): string
     {
-        return isset($this->existingTable[$propertyName]) && $this->existingTable[$propertyName]['key'] === 'UNIQUE';
+        $type = match ($property['type']) {
+            'int' => 'INTEGER',
+            'float' => 'REAL',
+            default => 'TEXT',
+        };
+        foreach ($property['attributes'] as $attribute) {
+            if ($attribute['name'] === "Neoan\\Model\\Attributes\\Type") {
+                $instance = $attribute['instance'];
+                $type .= ($instance->default ? " DEFAULT {$instance->default} " : '');
+            }
+        }
+        return $type;
     }
+
     function addKey(array $property): string
     {
         $name = $property['name'];
-        if($this->interpreter->getPrimaryField()['name'] === $name){
+        if ($this->interpreter->getPrimaryField()['name'] === $name) {
             return 'PRIMARY KEY';
         }
-        if($this->interpreter->isUnique($property)){
+        if ($this->interpreter->isUnique($property)) {
             return 'UNIQUE';
         }
         return '';
     }
 
-    /**
-     * @throws Exception
-     */
-    private function writeBackupCopy(string $destination): void
+    private function existingTablePropertyIsUnique(string $propertyName): bool
     {
-        if(!isset($this->existingTable)) {
-            throw new Exception("Failed: Cannot create backup copy of non-existing table");
-        }
-        $this->backupSql = "CREATE TABLE `$destination` as SELECT * FROM `{$this->interpreter->getTableName()}`;";
+        return isset($this->existingTable[$propertyName]) && $this->existingTable[$propertyName]['key'] === 'UNIQUE';
+    }
+
+    function sqlAsSingleCommands(): array
+    {
+        return array_values(explode(';', $this->sql));
     }
 }

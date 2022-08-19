@@ -16,6 +16,7 @@ class AttributeHelper
     public array $attributeMatchList = [];
     public array $propertyMatchList = [];
     private array $parsedClass = [];
+
     /**
      * @throws ReflectionException
      */
@@ -27,37 +28,42 @@ class AttributeHelper
         $this->className = $this->reflection->getName();
         $this->generateMachLists();
     }
-    public function findConstant(string $constant): ?string
+
+    private function generateMachLists(): void
     {
-        return $this->constants[$constant] ?? null;
-    }
-    public function findPropertiesByAttribute(string $attribute)
-    {
-        return $this->attributeMatchList[$attribute] ?? null;
-    }
-    public function findAttributesByProperty(string $property): array
-    {
-        return $this->propertyMatchList[$property];
-    }
-    private function generateMachLists() :void
-    {
-        foreach ($this->properties as $property){
+        foreach ($this->properties as $property) {
             $attributes = $property->getAttributes();
             $this->propertyMatchList[$property->getName()] = $attributes;
-            foreach ($attributes as $attribute){
+            foreach ($attributes as $attribute) {
                 $this->attributeMatchList[$attribute->getName()][] = $property->getName();
 
             }
         }
     }
+
+    public function findConstant(string $constant): ?string
+    {
+        return $this->constants[$constant] ?? null;
+    }
+
+    public function findPropertiesByAttribute(string $attribute)
+    {
+        return $this->attributeMatchList[$attribute] ?? null;
+    }
+
+    public function findAttributesByProperty(string $property): array
+    {
+        return $this->propertyMatchList[$property];
+    }
+
     public function parseClass(): array
     {
         $this->parsedClass[] = [];
-        foreach ($this->properties as $i => $property){
+        foreach ($this->properties as $i => $property) {
             $attributes = $this->propertyMatchList[$property->getName()];
             $attributeList = [];
             $ignore = false;
-            foreach ($attributes as $attribute){
+            foreach ($attributes as $attribute) {
                 $instance = $attribute->newInstance();
                 $attributeList[] = [
                     'name' => $attribute->getName(),
@@ -67,7 +73,7 @@ class AttributeHelper
                 ];
                 $ignore = $instance->getType() === AttributeType::PRIVATE;
             }
-            if(!$ignore){
+            if (!$ignore) {
                 $this->parsedClass[$i] = [
                     'name' => $property->getName(),
                     'type' => $property->getType()->getName(),
@@ -78,7 +84,7 @@ class AttributeHelper
                     'isPrimary' => !empty($property->getAttributes(IsPrimaryKey::class)),
                     'attributes' => $attributeList,
                 ];
-                if($property->hasDefaultValue()){
+                if ($property->hasDefaultValue()) {
                     $this->parsedClass[$i]['defaultValue'] = $property->getDefaultValue();
                 }
             }

@@ -1,6 +1,7 @@
 <?php
 
 namespace Neoan\Model\Attributes;
+
 use Attribute;
 use Exception;
 use Neoan\Enums\AttributeType;
@@ -14,7 +15,9 @@ use ReflectionException;
 class Transform implements ModelAttribute
 {
     private string $converterClass;
-    public function __construct(string $converterClass){
+
+    public function __construct(string $converterClass)
+    {
         $this->converterClass = $converterClass;
 
     }
@@ -23,9 +26,10 @@ class Transform implements ModelAttribute
      * @throws ReflectionException
      * @throws Exception
      */
-    public function __invoke(array $result, Direction $direction, string $property){
+    public function __invoke(array $result, Direction $direction, string $property)
+    {
         $check = new AttributeHelper($this->converterClass);
-        if(!$check->reflection->implementsInterface(Transformation::class)){
+        if (!$check->reflection->implementsInterface(Transformation::class)) {
             throw new Exception($this->converterClass . ' does not implement ' . Transformation::class);
         }
         $class = new $this->converterClass();

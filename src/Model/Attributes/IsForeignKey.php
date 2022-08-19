@@ -11,6 +11,7 @@ class IsForeignKey implements ModelAttribute
 {
     public string $table;
     public string $property;
+
     public function __construct(string $table, string $property)
     {
         $this->table = $table;
