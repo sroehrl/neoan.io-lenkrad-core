@@ -1,6 +1,6 @@
 <?php
 
-namespace Enums;
+namespace Test\Enums;
 
 use Neoan\Enums\ResponseOutput;
 use PHPUnit\Framework\TestCase;

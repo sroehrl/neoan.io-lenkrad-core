@@ -4,6 +4,7 @@ namespace Neoan\Render;
 
 
 use Neoan\Enums\GenericEvent;
+use Neoan\Errors\NotFound;
 use Neoan\Event\Event;
 use Neoan\Event\Listenable;
 use Neoan\Helper\DataNormalization;
@@ -15,7 +16,7 @@ class Renderer implements RenderEngine, Listenable
     protected string $templatePath = '/';
     protected ?string $htmlSkeletonPath = null;
     protected string $htmlComponentPlacement = 'main';
-    protected ?array $skeletonVariables = [];
+    protected ?DataNormalization $skeletonVariables;
 
     public static function setTemplatePath(string $path): void
     {
@@ -39,30 +40,31 @@ class Renderer implements RenderEngine, Listenable
         $instance = self::getInstance();
         $instance->htmlSkeletonPath = $fileLocation;
         $instance->htmlComponentPlacement = $componentPlacement;
-        $instance->skeletonVariables = $skeletonVariables;
+        $instance->skeletonVariables = new DataNormalization($skeletonVariables);
     }
 
-    public static function render(array|DataNormalization $data = [], $view = null): string
+    public static function render(DataNormalization|array $data = [], $view = null): string
     {
         $instance = self::getInstance();
+        if(!$data instanceof DataNormalization) {
+            $data = new DataNormalization($data);
+        }
         Event::dispatch(GenericEvent::BEFORE_RENDERING, ['data' => $data, 'view' => $view, 'instance' => $instance]);
         $viewLocation = $instance->templatePath . $view;
         if ($instance->htmlSkeletonPath) {
             $data = self::compressData($data, $view);
             $viewLocation = $instance->htmlSkeletonPath;
         }
-        return Template::embraceFromFile($viewLocation, $data);
+        return Template::embraceFromFile($viewLocation, $data->toArray());
     }
 
-    private static function compressData($data, $view): array
+    private static function compressData(DataNormalization $data, $view): DataNormalization
     {
         $instance = self::getInstance();
-
-        $data = [
-            ...$data,
-            ...new DataNormalization($instance->skeletonVariables)
-        ];
-        $data[$instance->htmlComponentPlacement] = Template::embraceFromFile($instance->templatePath . $view, $data);
+        $data->add($instance->skeletonVariables);
+        $add = [];
+        $add[$instance->htmlComponentPlacement] = Template::embraceFromFile($instance->templatePath . $view, $data->toArray());
+        $data->add($add);
         return $data;
     }
 
@@ -100,6 +102,6 @@ class Renderer implements RenderEngine, Listenable
      */
     public function getSkeletonVariables(): ?array
     {
-        return $this->skeletonVariables;
+        return $this->skeletonVariables->toArray();
     }
 }

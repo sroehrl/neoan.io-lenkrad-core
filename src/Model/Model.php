@@ -177,7 +177,7 @@ class Model
     {
         $primaryKey = self::$interpreter->getPrimaryKey();
 
-        if ($hard || !isset($this->deletedAt)) {
+        if ($hard || !property_exists($this, 'deletedAt')) {
             Database::raw("DELETE FROM `" . self::$tableName . "` WHERE `$primaryKey` = {{id}}", [
                 'id' => $this->{$primaryKey}
             ]);

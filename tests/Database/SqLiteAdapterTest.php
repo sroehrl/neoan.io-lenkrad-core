@@ -19,6 +19,7 @@ class SqLiteAdapterTest extends TestCase
     }
     public static function tearDownAfterClass(): void
     {
+        Database::connect(new SqLiteAdapter(['location' => __DIR__ . '/db.db']));
         Database::raw('DROP TABLE test_me',[]);
     }
     function testMethods()

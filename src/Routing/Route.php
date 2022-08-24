@@ -4,6 +4,7 @@ namespace Neoan\Routing;
 
 use Exception;
 use Neoan\Enums\GenericEvent;
+use Neoan\Enums\RequestMethod;
 use Neoan\Errors\NotFound;
 use Neoan\Event\Event;
 use Neoan\Request\Request;
@@ -19,40 +20,42 @@ class Route
 
     public static function get(string $path, ...$classNames): self
     {
-        return self::request('GET', $path, ...$classNames);
+        return self::request(RequestMethod::GET, $path, ...$classNames);
     }
 
-    public static function request(string $method, string $path, ...$classNames): self
+    public static function post(string $path, ...$classNames): self
+    {
+        return self::request(RequestMethod::POST, $path, ...$classNames);
+    }
+
+    public static function put(string $path, ...$classNames): self
+    {
+        return self::request(RequestMethod::PUT, $path, ...$classNames);
+    }
+
+    public static function patch(string $path, ...$classNames): self
+    {
+        return self::request(RequestMethod::PATCH, $path, ...$classNames);
+    }
+
+    public static function delete(string $path, ...$classNames): self
+    {
+        return self::request(RequestMethod::DELETE, $path, ...$classNames);
+    }
+
+    public static function request(RequestMethod $method, string $path, ...$classNames): self
     {
         $instance = self::getInstance(null, $path);
         Event::dispatch(GenericEvent::ROUTE_REGISTERED, [
             'method' => $method,
             'route' => $path
         ]);
-        $instance->currentMethod = $method;
-        $instance->paths[$method][$path] = ['classes' => [...$classNames], 'injections' => [], 'response' => []];
+        $instance->currentMethod = $method->name;
+        $instance->paths[$method->name][$path] = ['classes' => [...$classNames], 'injections' => [], 'response' => []];
         return $instance;
     }
 
-    public static function post(string $path, ...$classNames): self
-    {
-        return self::request('POST', $path, ...$classNames);
-    }
 
-    public static function put(string $path, ...$classNames): self
-    {
-        return self::request('PUT', $path, ...$classNames);
-    }
-
-    public static function patch(string $path, ...$classNames): self
-    {
-        return self::request('PATCH', $path, ...$classNames);
-    }
-
-    public static function delete(string $path, ...$classNames): self
-    {
-        return self::request('DELETE', $path, ...$classNames);
-    }
 
     public function response(array $responseHandler): void
     {
