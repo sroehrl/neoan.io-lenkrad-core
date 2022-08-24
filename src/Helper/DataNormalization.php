@@ -6,6 +6,7 @@ use Iterator;
 use Neoan\Model\Collection;
 use Neoan\Model\Model;
 use Neoan\Store\Dynamic;
+use function Swoole\Coroutine\Http\request;
 
 class DataNormalization implements Iterator
 {
@@ -21,7 +22,7 @@ class DataNormalization implements Iterator
 
     private function convert(mixed $data): mixed
     {
-        if ($data instanceof Model || $data instanceof Collection) {
+        if ($data instanceof Model || $data instanceof Collection || $data instanceof DataNormalization) {
             $data = $data->toArray();
         } elseif ($data instanceof Dynamic) {
             $data = $data->get();
@@ -49,6 +50,14 @@ class DataNormalization implements Iterator
             self::$instance = new DataNormalization();
         }
         return self::$instance;
+    }
+    public function toArray()
+    {
+        return $this->converted;
+    }
+    public function add(mixed $data)
+    {
+        $this->converted = [...$this->converted, ...$this->convert($data)];
     }
 
     public function current(): mixed

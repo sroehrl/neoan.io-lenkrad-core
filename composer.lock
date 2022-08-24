@@ -158,16 +158,16 @@
         },
         {
             "name": "neoan3-apps/template",
-            "version": "2.0.2",
+            "version": "v2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroehrl/neoan3-template.git",
-                "reference": "c756488855d8f9d99dfecded5f97c118f90c5a11"
+                "reference": "5faf950e313cc43f34698445dc0dfbc32e529f4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroehrl/neoan3-template/zipball/c756488855d8f9d99dfecded5f97c118f90c5a11",
-                "reference": "c756488855d8f9d99dfecded5f97c118f90c5a11",
+                "url": "https://api.github.com/repos/sroehrl/neoan3-template/zipball/5faf950e313cc43f34698445dc0dfbc32e529f4f",
+                "reference": "5faf950e313cc43f34698445dc0dfbc32e529f4f",
                 "shasum": ""
             },
             "require": {
@@ -193,9 +193,9 @@
             "description": "PHP DOMDocument-based minimal template engine",
             "support": {
                 "issues": "https://github.com/sroehrl/neoan3-template/issues",
-                "source": "https://github.com/sroehrl/neoan3-template/tree/v2.0.2"
+                "source": "https://github.com/sroehrl/neoan3-template/tree/v2.1.2"
             },
-            "time": "2022-08-16T00:51:23+00:00"
+            "time": "2022-08-21T04:05:06+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -1678,23 +1678,23 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.15",
+            "version": "9.2.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "2e9da11878c4202f97915c1cb4bb1ca318a63f5f"
+                "reference": "2593003befdcc10db5e213f9f28814f5aa8ac073"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2e9da11878c4202f97915c1cb4bb1ca318a63f5f",
-                "reference": "2e9da11878c4202f97915c1cb4bb1ca318a63f5f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2593003befdcc10db5e213f9f28814f5aa8ac073",
+                "reference": "2593003befdcc10db5e213f9f28814f5aa8ac073",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
                 "ext-xmlwriter": "*",
-                "nikic/php-parser": "^4.13.0",
+                "nikic/php-parser": "^4.14",
                 "php": ">=7.3",
                 "phpunit/php-file-iterator": "^3.0.3",
                 "phpunit/php-text-template": "^2.0.2",
@@ -1743,7 +1743,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.15"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.16"
             },
             "funding": [
                 {
@@ -1751,7 +1751,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-07T09:28:20+00:00"
+            "time": "2022-08-20T05:26:47+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",

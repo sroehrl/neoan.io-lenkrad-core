@@ -17,7 +17,7 @@ class DatabaseTestAdapter implements \Neoan\Database\Adapter
 
     private function removeVars(string $sqlString):string
     {
-        return preg_replace('/{{[a-z.]}}/i','?', $sqlString);
+        return preg_replace('/{{[a-z.]+}}/i','?', $sqlString);
     }
     private function parseConditions(array $conditions = [], $mode = 'update'):array
     {

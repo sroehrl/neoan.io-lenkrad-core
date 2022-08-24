@@ -7,9 +7,11 @@ use Neoan\Enums\TransactionType;
 use Neoan\Model\Attributes\Initialize;
 use Neoan\Model\Collection;
 use Neoan\Model\Interpreter;
+use Neoan\Model\Model;
 use PHPUnit\Framework\TestCase;
 use Test\Mocks\DatabaseTestAdapter;
 use Test\Mocks\MockModel;
+use Test\Mocks\MockModelSetter;
 
 class ModelTest extends TestCase
 {
@@ -63,11 +65,35 @@ class ModelTest extends TestCase
         // many
         $collection = MockModel::retrieve(['id' => 1]);
         $this->assertInstanceOf(Collection::class, $collection);
+        foreach ($collection as $key => $model) {
+            $this->assertInstanceOf(Model::class, $model);
+        }
         // one
         $one = MockModel::retrieveOne(['id' => 1]);
         $this->assertInstanceOf(MockModel::class, $one);
         // retrieveOne is null
         $this->assertNull(MockModel::retrieveOne(['id' => 9999999]));
+    }
+    public function testDeleteHard()
+    {
+
+        $this->model->delete(true);
+        $this->assertEmpty(Database::raw('SELECT id FROM mockAttach WHERE id = {{id}}', [
+            'id' => $this->model->id
+        ]));
+    }
+    public function testDeleteSoft()
+    {
+        $se = new MockModelSetter(['defaultString' => 'some']);
+        $se->dbReset();
+        $se->ensure();
+        $se->store();
+        $newSe = MockModelSetter::get(1);
+        $this->assertSame(1, $newSe->id);
+        // soft delete
+        $newSe->delete();
+        $test = MockModelSetter::get(1);
+        $this->assertNull($test->deletedAt);
     }
 
     public function testGetTransactionMode()
@@ -84,7 +110,22 @@ class ModelTest extends TestCase
         $interpreter = new Interpreter(Fake::class);
         $this->assertSame('fake', $interpreter->getTableName());
     }
-
+    public function testReadOnlySetter()
+    {
+        $nm = new MockModelSetter(['id'=>5]);
+        $this->assertSame(5, $nm->id);
+    }
+    public function testTypeError()
+    {
+        $nm = new MockModel(['id'=>'string']);
+        $this->assertTrue(!isset($nm->id));
+    }
+    public function testSelectorString()
+    {
+        $interpreter = new Interpreter(MockModelSetter::class);
+        $res = $interpreter->generateSelect();
+        $this->assertStringContainsString('defaultString', $res['selectorString']);
+    }
 }
 class Fake{
     #[Initialize('bubu')]
