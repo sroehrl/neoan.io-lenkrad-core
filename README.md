@@ -85,6 +85,7 @@ You will need PHP 8.1 & composer2 to run this
 - - [Response Handling](#response-handler)
 - - [Injection](#inject)
 - - [Views](#views)
+- - [Using Attributes](#routing-attributes)
 - [Inputs & Outputs](#handling-inputs--outputs)
 - [Templating](#templating)
 - - [HTML skeleton](#skeleton)
@@ -444,6 +445,46 @@ Route::get('/')
 ```
 
 Learn more about [templating in neoan.io lenkrad](#templating) or [the neoan3-apps/template template engine](https://github.com/sroehrl/neoan3-template#neoan3-appstemplate)
+
+### Routing Attributes
+
+You can register routes using attributes as well. IN order to do so, two prerequisites have to be met:
+
+1. Register namespace(s) via AttributeRouting
+2. Add appropriate attributes to routable classes
+
+
+```php 
+// e.g. in idex.php
+// ...
+$app = new NeoanApp( dirname(__DIR__), __DIR__, dirname(__DIR__));
+
+// invoke using the namespace of whereever your routables are located
+$app->invoke(new Neoan\Routing\AttributeRouting('Controller'));
+
+```
+```php 
+// e.g. Controller\WebRoute.php
+namespace Controller;
+
+#[Web('/','/test.html')]
+class WebRoute implements Neoan\Routing\Routable
+{
+    public function __invoke(array $provided): array
+    {
+        return ["msg" => "Hello World"];
+    }
+}
+```
+This will register routes in a "ruby"-like manner instead of having to define routes manually.
+the following attributes are at your disposal:
+
+- **Web(string $route, string $viewTemplate, ...$middlewareClasses)**
+- **Get(string $route, ...$middlewareClasses)**
+- **Post(string $route, ...$middlewareClasses)**
+- **Put(string $route, ...$middlewareClasses)**
+- **Patch(string $route, ...$middlewareClasses)**
+- **Delete(string $route, ...$middlewareClasses)**
 
 
 ## Handling inputs & outputs
