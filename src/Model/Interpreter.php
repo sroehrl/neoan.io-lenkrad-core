@@ -36,11 +36,11 @@ class Interpreter
     public function initialize(array $staticModel = []): Model
     {
         foreach ($this->parsedModel as $property) {
-
-
             // Custom Type?
-            if (!$property['isBuiltIn']) {
+            if (!$property['isBuiltIn'] && !isset($staticModel[$property['name']])) {
                 $this->currentModel->{$property['name']} = new $property['type']();
+            } elseif (!$property['isBuiltIn'] && $staticModel[$property['name']] instanceof $property['type']) {
+                $this->currentModel->{$property['name']} = $staticModel[$property['name']];
             }
             // has default value?
             if (isset($property['defaultValue'])) {
