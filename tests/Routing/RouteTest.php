@@ -2,6 +2,7 @@
 
 namespace Test\Routing;
 
+use Neoan\NeoanApp;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
 use Neoan\Routing\Routable;
@@ -12,6 +13,11 @@ use Test\Mocks\MockRequest;
 
 class RouteTest extends TestCase
 {
+    private NeoanApp $app;
+    public function setUp(): void
+    {
+        $this->app = new NeoanApp(dirname(__DIR__), dirname(__DIR__),dirname(__DIR__));
+    }
 
     public function testMethods()
     {
@@ -38,7 +44,7 @@ class RouteTest extends TestCase
         $ins = Route::get('/some/:name', Routing::class);
         $ins->response([ResponseHandler::class,'output']);
         $this->assertInstanceOf(Route::class, $ins);
-        $ins();
+        $ins($this->app);
     }
     public function testNotFound()
     {
@@ -48,7 +54,7 @@ class RouteTest extends TestCase
         });
         $r = new Route();
         $this->expectException(\Exception::class);
-        $r();
+        $r($this->app);
 
     }
     public function testRouteNotFound()
@@ -61,7 +67,7 @@ class RouteTest extends TestCase
         $r = new Route();
 
         $this->expectException(\Exception::class);
-        $r();
+        $r($this->app);
     }
     public function testNotRoutable()
     {
@@ -70,7 +76,7 @@ class RouteTest extends TestCase
         $r = new Route();
 
         $this->expectException(\Exception::class);
-        $r();
+        $r($this->app);
     }
     public function testOnlyView()
     {
@@ -80,7 +86,7 @@ class RouteTest extends TestCase
         $r = new Route();
         $this->expectException(\Exception::class);
 //        $this->expectErrorMessage('renderer');
-        $r();
+        $r($this->app);
 
     }
 
