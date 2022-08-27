@@ -2,6 +2,7 @@
 
 namespace Neoan\Routing;
 
+use Neoan\Helper\ComposerParser;
 use Neoan\NeoanApp;
 use ReflectionClass;
 use ReflectionException;
@@ -18,8 +19,8 @@ class AttributeRouting
 
     public function __invoke(NeoanApp $neoanApp): void
     {
-        $composerFile = json_decode(file_get_contents($neoanApp->cliPath . '/composer.json'), true);
-        $autoloader = array_merge($composerFile['autoload']['psr-4'], $composerFile['autoload-dev']['psr-4']);
+        $composer = new ComposerParser($neoanApp);
+        $autoloader = $composer->getAutoloadNamespaces();
         $nameSpaceParts = explode('\\', $this->searchableNamespace);
         $searchable = '';
         foreach($nameSpaceParts as $part) {

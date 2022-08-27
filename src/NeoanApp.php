@@ -12,6 +12,7 @@ class NeoanApp
     public string $publicPath;
     public string $webPath;
     public string $cliPath;
+    private static NeoanApp $instance;
 
     public function __construct(string $appPath, string $publicPath, string $cliPath = __DIR__)
     {
@@ -26,7 +27,7 @@ class NeoanApp
                 define('base', $protocol . $_SERVER['HTTP_HOST'] . $this->webPath);
             }
         }
-
+        self::$instance = $this;
     }
 
     /**
@@ -41,5 +42,9 @@ class NeoanApp
     public function invoke($instance): void
     {
         $instance($this);
+    }
+    public static function getInstance(): self
+    {
+        return self::$instance;
     }
 }
