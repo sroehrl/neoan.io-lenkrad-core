@@ -17,6 +17,11 @@ class NeoanAppTest extends TestCase
         $testApp->invoke($listenable);
         $this->assertTrue(isset($testApp->testVariable));
     }
+    function testGetInstance()
+    {
+        $testApp = new NeoanApp(__DIR__, __DIR__);
+        $this->assertInstanceOf(NeoanApp::class, NeoanApp::getInstance());
+    }
     /*function testRun()
     {
         $testApp = new NeoanApp(__DIR__, __DIR__);
