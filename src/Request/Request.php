@@ -28,6 +28,11 @@ class Request implements RequestInterface
         $instance = self::getInstance();
         $instance->parameters = $parameters;
     }
+    public static function setParameter(string $key, ?string $value)
+    {
+        $instance = self::getInstance();
+        $instance->parameters[$key] = $value;
+    }
 
     public static function getQueries(): array
     {

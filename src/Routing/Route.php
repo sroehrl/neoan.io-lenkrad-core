@@ -7,6 +7,7 @@ use Neoan\Enums\GenericEvent;
 use Neoan\Enums\RequestMethod;
 use Neoan\Errors\NotFound;
 use Neoan\Event\Event;
+use Neoan\NeoanApp;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
 use Traversable;
@@ -101,7 +102,7 @@ class Route
         return $instance;
     }
 
-    public function __invoke(): void
+    public function __invoke(NeoanApp $app): void
     {
         $instance = self::getInstance();
         if (!isset($instance->paths[Request::getRequestMethod()])) {
@@ -109,31 +110,61 @@ class Route
         }
         $found = false;
         foreach ($instance->paths[Request::getRequestMethod()] as $path => $route) {
-            $expression = str_replace('/', '\/', preg_replace('/:[^\/]+/', '([^/]+)', $path));
-            if (preg_match("/$expression$/", Request::getRequestUri(), $matches)) {
-                $found = true;
-                if (count($matches) > 1) {
-                    array_shift($matches);
-                    $instance->handleParameters($path, $matches);
-                }
+            if($found = $this->evaluateRouteMatch($app->webPath, $path)){
+
                 Event::dispatch(GenericEvent::BEFORE_ROUTABLE_EXECUTION, $route);
                 $instance->execute($route);
+                break;
             }
+
         }
         if (!$found) {
             new NotFound(Request::getRequestUri());
         }
     }
 
-    private function handleParameters(string $path, $uriMatches): void
+    private function evaluateRouteMatch($webPath, $path): bool
     {
-        $instance = self::getInstance();
-        preg_match_all('/:([^\/]+)/', $path, $params, PREG_SET_ORDER);
-        $expose = [];
-        foreach ($params as $i => $param) {
-            $expose[$param[1]] = $uriMatches[$i];
+        // clean webpath of potential double-/
+        $fullPath = $webPath . $path;
+        $fullPath = str_replace('//','/', $fullPath);
+        $parameters = $this->extractParameters($fullPath);
+
+
+        $expression = str_replace('/','\/', $fullPath);
+
+        return $this->executePotentialRouteMatch($expression, $parameters);
+    }
+
+    private function executePotentialRouteMatch(string $expression, array $parameters): bool
+    {
+        $hit = preg_match("/^$expression$/", Request::getRequestUri(), $matches);
+        if($hit){
+            array_shift($matches);
+            foreach ($matches as $i => $value){
+                Request::setParameter($parameters[$i], str_replace('/','',$value));
+            }
+            return true;
         }
-        Request::setParameters($expose);
+        return $hit;
+    }
+
+    private function extractParameters(string &$fullPath): array
+    {
+        $hit = preg_match_all('/\/:(\w+)(\*){0,1}/',$fullPath, $matches, PREG_SET_ORDER);
+        $parameters = [];
+        if($hit){
+            foreach ($matches as $matchGroup){
+                $parameters[] = $matchGroup[1];
+                if(isset($matchGroup[2])) {
+                    $fullPath = str_replace($matchGroup[0],'(/[^/]+){0,1}', $fullPath);
+                } else {
+                    $fullPath = str_replace($matchGroup[0],'/([^/]+)', $fullPath);
+                }
+            }
+
+        }
+        return $parameters;
     }
 
     /**
