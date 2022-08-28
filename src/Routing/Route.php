@@ -142,8 +142,7 @@ class Route
         if($hit){
             array_shift($matches);
             foreach ($matches as $i => $value){
-                $querySplit = explode('?', str_replace('/','',$value));
-                Request::setParameter($parameters[$i], $querySplit[0]);
+                Request::setParameter($parameters[$i], str_replace('/','',$value));
             }
             return true;
         }
