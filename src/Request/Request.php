@@ -131,10 +131,11 @@ class Request implements RequestInterface
         // extract query-params
         $query = $_SERVER['QUERY_STRING'] ?? '';
         parse_str($query, self::$instance->queryParts);
-        if ($query !== '') {
-            self::$instance->requestUri = mb_substr($_SERVER['REQUEST_URI'], 0, -1 * (mb_strlen($query)));
-        }
         self::$instance->requestUri = $_SERVER['REQUEST_URI'];
+        if ($query !== '') {
+            self::$instance->requestUri = mb_substr($_SERVER['REQUEST_URI'], 0, -1 * (mb_strlen($query)+1));
+        }
+
     }
 
     private function processRequestUriSanitation(): void
