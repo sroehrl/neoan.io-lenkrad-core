@@ -88,7 +88,11 @@ class Model
                 break;
         }
 
-        $this->rehydrate($id);
+        try{
+            $this->rehydrate($id);
+        } catch (\TypeError $e) {
+            throw new Exception('Store error: not hydratable');
+        }
         self::$notify->inform();
         return $this;
     }
@@ -118,7 +122,7 @@ class Model
         return $values;
     }
 
-    public function rehydrate($id = null): void
+    public function rehydrate(string|int $id = null): void
     {
         $fromDisk = $this->get($id ?? $this->{self::$interpreter->getPrimaryKey()});
 
