@@ -16,6 +16,7 @@ class Application
     {
         $this->app = new SymfonyApplication();
         $this->app->add(new MigrateCommand($app));
+        $this->app->add(new MigrateAllCommand($app));
         $this->app->add(new CreateControllerCommand($app));
         $this->app->add(new CreateModelCommand($app));
     }
