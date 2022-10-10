@@ -94,12 +94,6 @@ class Request implements RequestInterface
         self::$instance = null;
     }
 
-    public static function redirect(string $whereTo)
-    {
-        header('location: ' . $whereTo);
-        Terminate::exit();
-    }
-
     public function __invoke(NeoanApp $app = null, $additional = null): void
     {
         new FileParser($app->publicPath . $_SERVER['REQUEST_URI']);
