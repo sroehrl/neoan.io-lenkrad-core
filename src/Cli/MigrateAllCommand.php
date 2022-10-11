@@ -58,39 +58,17 @@ class MigrateAllCommand extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    private function migrateOne($modelName, $input, $output)
     {
-
-        $namespaceName = $input->getArgument('namespace');
-        $composerParser = new ComposerParser($this->app);
-        $models = [];
-        foreach ($composerParser->getAutoloadNamespaces() as $ns => $path){
-            if(str_starts_with($namespaceName, $ns)){
-                $entryPoint = str_replace($ns, $path, $namespaceName);
-                foreach (scandir($entryPoint) as $possible){
-                    var_dump($possible);
-                }
-            }
-        }
-        die();
-
-
-
-        $sanitizedModelName = preg_replace('/[\/\\\]/', '_', $namespaceName);
-        if (!class_exists($modelName)) {
-            $output->writeln("The requested model does not exist");
-            return Command::FAILURE;
-        }
         if ($input->getArgument('dialect') === 'sqlite') {
             $migrate = new SqLiteMigration(new ModelInterpreter($modelName), $input->getOption('with-copy'));
         } else {
             $migrate = new MySqlMigration(new ModelInterpreter($modelName), $input->getOption('with-copy'));
         }
-
         $fileOption = $input->getOption('output-folder');
         if (false !== $fileOption) {
 
-            $fileName = $sanitizedModelName . '-' . time() . '.sql';
+            $fileName = $modelName . '-' . time() . '.sql';
             $directory = $this->appPath . DIRECTORY_SEPARATOR . $fileOption . DIRECTORY_SEPARATOR;
             $full = $directory . $fileName;
             $output->writeln("Writing to " . $full);
@@ -128,6 +106,28 @@ class MigrateAllCommand extends Command
             }
         }
         $output->writeln("/**** SUCCESS ****/");
+    }
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+
+        $namespaceName = $input->getArgument('namespace');
+        $composerParser = new ComposerParser($this->app);
+
+
+
+        foreach ($composerParser->getAutoloadNamespaces() as $ns => $path){
+            if(str_starts_with($namespaceName, $ns)){
+                $entryPoint = str_replace($ns, $path, $namespaceName);
+                foreach (scandir($entryPoint) as $possible){
+                    if(str_ends_with($possible, '.php')){
+                        $this->migrateOne(substr($possible, 0, -4), $input, $output);
+                    }
+
+                }
+            }
+        }
+
+
         return Command::SUCCESS;
     }
 }
