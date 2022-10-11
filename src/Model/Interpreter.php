@@ -5,6 +5,7 @@ namespace Neoan\Model;
 use Neoan\Enums\AttributeType;
 use Neoan\Enums\Direction;
 use Neoan\Helper\AttributeHelper;
+use Neoan\Helper\Str;
 use Neoan\Model\Attributes\IsPrimaryKey;
 use ReflectionException;
 use ReflectionProperty;
@@ -123,7 +124,7 @@ class Interpreter
             return $this->reflection->findConstant('tableName');
         } else {
             preg_match('/[a-z]+$/i', $this->reflection->className, $from);
-            return lcfirst($from[0]);
+            return Str::toSnakeCase($from[0]);
         }
     }
 

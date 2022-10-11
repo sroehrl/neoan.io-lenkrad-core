@@ -20,7 +20,7 @@ class MockModelSetter extends Model
     public function ensure()
     {
         $res = Database::raw('
-            CREATE TABLE IF NOT EXISTS mockModelSetter(
+            CREATE TABLE IF NOT EXISTS mock_model_setter(
                     id INTEGER PRIMARY KEY,
                     defaultString TEXT,
                     createdAt TIMESTAMP,
@@ -31,6 +31,6 @@ class MockModelSetter extends Model
     }
     public function dbReset()
     {
-        Database::raw('DROP TABLE mockModelSetter',[]);
+        Database::raw('DROP TABLE IF EXISTS mock_model_setter',[]);
     }
 }
