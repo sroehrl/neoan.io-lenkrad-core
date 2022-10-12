@@ -131,10 +131,9 @@ class MigrateAllCommand extends Command
 
                 if (str_ends_with($possible, '.php')) {
                     $fullName = $namespaceName . '\\' . substr($possible, 0, -4);
-                    var_dump('-' . $fullName);
+                    var_dump('-->' . $fullName);
                     try {
                         $reflection = new ReflectionClass($fullName);
-                        var_dump($reflection->getParentClass());
                         if ($reflection->getParentClass() && $reflection->getParentClass()->getName() === 'Neoan\\Model\\Model') {
                             $this->migrateOne($fullName);
                         }
