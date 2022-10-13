@@ -80,6 +80,8 @@ class Interpreter
                 $interim = $attribute['instance']($this->currentModel->toArray(), $direction, $propertyName);
                 if(isset($interim[$propertyName])){
                     $this->currentModel->{$propertyName} = $interim[$propertyName];
+                } else {
+                    unset($this->currentModel->{$propertyName});
                 }
             }
         }

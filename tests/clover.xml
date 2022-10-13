@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1665626790">
-  <project timestamp="1665626790">
+<coverage generated="1665629298">
+  <project timestamp="1665629298">
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\CoreInterfaces\RequestInterface.php">
       <metrics loc="12" ncloc="12" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
@@ -641,7 +641,7 @@
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Model\Interpreter.php">
       <class name="Neoan\Model\Interpreter" namespace="global">
-        <metrics complexity="37" methods="11" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="59" coveredstatements="58" elements="70" coveredelements="68"/>
+        <metrics complexity="37" methods="11" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="60" coveredstatements="59" elements="71" coveredelements="69"/>
       </class>
       <line num="26" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="24"/>
       <line num="28" type="stmt" count="24"/>
@@ -673,47 +673,48 @@
       <line num="80" type="stmt" count="16"/>
       <line num="81" type="stmt" count="16"/>
       <line num="82" type="stmt" count="16"/>
-      <line num="88" type="method" name="generateInsertUpdate" visibility="public" complexity="2" crap="2" count="16"/>
-      <line num="90" type="stmt" count="16"/>
-      <line num="91" type="stmt" count="16"/>
+      <line num="84" type="stmt" count="2"/>
+      <line num="90" type="method" name="generateInsertUpdate" visibility="public" complexity="2" crap="2" count="16"/>
       <line num="92" type="stmt" count="16"/>
+      <line num="93" type="stmt" count="16"/>
       <line num="94" type="stmt" count="16"/>
-      <line num="97" type="method" name="generateSelect" visibility="public" complexity="4" crap="4" count="16"/>
-      <line num="99" type="stmt" count="16"/>
-      <line num="100" type="stmt" count="16"/>
+      <line num="96" type="stmt" count="16"/>
+      <line num="99" type="method" name="generateSelect" visibility="public" complexity="4" crap="4" count="16"/>
       <line num="101" type="stmt" count="16"/>
       <line num="102" type="stmt" count="16"/>
       <line num="103" type="stmt" count="16"/>
-      <line num="104" type="stmt" count="2"/>
-      <line num="106" type="stmt" count="16"/>
-      <line num="107" type="stmt" count="16"/>
-      <line num="112" type="stmt" count="16"/>
-      <line num="113" type="stmt" count="16"/>
+      <line num="104" type="stmt" count="16"/>
+      <line num="105" type="stmt" count="16"/>
+      <line num="106" type="stmt" count="2"/>
+      <line num="108" type="stmt" count="16"/>
+      <line num="109" type="stmt" count="16"/>
       <line num="114" type="stmt" count="16"/>
-      <line num="118" type="method" name="addToSelectorString" visibility="private" complexity="2" crap="2" count="16"/>
-      <line num="120" type="stmt" count="16"/>
-      <line num="123" type="method" name="getTableName" visibility="public" complexity="2" crap="2" count="20"/>
-      <line num="125" type="stmt" count="20"/>
-      <line num="126" type="stmt" count="20"/>
-      <line num="128" type="stmt" count="3"/>
-      <line num="129" type="stmt" count="3"/>
-      <line num="133" type="method" name="attributeCheck" visibility="private" complexity="6" crap="6.02" count="16"/>
-      <line num="135" type="stmt" count="16"/>
-      <line num="136" type="stmt" count="16"/>
+      <line num="115" type="stmt" count="16"/>
+      <line num="116" type="stmt" count="16"/>
+      <line num="120" type="method" name="addToSelectorString" visibility="private" complexity="2" crap="2" count="16"/>
+      <line num="122" type="stmt" count="16"/>
+      <line num="125" type="method" name="getTableName" visibility="public" complexity="2" crap="2" count="20"/>
+      <line num="127" type="stmt" count="20"/>
+      <line num="128" type="stmt" count="20"/>
+      <line num="130" type="stmt" count="3"/>
+      <line num="131" type="stmt" count="3"/>
+      <line num="135" type="method" name="attributeCheck" visibility="private" complexity="6" crap="6.02" count="16"/>
       <line num="137" type="stmt" count="16"/>
       <line num="138" type="stmt" count="16"/>
+      <line num="139" type="stmt" count="16"/>
       <line num="140" type="stmt" count="16"/>
-      <line num="141" type="stmt" count="16"/>
       <line num="142" type="stmt" count="16"/>
       <line num="143" type="stmt" count="16"/>
       <line num="144" type="stmt" count="16"/>
-      <line num="145" type="stmt" count="0"/>
+      <line num="145" type="stmt" count="16"/>
       <line num="146" type="stmt" count="16"/>
+      <line num="147" type="stmt" count="0"/>
       <line num="148" type="stmt" count="16"/>
-      <line num="149" type="stmt" count="16"/>
-      <line num="153" type="method" name="getPrimaryKey" visibility="public" complexity="1" crap="1" count="16"/>
-      <line num="155" type="stmt" count="16"/>
-      <metrics loc="158" ncloc="150" classes="1" methods="11" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="59" coveredstatements="58" elements="70" coveredelements="68"/>
+      <line num="150" type="stmt" count="16"/>
+      <line num="151" type="stmt" count="16"/>
+      <line num="155" type="method" name="getPrimaryKey" visibility="public" complexity="1" crap="1" count="16"/>
+      <line num="157" type="stmt" count="16"/>
+      <metrics loc="160" ncloc="152" classes="1" methods="11" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="60" coveredstatements="59" elements="71" coveredelements="69"/>
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Model\Model.php">
       <class name="Neoan\Model\Model" namespace="global">
@@ -1314,6 +1315,6 @@
       <line num="60" type="stmt" count="21"/>
       <metrics loc="62" ncloc="62" classes="2" methods="7" coveredmethods="7" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="16" elements="23" coveredelements="23"/>
     </file>
-    <metrics files="60" loc="2854" ncloc="2734" classes="45" methods="220" coveredmethods="208" conditionals="0" coveredconditionals="0" statements="773" coveredstatements="759" elements="993" coveredelements="967"/>
+    <metrics files="60" loc="2856" ncloc="2736" classes="45" methods="220" coveredmethods="208" conditionals="0" coveredconditionals="0" statements="774" coveredstatements="760" elements="994" coveredelements="968"/>
   </project>
 </coverage>
