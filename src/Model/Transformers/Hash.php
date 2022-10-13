@@ -16,6 +16,8 @@ class Hash implements Transformation
             $inputOutput[$property] = $this->fakePassword;
         } elseif ($direction === Direction::IN && isset($inputOutput[$property]) && $inputOutput[$property] !== $this->fakePassword) {
             $inputOutput[$property] = password_hash($inputOutput['password'], PASSWORD_DEFAULT);
+        } else {
+            unset($inputOutput[$property]);
         }
         return $inputOutput;
     }
