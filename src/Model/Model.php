@@ -59,6 +59,15 @@ class Model
         return null;
     }
 
+    public static function retrieveOneOrCreate(array $condition): static
+    {
+        $newInstance = self::retrieveOne($condition);
+        if(!$newInstance) {
+            $newInstance = new static($condition);
+        }
+        return $newInstance;
+    }
+
     public static function declare(): array
     {
         self::interpret();

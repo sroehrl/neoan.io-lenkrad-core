@@ -126,6 +126,15 @@ class ModelTest extends TestCase
         $res = $interpreter->generateSelect();
         $this->assertStringContainsString('defaultString', $res['selectorString']);
     }
+    public function testRetrieveOneORCreate()
+    {
+        $nm = MockModel::retrieveOneOrCreate(['userName' => 'notGiven']);
+        $this->assertFalse(isset($nm->id));
+        // then store
+        $nm->store();
+        $nm2 = MockModel::retrieveOneOrCreate(['userName' => 'notGiven']);
+        $this->assertTrue(isset($nm2->id));
+    }
 }
 class Fake{
     #[Initialize('bubu')]
