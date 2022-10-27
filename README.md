@@ -1105,22 +1105,36 @@ The response of a pagination is an array like this:
 You might have noticed that there aren't any files handling migrations.
 Instead, the cli compares the existing table with your model definition and makes 
 updates accordingly. However, what happens on the database does not have to be invisible to you.
-The basic command `migrate:mysql $modelQualifiedName` has additional options:
+The basic command `migrate:model $dialect $modelQualifiedName` has additional options:
 
 - with-copy (c)
 - output-folder (o) 
 
 example:
 ```shell 
-php cli migrate:mysql App\Models\MovieModel -o migrations -c movie_backup
+php cli migrate:model mysql App\Models\MovieModel -o migrations -c movie_backup
 ```
 This will output the database operations to a sql-file (in our case /src/migrations)
 and create a copy of the table named "movie_backup" before any altering commands are executed.
 
 _NOTE: the output folder must exist under the NeoanApp->appPath_
 
+You can also migrate all models within any defined auto-loaded namespace at once. This is particularly useful when installing
+an app or when collaborating:
+```shell
+php cli migrate:models sqlite 
+```
+### Supported dialects
+Currently, the following dialects are supported out of the box
+- mysql
+- sqlite
+
+However, it is easy to create your own commands: [see cli](#cli)
+
 ## Testing
-_soon_
+The core itself uses PHPunit & CI with a high test-coverage. In the future we want to provide tooling for application testing as well.
+For now, please implement your own testing methodologies. 
+
 ## CLI
 The cli is based on symfony/console wrapped in a container which makes neoan.io lenkrad available to scripts.
 As such, you can add your own symfony console commands to the suggested file `cli` as you normally would:
