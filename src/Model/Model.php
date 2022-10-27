@@ -10,7 +10,9 @@ use Neoan\Enums\Direction;
 use Neoan\Enums\TransactionType;
 use Neoan\Event\Event;
 use Neoan\Event\EventNotification;
+use Neoan\Helper\AttributeHelper;
 use Neoan\Helper\DateHelper;
+use Neoan\Model\Attributes\IsForeignKey;
 
 
 class Model
@@ -27,6 +29,40 @@ class Model
         self::$interpreter->asInstance($this);
         self::$interpreter->initialize($staticModel);
         self::$notify->inform();
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws Exception
+     */
+    public function __call($method, $arguments)
+    {
+        $check = new AttributeHelper(static::class);
+        $foreignKeyProperties = $check->findPropertiesByAttribute(IsForeignKey::class);
+        if($foreignKeyProperties){
+            return $this->executeMagicCall($foreignKeyProperties, $method, $check);
+        }
+
+        throw new Exception('Unknown model method "' . $method . '" for model "'. static::class . '"');
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function executeMagicCall(array $foreignKeyProperties, string $method, AttributeHelper $helper): ?Model
+    {
+        foreach ($foreignKeyProperties as $property)
+        {
+            $fkAttributes = $helper->reflection->getProperty($property)->getAttributes(IsForeignKey::class);
+            if(!isset($fkAttributes[0]->getArguments()[2])) {
+                throw new Exception('Missing argument: ModelClass in ForeignKey declaration on property "' . $property . '"');
+            }
+            if(str_starts_with($property, $method)) {
+                $modelClass = $fkAttributes[0]->getArguments()[2];
+                return $modelClass::get($this->{$property});
+            }
+        }
+        return null;
     }
 
     /**
@@ -202,5 +238,9 @@ class Model
         }
     }
 
+    public static function paginate(int $page = 1, int $pageSize = 30): Paginate
+    {
+        return new Paginate($page, $pageSize, static::class);
+    }
 
 }

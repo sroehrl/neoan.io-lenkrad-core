@@ -71,7 +71,7 @@ class Request implements RequestInterface
         return $instance->input;
     }
 
-    public static function getInput(string $which): ?string
+    public static function getInput(string $which): mixed
     {
         $instance = self::getInstance();
         return $instance->input[$which] ?? null;
