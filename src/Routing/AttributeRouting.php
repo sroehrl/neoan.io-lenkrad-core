@@ -51,7 +51,7 @@ class AttributeRouting
 
             } elseif (is_dir($startingPoint . $fileOrFolder) && $fileOrFolder != '.' && $fileOrFolder != '..') {
                 $newNamespace = str_replace('\\\\', '\\', $nameSpace . '\\' . $fileOrFolder . '\\');
-                $this->directoryExplorer($startingPoint . $fileOrFolder, $newNamespace);
+                $this->directoryExplorer($startingPoint . $fileOrFolder . DIRECTORY_SEPARATOR, $newNamespace);
             }
         }
     }
