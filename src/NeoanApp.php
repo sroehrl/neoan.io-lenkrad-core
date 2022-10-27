@@ -14,9 +14,12 @@ class NeoanApp
     public string $cliPath;
     private static NeoanApp $instance;
 
-    public function __construct(string $appPath, string $publicPath, string $cliPath = __DIR__)
+    public function __construct(string $appPath, string $publicPath, string $cliPath = null)
     {
-        Env::initialize($appPath);
+        if(!$cliPath) {
+            $cliPath = dirname(\Composer\Factory::getComposerFile());
+        }
+        Env::initialize($cliPath);
         $this->appPath = $appPath;
         $this->publicPath = $publicPath;
         $this->cliPath = $cliPath;
