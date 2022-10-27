@@ -23,24 +23,18 @@ class VerifyJson implements JsonSerializable
         return json_last_error() === JSON_ERROR_NONE;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function jsonSerialize(): string
     {
-        $final = $this->data;
-        if ($final instanceof Collection || $final instanceof Model) {
-            $final = $final->toArray();
-        }
-
-        return $this->makeJson($final);
-    }
-
-    private function makeJson($rawData): string
-    {
-        try {
-            return json_encode($rawData, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        try{
+            $final = new DataNormalization($this->data);
+        } catch (\TypeError $e) {
             http_response_code(500);
             return json_encode(['error' => 'output-data is not serializable']);
         }
-
+        return json_encode($final->converted, JSON_THROW_ON_ERROR);
     }
+
 }

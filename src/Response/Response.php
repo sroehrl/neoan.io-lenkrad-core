@@ -86,6 +86,11 @@ class Response implements ResponseInterface
             ->respond($instance->defaultRenderer::render($data, $view));
     }
 
+    public static function setStatusCode(int $code)
+    {
+        http_response_code($code);
+    }
+
     public static function redirect(string $whereTo)
     {
         header('location: ' . $whereTo);

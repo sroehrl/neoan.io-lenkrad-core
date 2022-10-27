@@ -93,6 +93,12 @@ You will need PHP 8.1 & composer2 to run this
 - [Events](#events)
 - [Dynamic Store](#dynamic-store)
 - [Models](#models)
+- - [Database Setup](#database-setup)
+- - [Model basics](#model-basics)
+- - - [Creation](#creation)
+- - - [Retrieve & update](#retrieve--update)
+- - - [Collections](#collections)
+- - - [Pagination](#pagination)
 - [Migrations](#migrations)
 - [Testing](#testing)
 - [Contribution](#contribution)
@@ -127,7 +133,8 @@ _index.php_
 ```php
 <?php
 
-use Neoan\NeoanApp;use Neoan\src\Routing\Route;
+use Neoan\NeoanApp;
+use Neoan\src\Routing\Route;
 
 require_once 'vendor/autoload.php';
 $app = new NeoanApp(__DIR__, __DIR__);
@@ -1015,6 +1022,11 @@ $matrix = MovieModel::retrieveOne([
             'name' => 'The Matrix'
           ]); 
 
+// ... maybe I even want to create it if it doesn't exist
+$matix = MovieModel::retrieveOneOrCreate([
+            'name' => 'The Matrix'
+          ]); 
+
 // Let's fix the name
 $matix->studio = 'Warner Bros. Pictures'
 
@@ -1058,6 +1070,37 @@ $flat = $allMovies->toArray();
 // Just add to the existing collection
 $allMovies->add(new MovieModel(['name' => 'Alien']))
 ```
+
+#### Pagination
+A common task is the necessity to paginate collections that would otherwise be too big. You can conveniently paginate each model:
+```php 
+...
+$currentPage = 1;
+$pageSize = 25;
+
+return MovieModel::paginate($currentPage, $pageSize)
+
+    // are there conditions/filters to this list?
+    ->where(['studio' => 'Warner Bros. Pictures'])
+    
+    // controlling the sort
+    ->descending('year')
+    
+    // finally, execute the pagination request
+    ->get();
+
+```
+The response of a pagination is an array like this:
+```php 
+[
+    'page' => 1,    // current page
+    'total' => 50,      // total hits
+    'pageSize' => 30,       // number of results per page
+    'pages' => 2,       // total number of resulting pages
+    'collection' => `{Collection}`      // result as Collection
+]
+```
+
 ## Migrations
 You might have noticed that there aren't any files handling migrations.
 Instead, the cli compares the existing table with your model definition and makes 

@@ -48,6 +48,17 @@ class ResponseTest extends TestCase
         });
         Response::json(['hi' => 'there']);
     }
+    function testStatusCode()
+    {
+        Response::setStatusCode(421);
+        $this->assertSame(421, http_response_code());
+    }
+    function testRedirect()
+    {
+        $this->expectExceptionMessage('Wanted to exit');
+        Response::redirect('/some');
+    }
 
 }
+
 class NotARenderer{}

@@ -10,6 +10,7 @@ use Neoan\Model\Interpreter;
 use Neoan\Model\Model;
 use PHPUnit\Framework\TestCase;
 use Test\Mocks\DatabaseTestAdapter;
+use Test\Mocks\MockAttachedModel;
 use Test\Mocks\MockModel;
 use Test\Mocks\MockModelSetter;
 
@@ -135,6 +136,24 @@ class ModelTest extends TestCase
         $nm2 = MockModel::retrieveOneOrCreate(['userName' => 'notGiven']);
         $this->assertTrue(isset($nm2->id));
     }
+    public function testMagicFail()
+    {
+        $nm = new MockModel();
+        $this->expectException(\Exception::class);
+        $nm->users();
+    }
+    public function testMagic()
+    {
+        $ma = new MockAttachedModel();
+        $ma->mockId = 1;
+        $this->assertInstanceOf(MockModel::class,$ma->mock());
+    }
+    public function testPagination()
+    {
+        $this->expectException(\PDOException::class);
+        MockModel::paginate()->get();
+    }
+
 }
 class Fake{
     #[Initialize('bubu')]
