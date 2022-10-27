@@ -18,11 +18,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'migrate:models', description: 'Syncs all models within a namespace with the database')]
+#[AsCommand(name: 'migrate:models', description: 'Syncs all models with the database')]
 class MigrateAllCommand extends Command
 {
     protected static $defaultName = 'migrate:models';
-    protected static $defaultDescription = 'Syncs all models within a namespace with the database';
+    protected static $defaultDescription = 'Syncs all models with the database';
     private NeoanApp $app;
 
     private InputInterface $input;
@@ -144,7 +144,6 @@ class MigrateAllCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $namespaceName = $input->getArgument('namespace');
         $this->input = $input;
         $this->output = $output;
         $composerParser = new ComposerParser($this->app);
