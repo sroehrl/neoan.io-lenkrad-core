@@ -43,12 +43,7 @@ class MigrateAllCommand extends Command
                 InputArgument::REQUIRED,
                 'sqlite | mysql'
             )
-            ->addArgument(
-                'namespace',
-                InputArgument::REQUIRED,
-                'PSR4 namespace range',
-                null
-            )->addOption(
+            ->addOption(
                 'output-folder',
                 'o',
                 InputOption::VALUE_OPTIONAL,
@@ -113,38 +108,36 @@ class MigrateAllCommand extends Command
         $this->output->writeln("/**** SUCCESS ****/");
     }
 
-    private function scanDirectory($namespaceName, $ns, $path)
+
+    private function directoryExplorer(string $startingPoint, string $nameSpace): void
     {
-        if (str_starts_with($namespaceName, $ns)) {
-
-            $entryPoint = str_replace($ns, $path, $namespaceName);
-            foreach (scandir($entryPoint) as $possible) {
-                var_dump($entryPoint . '/' . $possible);
-                if ($possible === '.' || $possible === '..') {
-                    continue;
+        foreach (scandir($startingPoint) as $fileOrFolder) {
+            if (str_ends_with($fileOrFolder, '.php')) {
+                try {
+                    $potentialRoutable = $nameSpace . mb_substr($fileOrFolder, 0, -4);
+                    $this->checkAndMigrate($potentialRoutable);
+                } catch (ReflectionException $e) {
+                    // when file doesn't even contain a class, this will gracefully fail
+                    // Inform event?
                 }
 
-                if (is_dir($entryPoint . '/' . $possible)) {
-                    $this->scanDirectory($namespaceName . Str::toPascalCase($possible), $ns, $entryPoint . '/' . $possible);
-                    continue;
-                }
-
-                if (str_ends_with($possible, '.php')) {
-                    $fullName = $namespaceName . '\\' . substr($possible, 0, -4);
-                    var_dump('-->' . $fullName);
-                    try {
-                        $reflection = new ReflectionClass($fullName);
-                        if ($reflection->getParentClass() && $reflection->getParentClass()->getName() === 'Neoan\\Model\\Model') {
-                            $this->migrateOne($fullName);
-                        }
-
-                    } catch (Exception $e) {
-
-                    }
-
-                }
-
+            } elseif (is_dir($startingPoint . $fileOrFolder) && $fileOrFolder != '.' && $fileOrFolder != '..') {
+                $newNamespace = str_replace('\\\\', '\\', $nameSpace . '\\' . $fileOrFolder . '\\');
+                $this->directoryExplorer($startingPoint . $fileOrFolder . DIRECTORY_SEPARATOR, $newNamespace);
             }
+        }
+    }
+
+    private function checkAndMigrate(string $namespace)
+    {
+        try {
+            $reflection = new ReflectionClass($namespace);
+            if ($reflection->getParentClass() && $reflection->getParentClass()->getName() === 'Neoan\\Model\\Model') {
+                $this->migrateOne($namespace);
+            }
+
+        } catch (Exception $e) {
+
         }
     }
 
@@ -158,7 +151,7 @@ class MigrateAllCommand extends Command
 
 
         foreach ($composerParser->getAutoloadNamespaces() as $ns => $path) {
-            $this->scanDirectory($namespaceName, $ns, $path);
+            $this->directoryExplorer($this->app->cliPath . '/'. $path, $ns);
         }
 
 
