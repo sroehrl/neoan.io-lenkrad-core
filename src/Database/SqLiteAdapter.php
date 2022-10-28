@@ -11,6 +11,7 @@ class SqLiteAdapter implements Adapter
     private PDO $db;
     private NeoanSQLTranslator $translator;
     private array $rawSubstitutions;
+    private array $callFunctions = ['orderBy'=>[],'limit'=>[]];
 
     public function __construct($credentials = ['location' => __DIR__ . '/database.db'])
     {
@@ -27,12 +28,38 @@ class SqLiteAdapter implements Adapter
             $sql .= " WHERE " . $this->translator->whereString;
         }
         $this->rawSubstitutions = array_values($conditions);
-        $result = $this->execute($sql, array_values($conditions));
+        $this->addCallFunctions($extra);
+        $result = $this->execute($sql);
         return $result->fetchAll(PDO::FETCH_ASSOC);
+    }
+    private function addCallFunctions(?array $extra): void
+    {
+
+        foreach ($this->callFunctions as $key => $set){
+            if(isset($extra[$key])){
+                $this->callFunctions[$key] = $extra[$key];
+            }
+        }
+
+    }
+    private function orderBy($set): string
+    {
+        return " ORDER BY $set[0] $set[1]";
+    }
+    private function limit($set): string
+    {
+        return " LIMIT $set[0], $set[1]";
     }
 
     private function execute($sql): PDOStatement
     {
+        foreach ($this->callFunctions as $key => $set){
+            if(!empty($set)){
+                $sql .= $this->{$key}($set);
+            }
+        }
+        // reset
+        $this->callFunctions = ['orderBy'=>[],'limit'=>[]];
         $exec = $this->db->prepare($sql);
         if (empty($this->rawSubstitutions)) {
             $exec->execute();
