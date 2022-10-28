@@ -47,4 +47,19 @@ class SqLiteAdapterTest extends TestCase
         $this->assertEmpty($hard);
 
     }
+    function testCallFunctions()
+    {
+        // clear db
+        Database::raw('DELETE FROM test_me');
+        // insert 3 rows
+        foreach(['one','two','three'] as $some){
+            Database::insert('test_me', ['some' => $some]);
+        }
+        // test limit
+        $call = Database::easy('test_me.*',[],['limit'=> [0,1]]);
+        $this->assertSame(1, count($call));
+        // test orderBy
+        $call = Database::easy('test_me.*',[],['orderBy'=> ['id','desc']]);
+        $this->assertTrue($call[0]['id'] > $call[1]['id']);
+    }
 }
