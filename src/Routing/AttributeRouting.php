@@ -4,6 +4,7 @@ namespace Neoan\Routing;
 
 use Neoan\Helper\ComposerParser;
 use Neoan\NeoanApp;
+use Neoan\Routing\Interfaces\Routable;
 use ReflectionClass;
 use ReflectionException;
 

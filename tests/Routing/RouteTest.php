@@ -3,9 +3,10 @@
 namespace Test\Routing;
 
 use Neoan\NeoanApp;
+use Neoan\Provider\Interfaces\Provide;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
-use Neoan\Routing\Routable;
+use Neoan\Routing\Interfaces\Routable;
 use Neoan\Routing\Route;
 use PHPUnit\Framework\TestCase;
 use Test\Mocks\MockRenderer;
@@ -101,7 +102,7 @@ class RouteTest extends TestCase
 }
 
 class Routing implements Routable{
-    public function __invoke(array $provided): mixed
+    public function __invoke(Provide $provided): mixed
     {
         return ['result'=>'worked'];
     }

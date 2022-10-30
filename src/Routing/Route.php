@@ -8,8 +8,11 @@ use Neoan\Enums\RequestMethod;
 use Neoan\Errors\NotFound;
 use Neoan\Event\Event;
 use Neoan\NeoanApp;
+use Neoan\Provider\DefaultProvider;
+use Neoan\Provider\Interfaces\Provide;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
+use Neoan\Routing\Interfaces\Routable;
 use Traversable;
 
 class Route
@@ -18,6 +21,7 @@ class Route
     public array $paths = [];
     private string $currentPath;
     private string $currentMethod;
+    private Provide $provider;
 
     public static function get(string $path, ...$classNames): self
     {
@@ -105,6 +109,7 @@ class Route
     public function __invoke(NeoanApp $app): void
     {
         $instance = self::getInstance();
+        $instance->provider = $app->injectionProvider;
         if (!isset($instance->paths[Request::getRequestMethod()])) {
             new NotFound(Request::getRequestUri());
         }
@@ -175,18 +180,18 @@ class Route
         if (empty($route['classes'])) {
             Response::output($route['injections'], [$route['view'] ?? null]);
         } else {
-            $passIn = $route['injections'];
+            $this->provider->set('injections', $route['injections']);
             foreach ($route['classes'] as $i => $class) {
 
                 $run = new $class();
                 if (!$run instanceof Routable) {
                     throw new Exception($class . ' needs to implement ' . Routable::class, 500);
                 }
-                $result = $run($passIn);
+                $result = $run($this->provider);
                 if ($this->isLastRoutable($route, $i)) {
                     $this->lastRoutable($route, $result);
                 }
-                $passIn = $this->packUnpack($passIn, $result);
+                $this->provider->set($class, $result);
             }
         }
 
@@ -203,15 +208,6 @@ class Route
             $route['response'][0]::{$route['response'][1]}($result, $route['view'] ?? null);
         } else {
             Response::output($result, [$route['view'] ?? null]);
-        }
-    }
-
-    private function packUnpack(array $existing, mixed $previousResult): array
-    {
-        if (is_array($previousResult) || $previousResult instanceof Traversable) {
-            return [...$existing, ...$previousResult];
-        } else {
-            return [...$existing, $previousResult];
         }
     }
 }

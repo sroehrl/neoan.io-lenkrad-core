@@ -3,6 +3,7 @@
 namespace Test;
 
 use Neoan\NeoanApp;
+use Neoan\Provider\DefaultProvider;
 use PHPUnit\Framework\TestCase;
 use Test\Mocks\Listenable;
 
@@ -21,6 +22,14 @@ class NeoanAppTest extends TestCase
     {
         $testApp = new NeoanApp(__DIR__, __DIR__);
         $this->assertInstanceOf(NeoanApp::class, NeoanApp::getInstance());
+    }
+    function testSetProvider()
+    {
+        $testApp = new NeoanApp(__DIR__, __DIR__);
+        $t = new DefaultProvider();
+        $t->set('a', 'b');
+        $testApp->setProvider($t);
+        $this->assertSame('b', $testApp->injectionProvider->get('a'));
     }
     /*function testRun()
     {

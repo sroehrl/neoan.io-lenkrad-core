@@ -3,6 +3,8 @@
 namespace Neoan;
 
 use Neoan\Helper\Env;
+use Neoan\Provider\DefaultProvider;
+use Neoan\Provider\Interfaces\Provide;
 use Neoan\Request\Request;
 use Neoan\Routing\Route;
 
@@ -12,6 +14,7 @@ class NeoanApp
     public string $publicPath;
     public string $webPath;
     public string $cliPath;
+    public Provide $injectionProvider;
     private static NeoanApp $instance;
 
     public function __construct(string $appPath, string $publicPath, string $cliPath = null)
@@ -24,13 +27,21 @@ class NeoanApp
         $this->publicPath = $publicPath;
         $this->cliPath = $cliPath;
         $this->webPath = Env::get('WEB_PATH', '/');
+
         if (isset($_SERVER["SERVER_PROTOCOL"])) {
             $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, strpos($_SERVER["SERVER_PROTOCOL"], '/'))) . '://';
             if (!defined('base')) {
                 define('base', $protocol . $_SERVER['HTTP_HOST'] . $this->webPath);
             }
         }
+        $this->injectionProvider = new DefaultProvider();
+        $this->injectionProvider->set(static::class, $this);
         self::$instance = $this;
+    }
+
+    public function setProvider(Provide $provider): void
+    {
+        $this->injectionProvider = $provider;
     }
 
     /**

@@ -4,7 +4,7 @@ namespace Neoan\Event;
 
 use Neoan\Enums\GenericEvent;
 use Neoan\Model\Model;
-use Neoan\Routing\Routable;
+use Neoan\Routing\Interfaces\Routable;
 use Neoan\Store\Store;
 
 class Event
