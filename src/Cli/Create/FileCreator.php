@@ -32,8 +32,13 @@ class FileCreator
      */
     private static function parse($type): array
     {
-        self::$folder = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR;
         self::$template = ucfirst($type) . 'Template.txt';
+
+        self::$folder = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR;
+        if(file_exists(self::$neoanApp->cliPath . DIRECTORY_SEPARATOR . '.templates' . DIRECTORY_SEPARATOR . self::$template)) {
+            self::$folder = self::$neoanApp->cliPath . DIRECTORY_SEPARATOR . '.templates' . DIRECTORY_SEPARATOR;
+        }
+
         if (!file_exists(self::$folder . self::$template)) {
             self::$output->writeln(["No template for `{$type}`", "Try `model` or `controller`"]);
             throw new Exception('Template not found');
@@ -48,10 +53,13 @@ class FileCreator
 
     private static function getFileContent($name): string
     {
-        return str_replace(['{{namespace}}', '{{name}}'], [
+        $variables = [
             'namespace' => preg_replace('/\\\[a-z]+$/i', '', $name),
             'name' => end(self::$path)
-        ], file_get_contents(self::$folder . self::$template));
+        ];
+        $variables['name.toLower'] = strtolower($variables['name']);
+        $variables['name.toUpper'] = strtoupper($variables['name']);
+        return str_replace(['{{namespace}}', '{{name}}', '{{name.toLower}}', '{{name.toUpper}}'], $variables, file_get_contents(self::$folder . self::$template));
     }
 
     private static function readComposer(): void

@@ -16,7 +16,7 @@ class Renderer implements RenderEngine, Listenable
     protected string $templatePath = '/';
     protected ?string $htmlSkeletonPath = null;
     protected string $htmlComponentPlacement = 'main';
-    protected ?DataNormalization $skeletonVariables;
+    protected ?array $skeletonVariables;
 
     public static function setTemplatePath(string $path): void
     {
@@ -40,7 +40,7 @@ class Renderer implements RenderEngine, Listenable
         $instance = self::getInstance();
         $instance->htmlSkeletonPath = $fileLocation;
         $instance->htmlComponentPlacement = $componentPlacement;
-        $instance->skeletonVariables = new DataNormalization($skeletonVariables);
+        $instance->skeletonVariables = $skeletonVariables;
     }
 
     public static function render(DataNormalization|array $data = [], $view = null): string
@@ -61,7 +61,7 @@ class Renderer implements RenderEngine, Listenable
     private static function compressData(DataNormalization $data, $view): DataNormalization
     {
         $instance = self::getInstance();
-        $data->add($instance->skeletonVariables);
+        $data->add(new DataNormalization($instance->skeletonVariables));
         $add = [];
         $add[$instance->htmlComponentPlacement] = Template::embraceFromFile($instance->templatePath . $view, $data->toArray());
         $data->add($add);
@@ -97,11 +97,4 @@ class Renderer implements RenderEngine, Listenable
         return $this->htmlComponentPlacement;
     }
 
-    /**
-     * @return array|null
-     */
-    public function getSkeletonVariables(): ?array
-    {
-        return $this->skeletonVariables->toArray();
-    }
 }
