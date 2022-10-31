@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>500 System Error</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: rgb(121, 50, 109);
+        min-height: 80vh;
+        color: white;
+    }
+
+    .container {
+        width: 50%;
+        margin: 20vh auto;
+        font-family: 'Raleway', sans-serif;
+        text-align: center;
+    }
+
+    .container h1 {
+
+        font-size: 10rem;
+        text-shadow: 3px 7px 12px gray;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: 60% 20% 20%;
+        border-bottom: 2px solid #5b0f74;
+    }
+    .grid div{
+        text-align: start;
+        padding: 5px;
+    }
+</style>
+<body>
+<div class="container">
+    <h1>500 Error</h1>
+    <p style="font-weight: bold">{{msg}}</p>
+    <div>
+        <div n-for="backtrace as depth" class="grid">
+            <div>{{depth.class}}</div>
+            <div>Line: {{depth.line}}</div>
+            <div>Method: {{depth.function}}</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

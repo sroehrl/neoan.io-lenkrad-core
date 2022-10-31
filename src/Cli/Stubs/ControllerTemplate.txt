@@ -2,11 +2,12 @@
 
 namespace {{namespace}};
 
-use Neoan\Routing\Routable;
+use Neoan\Routing\Interfaces\Routable;
+use Neoan\Provider\Injections;
 
 class {{name}} implements Routable
 {
-    public function __invoke(array $provided): array
+    public function __invoke(Injections $provided): array
     {
         return ['name' => '{{name}}'];
     }

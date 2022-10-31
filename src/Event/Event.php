@@ -4,7 +4,7 @@ namespace Neoan\Event;
 
 use Neoan\Enums\GenericEvent;
 use Neoan\Model\Model;
-use Neoan\Routing\Routable;
+use Neoan\Routing\Interfaces\Routable;
 use Neoan\Store\Store;
 
 class Event
@@ -22,7 +22,7 @@ class Event
     {
         self::init();
         $name = self::eventNameConversion($name);
-        $marksman = debug_backtrace()[1];
+        $marksman = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1];
         $from = $marksman['class'] . $marksman['type'] . $marksman['function'];
         // fire closures
         if (isset(self::$registeredClosures[$name])) {

@@ -5,6 +5,7 @@ namespace Test;
 use Neoan\NeoanApp;
 use PHPUnit\Framework\TestCase;
 use Test\Mocks\Listenable;
+use Test\Mocks\MockProvider;
 
 class NeoanAppTest extends TestCase
 {
@@ -22,12 +23,14 @@ class NeoanAppTest extends TestCase
         $testApp = new NeoanApp(__DIR__, __DIR__);
         $this->assertInstanceOf(NeoanApp::class, NeoanApp::getInstance());
     }
-    /*function testRun()
+
+    function testSetProviderAndInvoke()
     {
         $testApp = new NeoanApp(__DIR__, __DIR__);
-        $this->expectWarning();
-        $this->expectException(\Exception::class);
-        $testApp->run();
+        $testApp->setProvider(new MockProvider());
+        $this->assertInstanceOf(MockProvider::class, $testApp->injectionProvider);
+        $this->assertInstanceOf(NeoanApp::class, $testApp());
+    }
 
-    }*/
 }
+
