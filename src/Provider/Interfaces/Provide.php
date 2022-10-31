@@ -2,10 +2,12 @@
 
 namespace Neoan\Provider\Interfaces;
 
-interface Provide extends \Iterator
+use Psr\Container\ContainerInterface;
+
+interface Provide extends ContainerInterface
 {
     public function toArray(): array;
-    public function get(string $which):mixed;
-    public function set(string $which, mixed $provider):void;
+    public function get(string $id):mixed;
+    public function set(string $id, mixed $provider):void;
 
 }

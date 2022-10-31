@@ -17,4 +17,5 @@ enum GenericEvent
     case BEFORE_RESPONSE;
     case ROUTE_INJECTION;
     case BEFORE_ROUTABLE_EXECUTION;
+    case UNRECOVERABLE_ERROR;
 }

@@ -9,6 +9,7 @@ use Neoan\Errors\NotFound;
 use Neoan\Event\Event;
 use Neoan\NeoanApp;
 use Neoan\Provider\DefaultProvider;
+use Neoan\Provider\Injections;
 use Neoan\Provider\Interfaces\Provide;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
@@ -95,7 +96,10 @@ class Route
             'path' => $instance->currentPath,
             'injections' => $injections
         ]);
-        $instance->paths[$instance->currentMethod][$instance->currentPath]['injections'] = $injections;
+        $instance->paths[$instance->currentMethod][$instance->currentPath]['injections'] = [
+            ...$instance->paths[$instance->currentMethod][$instance->currentPath]['injections'],
+            ...$injections
+        ];
         return $instance;
     }
 
@@ -108,6 +112,7 @@ class Route
 
     public function __invoke(NeoanApp $app): void
     {
+
         $instance = self::getInstance();
         $instance->provider = $app->injectionProvider;
         if (!isset($instance->paths[Request::getRequestMethod()])) {
@@ -180,18 +185,13 @@ class Route
         if (empty($route['classes'])) {
             Response::output($route['injections'], [$route['view'] ?? null]);
         } else {
-            $this->provider->set('injections', $route['injections']);
+            $this->provider->get(Injections::class, [$route['injections']]);
             foreach ($route['classes'] as $i => $class) {
+                $loaded = $this->provider->get($class);
 
-                $run = new $class();
-                if (!$run instanceof Routable) {
-                    throw new Exception($class . ' needs to implement ' . Routable::class, 500);
-                }
-                $result = $run($this->provider);
                 if ($this->isLastRoutable($route, $i)) {
-                    $this->lastRoutable($route, $result);
+                    $this->lastRoutable($route, $loaded);
                 }
-                $this->provider->set($class, $result);
             }
         }
 

@@ -9,7 +9,7 @@
 
 This is an experimental core rewrite of neoan and not (yet) meant for production. 
 Using modern PHP, we believe it's possible to create easy & static internal APIs without the usual 
-problems regarding mocking & injectablility and testability.
+problems regarding mocking & injection and testability.
 
 ## It's modern!
 
@@ -633,7 +633,7 @@ use Neoan\Request\Request;
 
 class YouClass implements Routable{
 
-    public function __invoke($injected = []): array
+    public function __invoke(Injections $provided): array
     {
         Store::write('title','you-route');  // write to dynamic store
         return Request::getParams();        // we know this includes "you"

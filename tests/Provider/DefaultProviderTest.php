@@ -3,20 +3,53 @@
 namespace Test\Provider;
 
 use Neoan\Provider\DefaultProvider;
+use Neoan\Provider\Interfaces\Provide;
 use PHPUnit\Framework\TestCase;
 
 class DefaultProviderTest extends TestCase
 {
-    function testIteration()
+    function testToArray()
     {
         $provider = new DefaultProvider();
-        $provider->set('a', []);
-        $this->assertInstanceOf(\Iterator::class, $provider);
-        $this->assertIsArray($provider->get('a'));
+        $this->assertTrue($provider->has(DefaultProvider::class));
         $this->assertIsArray($provider->toArray());
-        foreach ($provider as $key => $value){
-            $this->assertIsArray($value);
-        }
+    }
+    function testTypeGuard()
+    {
+        $provider = new DefaultProvider();
+        $this->expectErrorMessage('Wanted to die');
+        $provider->get(WrongfullyRequiresInterface::class);
+    }
+    function testDefaultValue()
+    {
+        $provider = new DefaultProvider();
+        $result = $provider->get(DefaultIsAvailable::class);
+        $this->assertInstanceOf(DefaultIsAvailable::class, $result);
+    }
+    function testDefaultNotAvailable()
+    {
+        $provider = new DefaultProvider();
+        $this->expectErrorMessage('Wanted to die');
+        $provider->get(DefaultNotAvailable::class);
     }
 
+}
+
+class WrongfullyRequiresInterface{
+    public function __invoke(Provide $provideInterface): self
+    {
+        return $this;
+    }
+}
+class DefaultIsAvailable{
+    public function __invoke(array $provided = []): self
+    {
+        return $this;
+    }
+}
+class DefaultNotAvailable{
+    public function __invoke(array $provided): self
+    {
+        return $this;
+    }
 }

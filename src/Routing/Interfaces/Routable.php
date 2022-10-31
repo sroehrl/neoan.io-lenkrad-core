@@ -6,5 +6,5 @@ use Neoan\Provider\Interfaces\Provide;
 
 interface Routable
 {
-    public function __invoke(Provide $provided): mixed;
+//    public function __invoke(): mixed;
 }

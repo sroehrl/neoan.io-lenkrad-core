@@ -3,7 +3,7 @@
 namespace Test\Routing;
 
 use Neoan\NeoanApp;
-use Neoan\Provider\Interfaces\Provide;
+use Neoan\Provider\DefaultProvider;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
 use Neoan\Routing\Interfaces\Routable;
@@ -102,7 +102,7 @@ class RouteTest extends TestCase
 }
 
 class Routing implements Routable{
-    public function __invoke(Provide $provided): mixed
+    public function __invoke(DefaultProvider $provided): mixed
     {
         return ['result'=>'worked'];
     }

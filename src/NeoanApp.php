@@ -61,4 +61,8 @@ class NeoanApp
     {
         return self::$instance;
     }
+    public function __invoke(): static
+    {
+        return $this;
+    }
 }

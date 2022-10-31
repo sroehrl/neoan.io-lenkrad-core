@@ -3,6 +3,7 @@
 namespace Test\Errors;
 
 use Neoan\Errors\NotFound;
+use Neoan\Errors\SystemError;
 use Neoan\Errors\Unauthorized;
 use PHPUnit\Framework\TestCase;
 
@@ -24,5 +25,14 @@ class ErrorTest extends TestCase
             var_dump($output);
         });
         new Unauthorized();
+    }
+    function testSystemError()
+    {
+        SystemError::setTemplate(dirname(__DIR__). '/Request/test.txt');
+        $this->expectErrorMessage('Wanted to die');
+        $this->setOutputCallback(function($output){
+            var_dump($output);
+        });
+        new SystemError('not here');
     }
 }
