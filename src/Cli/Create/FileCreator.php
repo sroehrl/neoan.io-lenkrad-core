@@ -17,11 +17,11 @@ class FileCreator
 
     public static function process($type, $name, $neoanApp, $output)
     {
+        self::$neoanApp = $neoanApp;
         self::$output = $output;
         self::parse($type);
         self::getPath($name);
         self::$fileContent = self::getFileContent($name);
-        self::$neoanApp = $neoanApp;
         self::readComposer();
         self::ensureDirectory();
         self::writeFile();
