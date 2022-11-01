@@ -24,7 +24,6 @@ class RendererTest extends TestCase
         $this->assertIsString($r->getTemplatePath());
         $this->assertIsString($r->getHtmlSkeletonPath());
         $this->assertIsString($r->getHtmlComponentPlacement());
-        $this->assertIsArray($r->getSkeletonVariables());
     }
     function testRender()
     {
