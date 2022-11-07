@@ -26,6 +26,8 @@ class DataNormalization implements Iterator
             $data = $data->toArray();
         } elseif ($data instanceof Dynamic) {
             $data = $data->get();
+        } elseif ($data instanceof \BackedEnum) {
+            $data = $data->value;
         } elseif (is_array($data)) {
             foreach ($data as $key => $value) {
                 $data[$key] = $this->convert($value);
