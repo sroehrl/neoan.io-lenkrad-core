@@ -4,6 +4,7 @@ namespace Neoan\Request;
 
 use Neoan\CoreInterfaces\RequestInterface;
 use Neoan\Enums\GenericEvent;
+use Neoan\Enums\RequestMethod;
 use Neoan\Event\Event;
 use Neoan\Helper\FileParser;
 use Neoan\Helper\Terminate;
@@ -53,10 +54,10 @@ class Request implements RequestInterface
         $instance->queryParts = $queryParameter;
     }
 
-    public static function getRequestMethod(): string
+    public static function getRequestMethod(): RequestMethod
     {
         $instance = self::getInstance();
-        return $instance->requestMethod;
+        return RequestMethod::find($instance->requestMethod);
     }
 
     public static function getRequestUri(): string

@@ -115,11 +115,11 @@ class Route
 
         $instance = self::getInstance();
         $instance->provider = $app->injectionProvider;
-        if (!isset($instance->paths[Request::getRequestMethod()])) {
+        if (!isset($instance->paths[Request::getRequestMethod()->name])) {
             new NotFound(Request::getRequestUri());
         }
         $found = false;
-        foreach ($instance->paths[Request::getRequestMethod()] as $path => $route) {
+        foreach ($instance->paths[Request::getRequestMethod()->name] as $path => $route) {
             if($found = $this->evaluateRouteMatch($app->webPath, $path)){
 
                 Event::dispatch(GenericEvent::BEFORE_ROUTABLE_EXECUTION, $route);
