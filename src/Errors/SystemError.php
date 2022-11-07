@@ -18,10 +18,34 @@ class SystemError
             self::class => $message
         ]);
         $response = new Response();
-        http_response_code(404);
+        http_response_code(500);
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 10);
+        $output = [];
+        foreach ($backtrace as $i => $encounter){
+            if($i === 0){
+                // skip error class itself
+                continue;
+            }
+            $output[$i] = [
+                'class' => $encounter['class'],
+                'method' => $encounter['function'],
+                'line' => $encounter['line'],
+                'arguments' => ''
+            ];
+            foreach ($encounter['args'] as $j => $argument) {
+                if($argument instanceof \ReflectionParameter){
+                    $argument = $argument->name;
+                } elseif (is_object($argument)){
+                    $argument = $argument::class;
+                } elseif (is_array($argument)) {
+                    $argument = json_encode($argument);
+                }
+                $output[$i]['arguments'] .= ($j >0? ', ':'') . $argument;
+            }
+        }
         $response->respond(Template::embrace(file_get_contents(self::$defaultSystemErrorTemplate), [
             'msg' => $message,
-            'backtrace' => debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 7)
+            'backtrace' => $output
         ]));
         Terminate::die();
     }
