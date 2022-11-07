@@ -8,7 +8,6 @@ use Neoan\Cli\MigrationHelper\MySqlMigration;
 use Neoan\Cli\MigrationHelper\SqLiteMigration;
 use Neoan\Database\Database;
 use Neoan\Helper\ComposerParser;
-use Neoan\Helper\Str;
 use Neoan\NeoanApp;
 use ReflectionClass;
 use Symfony\Component\Console\Attribute\AsCommand;
