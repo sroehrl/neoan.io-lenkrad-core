@@ -6,6 +6,7 @@ use Exception;
 use Neoan\Enums\GenericEvent;
 use Neoan\Event\Event;
 use Neoan\Event\Listenable;
+use Neoan\Helper\DataNormalization;
 
 class Database implements Listenable
 {
@@ -53,11 +54,12 @@ class Database implements Listenable
      */
     public static function insert($table, ?array $content = null)
     {
+        $content = new DataNormalization($content);
         Event::dispatch(GenericEvent::BEFORE_DATABASE_TRANSACTION, [
             'clientMethod' => __FUNCTION__,
             'arguments' => func_get_args()
         ]);
-        return self::respond(self::$client->insert($table, $content));
+        return self::respond(self::$client->insert($table, $content->toArray()));
     }
 
     /**
@@ -65,11 +67,12 @@ class Database implements Listenable
      */
     public static function update($table, array $values, array $where)
     {
+        $values = new DataNormalization($values);
         Event::dispatch(GenericEvent::BEFORE_DATABASE_TRANSACTION, [
             'clientMethod' => __FUNCTION__,
             'arguments' => func_get_args()
         ]);
-        return self::respond(self::$client->update($table, $values, $where));
+        return self::respond(self::$client->update($table, $values->toArray(), $where));
     }
 
     /**

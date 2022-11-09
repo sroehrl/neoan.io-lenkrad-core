@@ -94,7 +94,7 @@ class ModelTest extends TestCase
         // soft delete
         $newSe->delete();
         $test = MockModelSetter::get(1);
-        $this->assertNull($test->deletedAt);
+        $this->assertNull($test->deletedAt->value);
     }
 
     public function testGetTransactionMode()

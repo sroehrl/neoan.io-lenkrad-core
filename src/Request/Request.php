@@ -97,7 +97,10 @@ class Request implements RequestInterface
 
     public function __invoke(NeoanApp $app = null, $additional = null): void
     {
-        new FileParser($app->publicPath . $_SERVER['REQUEST_URI']);
+        if(isset($_SERVER['REQUEST_URI'])){
+            new FileParser($app->publicPath . $_SERVER['REQUEST_URI']);
+        }
+
         $instance = self::getInstance(null, $app->webPath);
         self::parseInput();
         self::parseRequestHeaders();

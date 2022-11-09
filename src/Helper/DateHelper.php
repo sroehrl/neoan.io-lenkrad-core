@@ -7,13 +7,16 @@ use DateTime;
 class DateHelper extends DateTime
 {
 
-    public function __construct(string $input = 'now', $timezone = null)
+    public function __construct(string|int|null $input = 'now', $timezone = null)
     {
         parent::__construct($this->parseDateInput($input), $timezone);
     }
 
-    private function parseDateInput($input): string
+    private function parseDateInput(mixed $input): string
     {
+        if(is_null($input)){
+            $input = 'now';
+        }
         if (is_numeric($input)) {
             $input = date('Y-m-d H:i:s', $input);
         }

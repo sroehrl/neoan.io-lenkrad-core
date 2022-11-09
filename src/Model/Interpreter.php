@@ -7,6 +7,7 @@ use Neoan\Enums\Direction;
 use Neoan\Helper\AttributeHelper;
 use Neoan\Helper\Str;
 use Neoan\Model\Attributes\IsPrimaryKey;
+use Playground\Debug;
 use ReflectionException;
 use ReflectionProperty;
 use TypeError;
@@ -36,23 +37,33 @@ class Interpreter
 
     public function initialize(array $staticModel = []): Model
     {
+
         foreach ($this->parsedModel as $property) {
+
+            // has default value?
+            $hasDefault = false;
+            if (array_key_exists('defaultValue', $property)) {
+                $hasDefault = true;
+                $this->currentModel->{$property['name']} = $property['defaultValue'];
+            }
+
             // Custom Type?
             if (!$property['isBuiltIn'] && !isset($staticModel[$property['name']])) {
-                $this->currentModel->{$property['name']} = new $property['type']();
+                if($hasDefault){
+                    $this->currentModel->{$property['name']} = $property['isInstantiable'] ? new $property['type']($property['defaultValue']) : $property['defaultValue'];
+                } else {
+                    $this->currentModel->{$property['name']} = $property['isInstantiable'] ? new $property['type']() : null;
+                }
+
+
             } elseif (!$property['isBuiltIn'] && $staticModel[$property['name']] instanceof $property['type']) {
                 $this->currentModel->{$property['name']} = $staticModel[$property['name']];
             }
-            // has default value?
-            if (isset($property['defaultValue'])) {
-                $this->currentModel->{$property['name']} = $property['defaultValue'];
-            }
+
             // fill from input
             if ($property['isBuiltIn'] && isset($staticModel[$property['name']])) {
                 $this->fillWithReadOnlyGuard($property, $property['isReadOnly'], $staticModel[$property['name']]);
             }
-
-
             // initialization attributes
             $this->executeAttributes($property['attributes'], $property['name'], AttributeType::INITIAL, Direction::IN);
         }

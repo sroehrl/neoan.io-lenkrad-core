@@ -84,6 +84,10 @@ class AttributeHelper
                     'isPrimary' => !empty($property->getAttributes(IsPrimaryKey::class)),
                     'attributes' => $attributeList,
                 ];
+                if(!$property->getType()->isBuiltin()){
+                    $instanceTest = new ReflectionClass($property->getType()->getName());
+                    $this->parsedClass[$i]['isInstantiable'] = $instanceTest->isInstantiable();
+                }
                 if ($property->hasDefaultValue()) {
                     $this->parsedClass[$i]['defaultValue'] = $property->getDefaultValue();
                 }
