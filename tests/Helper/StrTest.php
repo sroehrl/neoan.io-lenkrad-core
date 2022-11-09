@@ -72,4 +72,10 @@ class StrTest extends TestCase
         $encrypted = Str::encrypt('Hello World', $key);
         $this->assertSame('Hello World', Str::decrypt($encrypted, $key));
     }
+    public function testFailDecrypt()
+    {
+        $this->expectException(\Exception::class);
+        $encrypted = Str::encrypt('Hello World', '123');
+        Str::decrypt($encrypted . '2=?', '123');
+    }
 }

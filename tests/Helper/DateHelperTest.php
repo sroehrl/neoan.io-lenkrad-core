@@ -18,6 +18,11 @@ class DateHelperTest extends TestCase
         $d = new DateHelper(time());
         $this->assertMatchesRegularExpression($this->getDatePattern(), (string)$d);
     }
+    public function testNull()
+    {
+        $d = new DateHelper(null);
+        $this->assertMatchesRegularExpression($this->getDatePattern(), (string)$d);
+    }
     private function getDatePattern()
     {
         return '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/';
