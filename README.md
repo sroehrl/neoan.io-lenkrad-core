@@ -6,8 +6,9 @@
 [![vegan](https://img.shields.io/static/v1?label=100%&message=vegan&color=47a244&logo=mongodb)](https://www.whyveganism.com/)
 
 
+## [Online Documentation @ lenkrad.neoan3.rocks](https://lenkrad.neoan3.rocks)
 
-This is an experimental core rewrite of neoan and not (yet) meant for production. 
+This is a core rewrite of neoan and not (yet) meant for production. 
 Using modern PHP, we believe it's possible to create easy & static internal APIs without the usual 
 problems regarding mocking & injection and testability.
 
