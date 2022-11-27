@@ -60,6 +60,11 @@ class Model
             if(str_starts_with($property, $method)) {
                 $modelClass = $fkAttributes[0]->getArguments()[2];
                 return $modelClass::get($this->{$property});
+            } elseif (str_starts_with('with' . ucfirst($property), $method)) {
+                $modelClass = $fkAttributes[0]->getArguments()[2];
+                $identifier = lcfirst(substr($method, 4));
+                $this->{$identifier} = $modelClass::get($this->{$property});
+                return $this;
             }
         }
         return null;
