@@ -146,7 +146,8 @@ class ModelTest extends TestCase
     {
         $ma = new MockAttachedModel();
         $ma->mockId = 1;
-        $this->assertInstanceOf(MockModel::class,$ma->mock());
+        $this->assertInstanceOf(MockModel::class, $ma->mock());
+        $this->assertInstanceOf(MockAttachedModel::class, $ma->withMock());
     }
     public function testPagination()
     {
