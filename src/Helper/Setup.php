@@ -87,6 +87,18 @@ class Setup
         return $this;
     }
 
+    public function setLibraryPath(string $path): self
+    {
+        $this->configuration['libraryPath'] = $path;
+        return $this;
+    }
+
+    public function setPublicPath(string $path): self
+    {
+        $this->configuration['publicPath'] = $path;
+        return $this;
+    }
+
     public function set(string $key, mixed $value):self
     {
         $this->configuration[$key] = $value;
@@ -97,9 +109,16 @@ class Setup
     {
         return $this->configuration;
     }
+
+    /**
+     * @throws \Exception
+     */
     public function get(string $key): mixed
     {
-        return $this->configuration[$key] ?? null;
+        if(!isset($this->configuration[$key]) && !is_null($this->configuration[$key])) {
+            throw new \Exception('Missing setup key "' . $key . '"!');
+        }
+        return $this->configuration[$key];
     }
 
 }
