@@ -3,6 +3,7 @@
 namespace Neoan;
 
 use Exception;
+use Neoan\Errors\SystemError;
 use Neoan\Helper\Env;
 use Neoan\Helper\Setup;
 use Neoan\Provider\DefaultProvider;
@@ -28,8 +29,13 @@ class NeoanApp
             $cliPath = dirname(\Composer\Factory::getComposerFile());
         }
         Env::initialize($cliPath);
-        $this->appPath = $setup->get('libraryPath');
-        $this->publicPath = $setup->get('publicPath');
+        try{
+            $this->appPath = $setup->get('libraryPath');
+            $this->publicPath = $setup->get('publicPath');
+        } catch (Exception $e) {
+            new SystemError($e->getMessage());
+        }
+
         $this->cliPath = $cliPath;
         $this->webPath = Env::get('WEB_PATH', '/');
 
