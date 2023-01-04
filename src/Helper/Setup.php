@@ -12,6 +12,11 @@ class Setup
 
     private array $configuration = [];
 
+    public function __construct()
+    {
+        return $this;
+    }
+
     /**
      * @param string $templatePath
      * @return Setup
