@@ -3,6 +3,7 @@
 namespace Neoan\Helper;
 
 
+use Exception;
 use Neoan\Database\Adapter;
 use Neoan\Database\Database;
 
@@ -111,12 +112,12 @@ class Setup
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function get(string $key): mixed
     {
-        if(!isset($this->configuration[$key]) && !is_null($this->configuration[$key])) {
-            throw new \Exception('Missing setup key "' . $key . '"!');
+        if(!array_key_exists($key, $this->configuration)) {
+            throw new Exception('Missing setup key "' . $key . '"!');
         }
         return $this->configuration[$key];
     }
