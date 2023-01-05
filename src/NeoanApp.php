@@ -2,7 +2,10 @@
 
 namespace Neoan;
 
+use Exception;
+use Neoan\Errors\SystemError;
 use Neoan\Helper\Env;
+use Neoan\Helper\Setup;
 use Neoan\Provider\DefaultProvider;
 use Neoan\Provider\Interfaces\Provide;
 use Neoan\Request\Request;
@@ -17,14 +20,22 @@ class NeoanApp
     public Provide $injectionProvider;
     private static NeoanApp $instance;
 
-    public function __construct(string $appPath, string $publicPath, string $cliPath = null)
+    /**
+     * @throws Exception
+     */
+    public function __construct(Setup $setup, string $cliPath = null)
     {
         if(!$cliPath) {
             $cliPath = dirname(\Composer\Factory::getComposerFile());
         }
         Env::initialize($cliPath);
-        $this->appPath = $appPath;
-        $this->publicPath = $publicPath;
+        try{
+            $this->appPath = $setup->get('libraryPath');
+            $this->publicPath = $setup->get('publicPath');
+        } catch (Exception $e) {
+            new SystemError($e->getMessage());
+        }
+
         $this->cliPath = $cliPath;
         $this->webPath = Env::get('WEB_PATH', '/');
 

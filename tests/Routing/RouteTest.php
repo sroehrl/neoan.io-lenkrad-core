@@ -2,6 +2,7 @@
 
 namespace Test\Routing;
 
+use Neoan\Helper\Setup;
 use Neoan\NeoanApp;
 use Neoan\Provider\DefaultProvider;
 use Neoan\Request\Request;
@@ -17,7 +18,9 @@ class RouteTest extends TestCase
     private NeoanApp $app;
     public function setUp(): void
     {
-        $this->app = new NeoanApp(dirname(__DIR__), dirname(__DIR__),dirname(__DIR__));
+        $setup = new Setup();
+        $setup->setLibraryPath(__DIR__)->setPublicPath(__DIR__);
+        $this->app = new NeoanApp($setup, dirname(__DIR__));
     }
 
     public function testMethods()
