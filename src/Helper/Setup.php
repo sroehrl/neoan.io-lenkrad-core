@@ -6,6 +6,8 @@ namespace Neoan\Helper;
 use Exception;
 use Neoan\Database\Adapter;
 use Neoan\Database\Database;
+use Neoan\Errors\NotFound;
+use Neoan\Errors\SystemError;
 
 class Setup
 {
@@ -34,6 +36,7 @@ class Setup
     public function setDefault404(string $default404): self
     {
         $this->configuration['default404'] = $default404;
+        NotFound::setTemplate($default404);
         return $this;
     }
 
@@ -44,6 +47,7 @@ class Setup
     public function setDefault500(string $default500): self
     {
         $this->configuration['default500'] = $default500;
+        SystemError::setTemplate($default500);
         return $this;
     }
 
@@ -90,6 +94,8 @@ class Setup
     public function setDatabaseAdapter(Adapter $adapter): self
     {
         Database::connect($adapter);
+        $instance = new \ReflectionClass($adapter);
+        $this->configuration['databaseAdapter'] = $instance->getName();
         return $this;
     }
 

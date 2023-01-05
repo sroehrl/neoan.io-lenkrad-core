@@ -2,6 +2,7 @@
 
 namespace Test\Request;
 
+use Neoan\Helper\Setup;
 use Neoan\NeoanApp;
 use Neoan\CoreInterfaces\RequestInterface;
 use Neoan\Request\Request;
@@ -29,7 +30,8 @@ class RequestTest extends TestCase
         $r = Request::getInstance();
         $this->assertInstanceOf(RequestInterface::class, $r);
         // full
-        $app = new NeoanApp(__DIR__,__DIR__);
+        $setup = new Setup();
+        $app = new NeoanApp($setup->setLibraryPath(__DIR__)->setPublicPath(__DIR__));
         $r($app);
         $this->assertSame('home', $r->requestUri);
 
@@ -76,7 +78,8 @@ class RequestTest extends TestCase
             var_dump($output);
         });
         $r = Request::getInstance();
-        $app = new NeoanApp(__DIR__,__DIR__);
+        $setup = new Setup();
+        $app = new NeoanApp($setup->setLibraryPath(__DIR__)->setPublicPath(__DIR__), __DIR__);
         $r($app);
     }
 
