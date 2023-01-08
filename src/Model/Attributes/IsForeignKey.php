@@ -10,7 +10,7 @@ use Neoan\Model\Interfaces\ModelAttribute;
 class IsForeignKey implements ModelAttribute
 {
     public string $table;
-    public string $property;
+    public ?string $property;
     public ?string $modelName;
 
     public function __construct(string $modelName = null, string $property = null)

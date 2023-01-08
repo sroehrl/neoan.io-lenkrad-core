@@ -54,16 +54,15 @@ class Model
         foreach ($foreignKeyProperties as $property)
         {
             $fkAttributes = $helper->reflection->getProperty($property)->getAttributes(IsForeignKey::class);
-            if(!isset($fkAttributes[0]->getArguments()[2])) {
-                throw new Exception('Missing argument: ModelClass in ForeignKey declaration on property "' . $property . '"');
-            }
+            $modelClass = $fkAttributes[0]->getArguments()[0];
+            $interpreter = new Interpreter($modelClass);
+            $key = $fkAttributes[0]->getArguments()[1] ?? $interpreter->getPrimaryKey();
+
             if(str_starts_with($property, $method)) {
-                $modelClass = $fkAttributes[0]->getArguments()[2];
-                return $modelClass::get($this->{$property});
+                return $modelClass::retrieveOne([$key => $this->{$property}]);
             } elseif (str_starts_with('with' . ucfirst($property), $method)) {
-                $modelClass = $fkAttributes[0]->getArguments()[2];
                 $identifier = lcfirst(substr($method, 4));
-                $this->{$identifier} = $modelClass::get($this->{$property});
+                $this->{$identifier} = $modelClass::retrieveOne([$key => $this->{$property}]);
                 return $this;
             }
         }
