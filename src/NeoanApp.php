@@ -47,6 +47,7 @@ class NeoanApp
         }
         $this->injectionProvider = new DefaultProvider();
         $this->injectionProvider->set(static::class, $this);
+        $this->injectionProvider->set(Setup::class, $setup);
         self::$instance = $this;
     }
 
