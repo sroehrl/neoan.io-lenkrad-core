@@ -41,8 +41,7 @@ class AttributeTest extends TestCase
     }
     function testIsForeignKey()
     {
-        $attribute = new IsForeignKey('test','test');
-        $this->assertSame('test', $attribute->table);
+        $attribute = new IsForeignKey(MockModel::class);
         $this->assertSame(AttributeType::DECLARE, $attribute->getType());
     }
     function testHasMany()

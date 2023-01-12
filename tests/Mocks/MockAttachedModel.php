@@ -9,7 +9,7 @@ class MockAttachedModel extends \Neoan\Model\Model
 {
     #[IsPrimaryKey]
     public int $id;
-    #[IsForeignKey('mock','id', MockModel::class)]
+    #[IsForeignKey(MockModel::class)]
     public int $mockId;
     public string $someValue = 'adam';
 
