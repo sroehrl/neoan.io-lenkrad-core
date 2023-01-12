@@ -8,13 +8,10 @@ use Neoan\Enums\RequestMethod;
 use Neoan\Errors\NotFound;
 use Neoan\Event\Event;
 use Neoan\NeoanApp;
-use Neoan\Provider\DefaultProvider;
 use Neoan\Provider\Injections;
 use Neoan\Provider\Interfaces\Provide;
 use Neoan\Request\Request;
 use Neoan\Response\Response;
-use Neoan\Routing\Interfaces\Routable;
-use Traversable;
 
 class Route
 {
