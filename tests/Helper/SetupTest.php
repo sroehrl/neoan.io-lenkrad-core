@@ -3,6 +3,7 @@
 namespace Test\Helper;
 
 use Neoan\Database\SqLiteAdapter;
+use Neoan\Enums\ResponseOutput;
 use Neoan\Helper\Setup;
 use PHPUnit\Framework\TestCase;
 
@@ -79,4 +80,24 @@ class SetupTest extends TestCase
         $this->setup->setSkeletonHTML('src/views/skeleton.html');
         $this->assertSame('src/views/skeleton.html', $this->setup->get('skeletonHTML'));
     }
+
+    public function testDefaultOutput()
+    {
+        $this->setup->setDefaultOutput(ResponseOutput::HTML);
+        $this->assertSame(ResponseOutput::HTML, $this->setup->get('defaultOutput'));
+    }
+
+    public function testInvoke()
+    {
+        $this->setup->setSkeletonComponentPlacement('haupt');
+        $this->setup->setTemplatePath('src');
+        $this->setup->setDefaultOutput(ResponseOutput::HTML);
+        $this->setup->setUseSkeleton(true);
+        $this->setup->setSkeletonHTML('some.html');
+        $this->setup->setSkeletonVariables([]);
+        $setup = $this->setup;
+        $setup();
+        $this->assertSame('haupt', $this->setup->get('skeletonComponentPlacement'));
+    }
+
 }

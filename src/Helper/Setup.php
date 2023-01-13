@@ -6,8 +6,11 @@ namespace Neoan\Helper;
 use Exception;
 use Neoan\Database\Adapter;
 use Neoan\Database\Database;
+use Neoan\Enums\ResponseOutput;
 use Neoan\Errors\NotFound;
 use Neoan\Errors\SystemError;
+use Neoan\Render\Renderer;
+use Neoan\Response\Response;
 
 class Setup
 {
@@ -91,6 +94,12 @@ class Setup
         return $this;
     }
 
+    public function setDefaultOutput(ResponseOutput $output): static
+    {
+        $this->configuration['defaultOutput'] = $output;
+        return $this;
+    }
+
     public function setDatabaseAdapter(Adapter $adapter): self
     {
         Database::connect($adapter);
@@ -131,6 +140,26 @@ class Setup
             throw new Exception('Missing setup key "' . $key . '"!');
         }
         return $this->configuration[$key];
+    }
+
+    public function __invoke(): static
+    {
+        // templating
+        if(isset($this->configuration['templatePath'])) {
+            Renderer::setTemplatePath($this->configuration['templatePath']);
+        }
+        if(isset($this->configuration['defaultOutput'])) {
+            Response::setDefaultOutput($this->configuration['defaultOutput']);
+        }
+        if(isset($this->configuration['useSkeleton']) && $this->configuration['useSkeleton']) {
+            Renderer::setHtmlSkeleton(
+                $this->configuration['skeletonHTML'],
+                $this->configuration['skeletonComponentPlacement'],
+                $this->configuration['skeletonVariables']
+            );
+        }
+        return $this;
+
     }
 
 }

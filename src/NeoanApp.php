@@ -19,6 +19,7 @@ class NeoanApp
     public string $cliPath;
     public Provide $injectionProvider;
     private static NeoanApp $instance;
+    private Setup $setup;
 
     /**
      * @throws Exception
@@ -32,6 +33,7 @@ class NeoanApp
         try{
             $this->appPath = $setup->get('libraryPath');
             $this->publicPath = $setup->get('publicPath');
+            $this->setup = $setup;
         } catch (Exception $e) {
             new SystemError($e->getMessage());
         }
@@ -61,6 +63,7 @@ class NeoanApp
      */
     public function run(): void
     {
+        $this->invoke($this->setup);
         $this->invoke(new Request());
         $this->invoke(new Route());
     }
