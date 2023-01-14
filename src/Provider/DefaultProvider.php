@@ -58,25 +58,35 @@ class DefaultProvider implements Provide
     {
         $dependencies = [];
         foreach ($parameters as $parameter) {
-            // get the type hinted class
-            $dependency = $parameter->getClass();
-            if ($dependency === NULL) {
-                // check if default value for a parameter is available
-                if ($parameter->isDefaultValueAvailable()) {
-                    // get default value of parameter
-                    $dependencies[] = $parameter->getDefaultValue();
+            foreach($this->getParameterTypes($parameter) as $dependency) {
+                if ($dependency === NULL || $dependency->isBuiltin()) {
+                    // check if default value for a parameter is available
+                    if ($parameter->isDefaultValueAvailable()) {
+                        // get default value of parameter
+                        $dependencies[] = $parameter->getDefaultValue();
+                    } else {
+                        new SystemError("Can not resolve class dependency {$parameter->name}");
+                    }
                 } else {
-                    new SystemError("Can not resolve class dependency {$parameter->name}");
+                    // get dependency resolved
+                    $dependencies[] = $this->get($dependency->getName());
                 }
-            } else {
-                // get dependency resolved
-                $dependencies[] = $this->get($dependency->name);
             }
+
         }
 
         return $dependencies;
     }
 
+    private function getParameterTypes(\ReflectionParameter $parameter): array
+    {
+        $reflectionType = $parameter->getType();
+        if (!$reflectionType) return [null];
+
+        return $reflectionType instanceof \ReflectionUnionType
+            ? $reflectionType->getTypes()
+            : [$reflectionType];
+    }
 
     private function resolve($concrete, $parameters = null)
     {
