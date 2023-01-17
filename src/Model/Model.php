@@ -143,6 +143,7 @@ class Model
             throw new Exception('Store error: not hydratable');
         }
         self::$notify->inform();
+        $this->afterStore();
         return $this;
     }
 
@@ -226,7 +227,7 @@ class Model
     }
 
 
-    public function delete($hard = false)
+    public function delete($hard = false):void
     {
         $primaryKey = self::$interpreter->getPrimaryKey();
 
@@ -240,11 +241,17 @@ class Model
                 $primaryKey => $this->{$primaryKey}
             ]);
         }
+        self::$notify->inform();
     }
 
     public static function paginate(int $page = 1, int $pageSize = 30): Paginate
     {
         return new Paginate($page, $pageSize, static::class);
+    }
+
+    protected function afterStore(): void
+    {
+        self::$notify->inform();
     }
 
 }
