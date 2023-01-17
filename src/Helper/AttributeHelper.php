@@ -12,6 +12,7 @@ class AttributeHelper
     public ReflectionClass $reflection;
     public array $constants = [];
     public array $properties = [];
+    public array $methods = [];
     public string $className;
     public array $attributeMatchList = [];
     public array $propertyMatchList = [];
@@ -25,6 +26,7 @@ class AttributeHelper
         $this->reflection = new ReflectionClass($classIdentifier);
         $this->constants = $this->reflection->getConstants();
         $this->properties = $this->reflection->getProperties();
+        $this->methods = $this->reflection->getMethods();
         $this->className = $this->reflection->getName();
         $this->generateMachLists();
     }

@@ -59,6 +59,8 @@ class ModelTest extends TestCase
         $this->model->email = 'changed@mail.com';
         $this->model->store();
         $this->assertSame('changed@mail.com', $this->model->email);
+        $this->assertTrue($this->model->called());
+
     }
 
     public function testRetrieval()
@@ -154,6 +156,7 @@ class ModelTest extends TestCase
         $this->expectException(\PDOException::class);
         MockModel::paginate()->get();
     }
+
 
 }
 class Fake{
