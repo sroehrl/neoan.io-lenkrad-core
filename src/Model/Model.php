@@ -242,6 +242,7 @@ class Model
             ]);
         }
         self::$notify->inform();
+        $this->afterDeletion();
     }
 
     public static function paginate(int $page = 1, int $pageSize = 30): Paginate
@@ -254,4 +255,8 @@ class Model
         self::$notify->inform();
     }
 
+    protected function afterDeletion(): void
+    {
+        self::$notify->inform();
+    }
 }
