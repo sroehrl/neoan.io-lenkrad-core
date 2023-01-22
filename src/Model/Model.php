@@ -122,6 +122,7 @@ class Model
         self::interpret();
         $modelClass = get_called_class();
         $copy = new $modelClass($this->toArray(true));
+        self::$interpreter->removePrivateAttributes($copy);
         $insertOrUpdate = self::$interpreter->generateInsertUpdate($copy);
 
         $id = null;

@@ -7,7 +7,6 @@ use Neoan\Enums\Direction;
 use Neoan\Helper\AttributeHelper;
 use Neoan\Helper\Str;
 use Neoan\Model\Attributes\IsPrimaryKey;
-use Playground\Debug;
 use ReflectionException;
 use ReflectionProperty;
 use TypeError;
@@ -66,6 +65,12 @@ class Interpreter
             }
             // initialization attributes
             $this->executeAttributes($property['attributes'], $property['name'], AttributeType::INITIAL, Direction::IN);
+        }
+        foreach($this->reflection->attributeMethods as $methods){
+            foreach ($methods as $method){
+                $method[0]($this->currentModel, $method[1]);
+            }
+
         }
         return $this->currentModel;
     }
@@ -166,6 +171,27 @@ class Interpreter
     public function getPrimaryKey(): string
     {
         return $this->reflection->findPropertiesByAttribute(IsPrimaryKey::class)[0] ?? 'id';
+    }
+
+    public function removePrivateAttributes(Model &$instance) : void
+    {
+        foreach ($this->reflection->properties as $property){
+            foreach ($property->getAttributes() as $attribute){
+                if($attribute->newInstance()->getType() === AttributeType::PRIVATE && $property->isPublic() && !$property->isReadOnly()) {
+                    unset($instance->{$property->getName()});
+                }
+
+            }
+
+        }
+        foreach($this->reflection->attributeMethods as $methods){
+            foreach ($methods as $method){
+                if(isset($method[1])){
+                    unset($instance->{$method[1]});
+                }
+            }
+
+        }
     }
 
 }

@@ -7,6 +7,7 @@ use Neoan\Enums\Direction;
 use Neoan\Enums\TimePeriod;
 use Neoan\Helper\AttributeHelper;
 use Neoan\Helper\DateHelper;
+use Neoan\Model\Attributes\Computed;
 use Neoan\Model\Attributes\HasMany;
 use Neoan\Model\Attributes\Ignore;
 use Neoan\Model\Attributes\Initialize;
@@ -49,6 +50,11 @@ class AttributeTest extends TestCase
         $attribute = new HasMany(Implemented::class,['notId' => 'anotherId']);
         $result = $attribute(1, 'different');
         $this->assertSame('anotherId', $result['notId']);
+    }
+    function testComputed()
+    {
+        $attribute = new Computed();
+        $this->assertSame(AttributeType::PRIVATE, $attribute->getType());
     }
     function testFindAttributesByProperty()
     {
