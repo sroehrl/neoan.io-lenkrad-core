@@ -18,6 +18,8 @@ class AttributeHelper
     public array $propertyMatchList = [];
     private array $parsedClass = [];
 
+    public array $attributeMethods = [];
+
     /**
      * @throws ReflectionException
      */
@@ -38,9 +40,17 @@ class AttributeHelper
             $this->propertyMatchList[$property->getName()] = $attributes;
             foreach ($attributes as $attribute) {
                 $this->attributeMatchList[$attribute->getName()][] = $property->getName();
-
             }
         }
+        foreach ($this->methods as $method) {
+            $attributes = $method->getAttributes();
+            foreach ($attributes as $attribute){
+                $instance = $attribute->newInstance();
+
+                $this->attributeMethods[$attribute->getName()][] = [$instance, $method->getName()];
+            }
+        }
+
     }
 
     public function findConstant(string $constant): ?string

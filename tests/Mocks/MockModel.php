@@ -3,6 +3,7 @@
 namespace Test\Mocks;
 
 use Neoan\Database\Database;
+use Neoan\Model\Attributes\Computed;
 use Neoan\Model\Attributes\HasMany;
 use Neoan\Model\Attributes\Ignore;
 use Neoan\Model\Attributes\IsPrimaryKey;
@@ -34,7 +35,7 @@ class MockModel extends Model
     public Collection $attached;
 
     #[Ignore]
-    private bool $hasBeenStored = false;
+    public bool $hasBeenStored = false;
 
     function called(): bool
     {
@@ -44,6 +45,12 @@ class MockModel extends Model
     public function afterStore(): void
     {
         $this->hasBeenStored = true;
+    }
+
+    #[Computed]
+    public function virtual(): string
+    {
+        return 'computed value';
     }
 
     function ensure(): self
