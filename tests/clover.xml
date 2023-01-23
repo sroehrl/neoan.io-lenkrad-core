@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1674421320">
-  <project timestamp="1674421320">
+<coverage generated="1674438423">
+  <project timestamp="1674438423">
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\CoreInterfaces\RequestInterface.php">
       <metrics loc="12" ncloc="12" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
@@ -982,7 +982,7 @@
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Model\Model.php">
       <class name="Neoan\Model\Model" namespace="global">
-        <metrics complexity="40" methods="18" coveredmethods="16" conditionals="0" coveredconditionals="0" statements="111" coveredstatements="108" elements="129" coveredelements="124"/>
+        <metrics complexity="41" methods="18" coveredmethods="16" conditionals="0" coveredconditionals="0" statements="111" coveredstatements="108" elements="129" coveredelements="124"/>
       </class>
       <line num="25" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="25"/>
       <line num="27" type="stmt" count="25"/>
@@ -1057,7 +1057,7 @@
       <line num="151" type="method" name="interpret" visibility="private" complexity="1" crap="1" count="25"/>
       <line num="154" type="stmt" count="25"/>
       <line num="155" type="stmt" count="25"/>
-      <line num="158" type="method" name="toArray" visibility="public" complexity="6" crap="6" count="22"/>
+      <line num="158" type="method" name="toArray" visibility="public" complexity="7" crap="7" count="22"/>
       <line num="160" type="stmt" count="22"/>
       <line num="161" type="stmt" count="22"/>
       <line num="162" type="stmt" count="22"/>
