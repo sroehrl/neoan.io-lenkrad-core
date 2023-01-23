@@ -165,7 +165,7 @@ class Model
         foreach ($values as $key => $value) {
             if ($value instanceof Collection && $flat) {
                 unset($values[$key]);
-            } elseif ($value instanceof Collection) {
+            } elseif ($value instanceof Collection || $value instanceof Model) {
                 $values[$key] = $value->toArray();
             }
 
