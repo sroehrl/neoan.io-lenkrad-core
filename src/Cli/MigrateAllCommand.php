@@ -115,7 +115,7 @@ class MigrateAllCommand extends Command
                 try {
                     $potentialRoutable = $nameSpace . mb_substr($fileOrFolder, 0, -4);
                     $this->checkAndMigrate($potentialRoutable);
-                } catch (ReflectionException $e) {
+                } catch (\ReflectionException $e) {
                     // when file doesn't even contain a class, this will gracefully fail
                     // Inform event?
                 }
