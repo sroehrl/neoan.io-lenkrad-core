@@ -3,6 +3,7 @@
 namespace Neoan\Cli;
 
 use Neoan\Cli\Create\CreateControllerCommand;
+use Neoan\Cli\Create\CreateGuardCommand;
 use Neoan\Cli\Create\CreateModelCommand;
 use Neoan\NeoanApp;
 use Symfony\Component\Console\Application as SymfonyApplication;
@@ -18,6 +19,7 @@ class Application
         $this->app->add(new MigrateCommand($app));
         $this->app->add(new MigrateAllCommand($app));
         $this->app->add(new CreateControllerCommand($app));
+        $this->app->add(new CreateGuardCommand($app));
         $this->app->add(new CreateModelCommand($app));
     }
 
