@@ -1,0 +1,10 @@
+<?php
+
+namespace {{namespace}};
+
+use Neoan\Request\RequestGuard;
+
+class {{name}} extends RequestGuard
+{
+
+}
