@@ -15,7 +15,7 @@ class FileCreator
     public static NeoanApp $neoanApp;
     public static Output $output;
 
-    public static function process($type, $name, $neoanApp, $output)
+    public static function process($type, $name, $neoanApp, $output): void
     {
         self::$neoanApp = $neoanApp;
         self::$output = $output;
