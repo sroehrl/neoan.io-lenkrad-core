@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1676078267">
-  <project timestamp="1676078267">
+<coverage generated="1676688411">
+  <project timestamp="1676688411">
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\CoreInterfaces\RequestInterface.php">
       <metrics loc="12" ncloc="12" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
@@ -1452,22 +1452,23 @@
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Request\RequestGuard.php">
       <class name="Neoan\Request\RequestGuard" namespace="global">
-        <metrics complexity="10" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="29" coveredstatements="29" elements="31" coveredelements="31"/>
+        <metrics complexity="14" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="36" coveredstatements="34" elements="38" coveredelements="35"/>
       </class>
-      <line num="14" type="method" name="getRequestTypes" visibility="private" complexity="2" crap="2" count="3"/>
+      <line num="13" type="method" name="getRequestTypes" visibility="private" complexity="2" crap="2" count="3"/>
+      <line num="15" type="stmt" count="3"/>
       <line num="16" type="stmt" count="3"/>
-      <line num="17" type="stmt" count="3"/>
+      <line num="18" type="stmt" count="3"/>
       <line num="19" type="stmt" count="3"/>
-      <line num="20" type="stmt" count="3"/>
+      <line num="22" type="stmt" count="3"/>
       <line num="23" type="stmt" count="3"/>
-      <line num="24" type="stmt" count="3"/>
+      <line num="26" type="stmt" count="3"/>
       <line num="27" type="stmt" count="3"/>
-      <line num="28" type="stmt" count="3"/>
+      <line num="30" type="stmt" count="3"/>
       <line num="31" type="stmt" count="3"/>
-      <line num="32" type="stmt" count="3"/>
-      <line num="34" type="stmt" count="3"/>
-      <line num="37" type="method" name="__invoke" visibility="public" complexity="8" crap="8" count="3"/>
-      <line num="39" type="stmt" count="3"/>
+      <line num="33" type="stmt" count="3"/>
+      <line num="36" type="method" name="__invoke" visibility="public" complexity="12" crap="12.07" count="3"/>
+      <line num="38" type="stmt" count="3"/>
+      <line num="40" type="stmt" count="3"/>
       <line num="41" type="stmt" count="3"/>
       <line num="42" type="stmt" count="3"/>
       <line num="43" type="stmt" count="3"/>
@@ -1475,17 +1476,23 @@
       <line num="45" type="stmt" count="3"/>
       <line num="46" type="stmt" count="3"/>
       <line num="47" type="stmt" count="3"/>
-      <line num="48" type="stmt" count="3"/>
-      <line num="50" type="stmt" count="1"/>
-      <line num="51" type="stmt" count="1"/>
-      <line num="54" type="stmt" count="3"/>
-      <line num="57" type="stmt" count="3"/>
-      <line num="58" type="stmt" count="1"/>
-      <line num="59" type="stmt" count="1"/>
-      <line num="61" type="stmt" count="1"/>
-      <line num="63" type="stmt" count="1"/>
-      <line num="67" type="stmt" count="2"/>
-      <metrics loc="69" ncloc="68" classes="1" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="29" coveredstatements="29" elements="31" coveredelements="31"/>
+      <line num="48" type="stmt" count="2"/>
+      <line num="49" type="stmt" count="2"/>
+      <line num="50" type="stmt" count="2"/>
+      <line num="51" type="stmt" count="2"/>
+      <line num="52" type="stmt" count="2"/>
+      <line num="55" type="stmt" count="1"/>
+      <line num="56" type="stmt" count="1"/>
+      <line num="59" type="stmt" count="3"/>
+      <line num="60" type="stmt" count="0"/>
+      <line num="61" type="stmt" count="0"/>
+      <line num="65" type="stmt" count="3"/>
+      <line num="66" type="stmt" count="1"/>
+      <line num="67" type="stmt" count="1"/>
+      <line num="69" type="stmt" count="1"/>
+      <line num="71" type="stmt" count="1"/>
+      <line num="75" type="stmt" count="2"/>
+      <metrics loc="77" ncloc="76" classes="1" methods="2" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="36" coveredstatements="34" elements="38" coveredelements="35"/>
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Response\Response.php">
       <class name="Neoan\Response\Response" namespace="global">
@@ -1783,6 +1790,6 @@
       <line num="60" type="stmt" count="26"/>
       <metrics loc="62" ncloc="62" classes="2" methods="7" coveredmethods="7" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="16" elements="23" coveredelements="23"/>
     </file>
-    <metrics files="74" loc="3872" ncloc="3693" classes="59" methods="299" coveredmethods="288" conditionals="0" coveredconditionals="0" statements="1080" coveredstatements="1067" elements="1379" coveredelements="1355"/>
+    <metrics files="74" loc="3880" ncloc="3701" classes="59" methods="299" coveredmethods="287" conditionals="0" coveredconditionals="0" statements="1087" coveredstatements="1072" elements="1386" coveredelements="1359"/>
   </project>
 </coverage>
