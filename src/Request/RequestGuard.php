@@ -45,12 +45,21 @@ class RequestGuard
                     $interim = Request::$which($property->getName());
                     if($property->getType()->isBuiltin()){
                         settype($interim, $property->getType()->getName());
+                    } elseif(enum_exists($property->getType()->getName())) {
+                        $enum = $property->getType()->getName();
+                        $interim = $enum::tryFrom($interim);
+                        if(!$property->getType()->allowsNull() && $interim === null) {
+                            $filled = false;
+                        }
                     } else {
                         $class = $property->getType()->getName();
                         $interim = new $class($interim);
                     }
-
-                    $this->{$property->getName()} = $interim;
+                    try{
+                        $this->{$property->getName()} = $interim;
+                    } catch (\TypeError $e) {
+                        $filled = false;
+                    }
                 }
             }
             if(!$filled && self::throwOnError && !$property->getType()->allowsNull()){

@@ -13,6 +13,7 @@ class RequestGuardTest extends TestCase
     {
         Request::setParameter('fill', 'filled');
         Request::setParameter('castToInt', '1');
+        Request::setParameter('type', 'mutate');
         $request = (new MockRequestGuard())();
         $this->assertIsInt($request->castToInt);
         $this->assertSame('filled', $request->fill);
@@ -22,6 +23,7 @@ class RequestGuardTest extends TestCase
         Request::setParameter('fill', 'filled');
         Request::setParameter('castToInt', '1');
         Request::setParameter('createdAt', '2023-01-01');
+        Request::setParameter('type', 'mutate');
         $request = (new MockRequestGuard())();
         $this->assertInstanceOf(DateTimeProperty::class, $request->createdAt);
     }
