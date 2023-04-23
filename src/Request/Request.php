@@ -90,6 +90,24 @@ class Request implements RequestInterface
         return $instance->parameters[$which] ?? null;
     }
 
+    public static function getFiles(): array
+    {
+        $instance = self::getInstance();
+        return $instance->files;
+    }
+
+    public static function getFile(string $which): ?array
+    {
+        $instance = self::getInstance();
+        return $instance->files[$which] ?? null;
+    }
+
+    public static function setFiles(array $files): void
+    {
+        $instance = self::getInstance();
+        $instance->files = $files;
+    }
+
     public static function detachInstance(): void
     {
         self::$instance = null;

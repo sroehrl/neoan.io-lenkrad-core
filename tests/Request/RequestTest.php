@@ -71,6 +71,14 @@ class RequestTest extends TestCase
         $this->assertSame('value', Request::getQuery('some'));
     }
 
+    function testFiles()
+    {
+        $_FILES = ['file1'=> ['name'=>'file1.txt']];
+        $this->init();
+        $this->assertSame('file1.txt', Request::getFile('file1')['name']);
+        $this->assertSame(1, count(Request::getFiles()));
+    }
+
     private function init()
     {
         Request::detachInstance();

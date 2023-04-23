@@ -6,7 +6,7 @@ use Neoan\Response\Response;
 
 class RequestGuard
 {
-    const requestTypes = ['query', 'parameter', 'post'];
+    const requestTypes = ['query', 'parameter', 'post', 'file'];
 
     const throwOnError = true;
 
@@ -26,6 +26,10 @@ class RequestGuard
                 'method' => 'getInput',
                 'keys' => array_keys(Request::getInputs())
             ],
+            'file' => [
+                'method' => 'getFile',
+                'keys' => array_keys(Request::getFiles())
+            ]
         ];
         foreach (self::requestTypes as $requestType) {
             $result[$possible[$requestType]['method']] = $possible[$requestType]['keys'];
