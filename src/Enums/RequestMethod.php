@@ -9,6 +9,10 @@ enum RequestMethod
     case PUT;
     case PATCH;
     case DELETE;
+    case OPTIONS;
+    case HEAD;
+    case CONNECT;
+    case TRACE;
     public static function find(string $method): self
     {
         foreach (self::cases() as $case) {
@@ -16,5 +20,6 @@ enum RequestMethod
                 return $case;
             }
         }
+        return self::GET;
     }
 }
