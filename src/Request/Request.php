@@ -42,7 +42,7 @@ class Request implements RequestInterface
         return $instance->queryParts;
     }
 
-    public static function getQuery(string $name): ?string
+    public static function getQuery(string $name): string | array | null
     {
         $instance = self::getInstance();
         return $instance->queryParts[$name] ?? null;
