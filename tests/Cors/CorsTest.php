@@ -30,9 +30,20 @@ class CorsTest extends TestCase
         $this->assertSame(['POST', 'GET', 'PUT'], $cors->getAllowedMethods());
     }
 
+    function testOptionsCall()
+    {
+        $this->expectException(\Exception::class);
+        $_SERVER['REQUEST_METHOD'] = 'OPTIONS';
+        $cors = new Cors();
+        $cors->setAllowMethodOptions(false);
+        $cors();
+
+    }
+
     function testInvoke()
     {
         $cors = new Cors();
+        $_SERVER['REQUEST_METHOD'] = 'GET';
         $this->assertInstanceOf(Cors::class, $cors());
     }
 

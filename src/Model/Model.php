@@ -238,7 +238,7 @@ class Model
             ]);
         } else {
             $newDate = new DateHelper();
-            Database::update(self::$tableName, ['deletedAt' => (string)$newDate], [
+            Database::update(self::$tableName, ['deletedAt' => $newDate->format('Y-m-d H:i:s')], [
                 $primaryKey => $this->{$primaryKey}
             ]);
         }

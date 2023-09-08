@@ -2,13 +2,16 @@
 
 namespace Neoan\Cors;
 
+use Neoan\Helper\Terminate;
+
 class Cors
 {
     private array $options = [
         'Access-Control-Allow-Origin' => [],
-        'Access-Control-Allow-Methods' => ['POST', 'PUT', 'GET'],
+        'Access-Control-Allow-Methods' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTIONS'],
         'Access-Control-Allow-Headers' => ['Content-Type', 'X-Auth-Token', 'Authorization', 'Origin']
     ];
+    private bool $allowOptionsCall = false;
 
     public function addAllowedOrigin(string $origin): static
     {
@@ -55,12 +58,22 @@ class Cors
         return $this->options['Access-Control-Allow-Headers'];
     }
 
+    public function setAllowMethodOptions(bool $allowOptions): static
+    {
+        $this->allowOptionsCall = $allowOptions;
+        return $this;
+    }
+
     public function __invoke(): static
     {
         foreach ($this->options as $header => $values) {
             if(!empty($values)){
                 header($header . ': ' . implode(', ', $values));
             }
+        }
+        if(!$this->allowOptionsCall && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS'){
+            Terminate::exit();
+
         }
         return $this;
     }
