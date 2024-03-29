@@ -230,6 +230,7 @@ class Model
 
     public function delete($hard = false):void
     {
+        self::interpret();
         $primaryKey = self::$interpreter->getPrimaryKey();
 
         if ($hard || !property_exists($this, 'deletedAt')) {
