@@ -5,8 +5,6 @@ namespace Neoan\Helper;
 
 use JsonException;
 use JsonSerializable;
-use Neoan\Model\Collection;
-use Neoan\Model\Model;
 
 class VerifyJson implements JsonSerializable
 {
@@ -17,9 +15,14 @@ class VerifyJson implements JsonSerializable
         $this->data = $data;
     }
 
-    static function isJson(string $string): bool
+    static function isJson(string $string, $depth = 512, $flags = 0): bool
     {
-        return json_validate($string);
+        try {
+            json_decode($string, false, $depth, $flags | JSON_THROW_ON_ERROR);
+            return true;
+        } catch (JsonException $e) {
+            return false;
+        }
     }
 
     /**
