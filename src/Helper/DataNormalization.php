@@ -29,6 +29,8 @@ class DataNormalization implements Iterator
             $data = $data->get();
         } elseif ($data instanceof \BackedEnum || $data instanceof DateTimeProperty) {
             $data = $data->value;
+        } elseif ($data instanceof \UnitEnum) {
+            $data = $data->name;
         } elseif (is_array($data)) {
             foreach ($data as $key => $value) {
                 $data[$key] = $this->convert($value);
