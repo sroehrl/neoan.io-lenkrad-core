@@ -20,7 +20,8 @@
     "neoan.io/legacy-db-adapter": "^1.0",
     "ext-openssl": "*",
     "composer/composer": "^2",
-    "ramsey/uuid": "^4.6"
+    "ramsey/uuid": "^4.6",
+    "monolog/monolog": "^3.6"
   },
   "autoload": {
     "psr-4": {

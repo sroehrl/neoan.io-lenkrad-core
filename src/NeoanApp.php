@@ -5,6 +5,7 @@ namespace Neoan;
 use Exception;
 use Neoan\Errors\SystemError;
 use Neoan\Helper\Env;
+use Neoan\Helper\Log;
 use Neoan\Helper\Setup;
 use Neoan\Provider\DefaultProvider;
 use Neoan\Provider\Interfaces\Provide;
@@ -39,7 +40,7 @@ class NeoanApp
         }
 
         $this->cliPath = $cliPath;
-        $this->webPath = Env::get('WEB_PATH', '/');
+        $this->webPath = Env::get('WEB_PATH', $setup->get('webPath'));
 
         if (isset($_SERVER["SERVER_PROTOCOL"])) {
             $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, strpos($_SERVER["SERVER_PROTOCOL"], '/'))) . '://';
@@ -47,9 +48,16 @@ class NeoanApp
                 define('base', $protocol . $_SERVER['HTTP_HOST'] . $this->webPath);
             }
         }
+        $log = new Log();
+        try{
+            $log->setFileLocation($setup->get('logFile'));
+        } catch (Exception $e){
+            // no logfile, no worries ;-)
+        }
         $this->injectionProvider = new DefaultProvider();
         $this->injectionProvider->set(static::class, $this);
         $this->injectionProvider->set(Setup::class, $setup);
+        $this->injectionProvider->set(Log::class, $log);
         self::$instance = $this;
     }
 
