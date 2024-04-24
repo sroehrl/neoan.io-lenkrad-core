@@ -63,4 +63,38 @@ class CollectionTest extends TestCase
         ]));
         $this->assertInstanceOf(Collection::class, $this->collection->store());
     }
+
+    public function testGrab()
+    {
+        $array = $this->collection->grab(['email']);
+        $this->assertSame('heinz@sam.de', $array[0]['email']);
+    }
+
+    public function testFirst()
+    {
+        $this->assertSame('heinz@sam.de', $this->collection->first()->email);
+    }
+    public function testLast()
+    {
+        $this->collection->add(new MockModel([
+            'userName' => 'different',
+            'email'=>'as@as.de',
+        ]));
+        $this->assertSame('as@as.de', $this->collection->last()->email);
+    }
+    public function testNth()
+    {
+        $this->assertSame('heinz@sam.de', $this->collection->nth(1)->email);
+    }
+    public function testNthFail()
+    {
+        $this->expectException(\Exception::class);
+        $this->collection->nth(1000);
+    }
+    public function testFilter()
+    {
+        $collectionCopy = clone $this->collection;
+        $collectionCopy->filter(fn($model) => false);
+        $this->assertEmpty($collectionCopy->toArray());
+    }
 }
