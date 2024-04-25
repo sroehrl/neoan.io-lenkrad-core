@@ -1,12 +1,18 @@
 <?php
 
 namespace Neoan\Database;
+
+use Exception;
+use \UnhandledMatchError;
+use function PHPUnit\Framework\isInstanceOf;
+
 class NeoanSQLTranslator
 {
     public string $tableName;
     public string $whereString;
     public string $setString;
     public array $statementParameter = [];
+
 
     function __construct(string $tableName = '')
     {
@@ -36,13 +42,41 @@ class NeoanSQLTranslator
         $sql = '';
         $i = 0;
         foreach ($array as $key => $value) {
+            if(is_array($value)){
+                $sql .= ($i > 0 ? $separator : '') . ' (' . $this->parseArray($value, ' OR ', $nullBinder) . ')';
+                unset($array[$key]);
+                foreach ($value as $k => $v) {
+                    $array[$k] = $v;
+                }
+
+                $i++;
+                continue;
+            }
+            if(is_numeric($key) && preg_match('/^\^|!/', $value, $matches)){
+                unset($array[$key]);
+                $key = preg_replace_callback('/\\' . $matches[0] . '/i',function($hit) use ($matches, &$value){
+                    $value = Selectandi::matchHit($hit[0]);
+                    return '';
+                }, $value);
+
+            }
             $sql .= $i > 0 ? $separator : '';
             $sql .= $this->addBackticks($key);
             if ($value === null) {
                 $sql .= " $nullBinder NULL";
                 unset($array[$key]);
+            } elseif ($value instanceof Selectandi ) {
+                $sql .= ' ' . $value->value;
+
             } else {
-                $sql .= ' = ?';
+                try{
+                    $operandi = Operandi::matchValue($value);
+                    $array[$key] = mb_substr($value, 1);
+                    $sql .= $operandi->setNamedParameter($key);
+                } catch (UnhandledMatchError | Exception $e){
+                    $sql .= ' = :' . $key;
+                }
+
             }
             $i++;
         }
@@ -58,6 +92,7 @@ class NeoanSQLTranslator
     {
         $sql = '';
         if (!empty($whereArray)) {
+
             $sql = $this->parseArray($whereArray, ' AND ');
         }
 
@@ -82,7 +117,20 @@ class NeoanSQLTranslator
     {
         preg_match('/[a-z_]+/i', $selectorString, $matches);
         $this->setTableName($matches[0]);
-        return explode(' ', $selectorString);
+        $selectorArray = explode(' ', $selectorString);
+        $addOns = [];
+        foreach ($selectorArray as $i => $value) {
+            $addOns[$i] = '';
+            if(preg_match('/:([a-z]+)/i', $value, $matches)){
+                $addOns[$i] = ' as ' . $matches[1];
+                $selectorArray[$i] = str_replace($matches[0], '', $value);
+            }
+        }
+        foreach ($selectorArray as $i => $value) {
+            $selectorArray[$i] = $this->addBackticks($value) . $addOns[$i];
+        }
+
+        return $selectorArray;
     }
 
     function setTableName(string $tableName): void
