@@ -68,6 +68,8 @@ class NeoanSQLTranslator
             } elseif ($value instanceof Selectandi ) {
                 $sql .= ' ' . $value->value;
 
+            } elseif($value === '.') {
+                $sql .= ' = NOW()';
             } else {
                 try{
                     $operandi = Operandi::matchValue($value);
@@ -83,7 +85,7 @@ class NeoanSQLTranslator
         return $sql;
     }
 
-    private function addBackticks(string $string): string
+    public function addBackticks(string $string): string
     {
         return preg_replace('/[a-z_]+/i', '`$0`', $string);
     }

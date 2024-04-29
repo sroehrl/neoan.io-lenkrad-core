@@ -3,6 +3,8 @@
 namespace Neoan\Database;
 
 use Exception;
+use Neoan\Event\Event;
+use Neoan\Helper\DateHelper;
 use PDO;
 use PDOStatement;
 
@@ -18,6 +20,8 @@ class MySQlAdapter implements Adapter
     ];
     private array $rawSubstitutions;
 
+    private array $callFunctions = [];
+
     private PDO $db;
 
     private NeoanSQLTranslator $translator;
@@ -29,12 +33,18 @@ class MySQlAdapter implements Adapter
         $this->translator = new NeoanSQLTranslator();
     }
 
-    public function raw(string $sql, array $conditions, mixed $extra)
+    public function raw(string $sql, array $conditions, mixed $extra = null)
     {
-        // TODO: Implement raw() method.
+        $sql = preg_replace_callback('/{\{([a-z.]+)\}\}/i', function($matches) use ($conditions, &$conditionArray){
+            $this->rawSubstitutions[] = $conditions[$matches[1]];
+            return '?';
+        }, $sql);
+        $result = $this->execute($sql);
+
+        die();
     }
 
-    public function easy(string $selectorString, array $conditions = [], mixed $extra = null)
+    public function easy(string $selectorString, array $conditions = [], mixed $extra = null): array
     {
         $select = $this->translator->parseEasy($selectorString);
         $sql = "SELECT " . implode(', ', $select) . " FROM " . $this->translator->tableName;
@@ -42,26 +52,101 @@ class MySQlAdapter implements Adapter
             $this->translator->parseWhere($conditions);
             $sql .= " WHERE " . $this->translator->whereString;
         }
-        // TODO: GENERIC Event for SQL
         $this->typeMatch($conditions, $this->describeTable($this->translator->tableName));
         $this->addCallFunctions($extra);
         $result = $this->execute($sql);
         return $result->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function insert($table, array $content)
+    public function insert($table, array $content): int
     {
-        // TODO: Implement insert() method.
+        $columns = implode(', ', array_keys($content));
+        $backtickedColumns = $this->translator->addBackticks($columns);
+        $sql = "INSERT INTO `{$table}` ($backtickedColumns) VALUES(";
+        $tableDefinition = $this->describeTable($table);
+        foreach ($content as $key => $value) {
+            if(array_key_exists($key, $tableDefinition)) {
+                switch (preg_replace('/\([0-9]+\)/','',$tableDefinition[$key]['type'])) {
+                    case 'int':
+                    case 'tinyint':
+                        $sql .= '?, ';
+                        $this->rawSubstitutions[] = (int)$value;
+                        break;
+                    case 'bool':
+                    case 'boolean':
+                        $this->rawSubstitutions[] = (bool)$value;
+                        $sql .= '?, ';
+                        break;
+                    case 'datetime':
+                    case 'date':
+                    case 'year':
+                        if($value === '.'){
+                            $sql .= 'NOW(), ';
+                        } else {
+                            $sql .= '?, ';
+                            $this->rawSubstitutions[] = trim((string) $value);
+                        }
+                        break;
+                    case 'decimal':
+                        $sql .= '?, ';
+                        $this->rawSubstitutions[] = (float) $value;
+                        break;
+                    default:
+                        $sql .= '?, ';
+                        $this->rawSubstitutions[] = $value;
+                };
+            }
+        }
+        $sql = rtrim($sql, ', ') . ')';
+        $exec = $this->execute($sql);
+        if($exec->errorCode()) {
+            throw new Exception($exec->errorInfo()[2]);
+        }
+        return $this->db->lastInsertId();
     }
 
     public function update($table, array $values, array $where)
     {
-        // TODO: Implement update() method.
+        $tableDefinition = $this->describeTable($table);
+        $this->typeMatch($values, $tableDefinition);
+        $this->typeMatch($where, $tableDefinition);
+        $sql = "UPDATE `{$table}` SET ";
+        foreach ($values as $key => $value) {
+            if(array_key_exists($key, $tableDefinition)) {
+                switch (preg_replace('/\([0-9]+\)/','',$tableDefinition[$key]['type'])) {
+                    case 'datetime':
+                    case 'date':
+                    case 'year':
+                        if($value === '.'){
+                            $sql .= $this->translator->addBackticks($key) . ' = NOW(), ';
+                            unset($this->rawSubstitutions[':' . $key]);
+                        } else {
+                            $sql .= $this->translator->addBackticks($key) . " = :$key, ";
+                        }
+                        break;
+                    default:
+                        $sql .= $sql .= $this->translator->addBackticks($key) . " = :$key, ";
+                };
+            }
+        }
+        $sql = rtrim($sql, ', ') . ' WHERE ';
+        $this->translator->parseWhere($where);
+        $sql .= $this->translator->whereString;
+        $result = $this->execute($sql);
+        if($result->errorCode()) {
+            throw new Exception($result->errorInfo()[2]);
+        }
+        return $result->rowCount();
+
     }
 
     public function delete($table, string $id, bool $hard = false)
     {
-        // TODO: Implement delete() method.
+        $targetTable = $this->describeTable($table);
+        if ($hard || !array_key_exists('deletedAt', $targetTable)) {
+            return $this->raw('DELETE FROM ' . $this->translator->addBackticks($table) . ' WHERE id = {{id}}', ['id' => $id]);
+        }
+        return $this->update($table, ['deletedAt' => '.'], ['id' => $id]);
     }
 
     public function describeTable($table): array
@@ -103,16 +188,38 @@ class MySQlAdapter implements Adapter
 
     private function addCallFunctions(?array $extra): void
     {
-        // TODO: Implement addCallFunctions() method.
+        foreach ($this->callFunctions as $key => $set){
+            if(isset($extra[$key])){
+                $this->callFunctions[$key] = $extra[$key];
+            }
+        }
+    }
+    private function orderBy($set): string
+    {
+        return " ORDER BY $set[0] $set[1]";
+    }
+    private function limit($set): string
+    {
+        return " LIMIT $set[0], $set[1]";
     }
     private function execute($sql) : PDOStatement
     {
+        foreach ($this->callFunctions as $key => $set){
+            if(!empty($set)){
+                $sql .= $this->{$key}($set);
+            }
+        }
+
+        Event::dispatch('MySQLAdapter.execute', ['sql' => $sql, 'substitutions' => $this->rawSubstitutions]);
         $exec = $this->db->prepare($sql);
         if (empty($this->rawSubstitutions)) {
             $exec->execute();
         } else {
             $exec->execute($this->rawSubstitutions);
         }
+        // reset
+        $this->callFunctions = ['orderBy'=>[],'limit'=>[]];
+        $this->rawSubstitutions = [];
         return $exec;
     }
 }
