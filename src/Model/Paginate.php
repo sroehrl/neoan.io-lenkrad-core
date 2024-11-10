@@ -53,7 +53,7 @@ class Paginate
         $modelDescription = $this->model::declare();
         $table = array_key_first($modelDescription);
         $select = $table . '.' . $modelDescription[$table][0]['name'];
-        foreach ($condition as $key => $value) {
+        foreach ($this->condition as $key => $value) {
             if(str_contains($key, '.')) {
                 $select .= ' ' . $key;
             }
