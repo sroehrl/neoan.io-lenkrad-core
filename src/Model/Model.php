@@ -76,6 +76,11 @@ class Model
     {
         self::interpret();
         $select = self::$tableName . '.' . self::$interpreter->getPrimaryKey();
+        foreach ($condition as $key => $value) {
+            if(str_contains($key, '.')) {
+                $select .= ' ' . $key;
+            }
+        }
         $results = Database::easy($select, $condition, $filter);
 
         $collection = new Collection();
