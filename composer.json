@@ -21,7 +21,7 @@
     "ext-openssl": "*",
     "composer/composer": "^2",
     "ramsey/uuid": "^4.6",
-    "monolog/monolog": "^3.6"
+    "monolog/monolog": "^3.7.0"
   },
   "autoload": {
     "psr-4": {
