@@ -20,6 +20,7 @@ class DateTimeProperty
     public function toNull(): void
     {
         $this->value = null;
+        $this->stamp = null;
     }
     public function addTimePeriod(int $amount, TimePeriod $period): self
     {

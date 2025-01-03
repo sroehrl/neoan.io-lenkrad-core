@@ -19,6 +19,7 @@ class MySQlAdapter implements Adapter
 
     ];
     private array $rawSubstitutions;
+    private array $conditions;
 
     private array $callFunctions = [];
 
@@ -39,20 +40,28 @@ class MySQlAdapter implements Adapter
             $this->rawSubstitutions[] = $conditions[$matches[1]];
             return '?';
         }, $sql);
-        $result = $this->execute($sql);
+        return $this->execute($sql);
 
-        die();
     }
 
     public function easy(string $selectorString, array $conditions = [], mixed $extra = null): array
     {
+        $this->conditions = $conditions;
         $select = $this->translator->parseEasy($selectorString);
-        $sql = "SELECT " . implode(', ', $select) . " FROM " . $this->translator->tableName;
+
+        $description = $this->describeTable($this->translator->tableName);
+
+        $sql = "SELECT " . implode(', ', $select) . " FROM " .  $this->translator->addBackticks($this->translator->tableName);
         if (!empty($conditions)) {
-            $this->translator->parseWhere($conditions);
-            $sql .= " WHERE " . $this->translator->whereString;
+            $this->normalizeConditions($this->translator->tableName);
+
+            $where = $this->parseConditions($description, $this->conditions, ' AND ', 'LIKE');
+            $sql .= " WHERE " . $where;
         }
-        $this->typeMatch($conditions, $this->describeTable($this->translator->tableName));
+
+
+        $this->typeMatch($this->conditions, $description);
+
         $this->addCallFunctions($extra);
         $result = $this->execute($sql);
         return $result->fetchAll(PDO::FETCH_ASSOC);
@@ -60,91 +69,61 @@ class MySQlAdapter implements Adapter
 
     public function insert($table, array $content): int
     {
-        $columns = implode(', ', array_keys($content));
-        $backtickedColumns = $this->translator->addBackticks($columns);
-        $sql = "INSERT INTO `{$table}` ($backtickedColumns) VALUES(";
         $tableDefinition = $this->describeTable($table);
-        foreach ($content as $key => $value) {
-            if(array_key_exists($key, $tableDefinition)) {
-                switch (preg_replace('/\([0-9]+\)/','',$tableDefinition[$key]['type'])) {
-                    case 'int':
-                    case 'tinyint':
-                        $sql .= '?, ';
-                        $this->rawSubstitutions[] = (int)$value;
-                        break;
-                    case 'bool':
-                    case 'boolean':
-                        $this->rawSubstitutions[] = (bool)$value;
-                        $sql .= '?, ';
-                        break;
-                    case 'datetime':
-                    case 'date':
-                    case 'year':
-                        if($value === '.'){
-                            $sql .= 'NOW(), ';
-                        } else {
-                            $sql .= '?, ';
-                            $this->rawSubstitutions[] = trim((string) $value);
-                        }
-                        break;
-                    case 'decimal':
-                        $sql .= '?, ';
-                        $this->rawSubstitutions[] = (float) $value;
-                        break;
-                    default:
-                        $sql .= '?, ';
-                        $this->rawSubstitutions[] = $value;
-                };
-            }
+
+        $this->conditions = $content;
+        $this->normalizeConditions($table);
+        $this->typeMatch($this->conditions, $tableDefinition);
+        $values = $this->parseConditions($tableDefinition, $this->conditions, ', ');
+
+        $sql = "INSERT INTO `{$table}` SET ";
+        $sql .= $values;
+
+        $result = $this->execute($sql);
+        if($result->errorCode() && $result->rowCount() === 0) {
+            $error = $result->errorInfo();
+            throw new Exception($error[2], $error[1]);
         }
-        $sql = rtrim($sql, ', ') . ')';
-        $exec = $this->execute($sql);
-        if($exec->errorCode()) {
-            throw new Exception($exec->errorInfo()[2]);
-        }
+
         return $this->db->lastInsertId();
     }
 
-    public function update($table, array $values, array $where)
+    public function update($table, array $values, array $where): int
     {
+
         $tableDefinition = $this->describeTable($table);
-        $this->typeMatch($values, $tableDefinition);
-        $this->typeMatch($where, $tableDefinition);
+
+        // where
+        $this->conditions = $where;
+        $this->normalizeConditions($table);
+        $this->typeMatch($this->conditions, $tableDefinition);
+        $where = $this->parseConditions($tableDefinition, $this->conditions, ' AND ', 'LIKE');
+
+        // SET
+        $this->conditions = $values;
+        $this->normalizeConditions($table);
+        $this->typeMatch($this->conditions, $tableDefinition);
+        $values = $this->parseConditions($tableDefinition, $this->conditions, ', ');
+
         $sql = "UPDATE `{$table}` SET ";
-        foreach ($values as $key => $value) {
-            if(array_key_exists($key, $tableDefinition)) {
-                switch (preg_replace('/\([0-9]+\)/','',$tableDefinition[$key]['type'])) {
-                    case 'datetime':
-                    case 'date':
-                    case 'year':
-                        if($value === '.'){
-                            $sql .= $this->translator->addBackticks($key) . ' = NOW(), ';
-                            unset($this->rawSubstitutions[':' . $key]);
-                        } else {
-                            $sql .= $this->translator->addBackticks($key) . " = :$key, ";
-                        }
-                        break;
-                    default:
-                        $sql .= $sql .= $this->translator->addBackticks($key) . " = :$key, ";
-                };
-            }
-        }
+        $sql .= $values;
         $sql = rtrim($sql, ', ') . ' WHERE ';
-        $this->translator->parseWhere($where);
-        $sql .= $this->translator->whereString;
+        $sql .= $where;
         $result = $this->execute($sql);
-        if($result->errorCode()) {
-            throw new Exception($result->errorInfo()[2]);
+        if($result->errorCode() && $result->rowCount() === 0) {
+            $error = $result->errorInfo();
+            throw new Exception($error[2], $error[1]);
         }
         return $result->rowCount();
 
     }
 
-    public function delete($table, string $id, bool $hard = false)
+    public function delete($table, string $id, bool $hard = false): int
     {
         $targetTable = $this->describeTable($table);
         if ($hard || !array_key_exists('deletedAt', $targetTable)) {
-            return $this->raw('DELETE FROM ' . $this->translator->addBackticks($table) . ' WHERE id = {{id}}', ['id' => $id]);
+            $call = $this->raw('DELETE FROM ' . $this->translator->addBackticks($table) . ' WHERE id = {{id}}', ['id' => $id]);
+            return $call->rowCount();
         }
         return $this->update($table, ['deletedAt' => '.'], ['id' => $id]);
     }
@@ -155,12 +134,95 @@ class MySQlAdapter implements Adapter
         $description = $query->fetchAll(PDO::FETCH_ASSOC);
         $result = [];
         foreach ($description as $field) {
-            $result[$field['Field']] = [
+            $result[$table . '.' .$field['Field']] = [
                 'type' => $field['Type'],
                 'null' => $field['Null'] === 'YES'
             ];
         }
         return $result;
+    }
+
+    private function parseConditions(array $description, array $array, string $separator = ', ', string $equalizer = '='): string
+    {
+        $sql = '';
+        $i = 0;
+        foreach ($array as $key => $value) {
+            if(is_array($value)){
+                $sql .= ($i > 0 ? $separator : '') . ' (' . $this->parseConditions($description, $value, ' OR ', $equalizer) . ')';
+                foreach ($value as $k => $v) {
+                    $array[$k] = $v;
+                }
+
+                $i++;
+                continue;
+            }
+
+            $definition = $description[$key];
+            $sql .= $i > 0 ? $separator : '';
+            $sql .= match ($definition['type']) {
+                'datetime', 'date', 'year' => $this->dateHandler($key, $value),
+                default => $this->translator->addBackticks($key) . " {$equalizer} :{$this->underscoreKey($key)} "
+            };
+            $i++;
+        }
+        return $sql;
+    }
+    private function dateHandler(string $key, string|null $value) :string
+    {
+        if(is_null($value)) {
+            $sql = $this->translator->addBackticks($key) . " = NULL";
+            unset($this->conditions[$key]);
+            return $sql;
+        }
+        $sql = '';
+        $position = strcspn( $value , '0123456789');
+
+        switch(trim(substr($value, 0, $position))) {
+            case '.':
+                $sql = $this->translator->addBackticks($key) . ' = NOW() ';
+                unset($this->conditions[$key]);
+                break;
+            case '^':
+                $sql = $this->translator->addBackticks($key) . ' IS NULL ';
+                unset($this->conditions[$key]);
+                break;
+            case '!':
+                $sql = $this->translator->addBackticks($key) . ' IS NOT NULL ';
+                unset($this->conditions[$key]);
+                break;
+            case '>':
+            case '>=':
+            case '<':
+            case '<=':
+                $sql = ' ' . $this->translator->addBackticks($key) . trim(substr($value, 0, $position)) . " :{$this->underscoreKey($key)} ";
+                break;
+            default:
+                $sql = $this->translator->addBackticks($key) . " = :{$this->underscoreKey($key)} ";
+
+        }
+        return $sql;
+    }
+
+    private function normalizeConditions(string $defaultTable): void
+    {
+        $normalized = [];
+        foreach ($this->conditions as $key => $value) {
+            // short declaration?
+            if(is_numeric($key)){
+                $position = strcspn( $value , '!^');
+                $key = substr($value, $position + 1);
+                $value = substr($value, 0, $position + 1);
+            }
+            if(!str_contains($key, $defaultTable .'.')) {
+                $key = $defaultTable . '.' . $key;
+            }
+            $normalized[$key] = $value;
+        }
+        $this->conditions = $normalized;
+    }
+    private function underscoreKey(string $key): string
+    {
+        return str_replace('.', '_', $key);
     }
 
     /**
@@ -169,26 +231,35 @@ class MySQlAdapter implements Adapter
     private function typeMatch(array $conditions, array $tableFields): void
     {
         foreach ($conditions as $key => $value) {
+
+
             if(!array_key_exists($key, $tableFields)) {
                 throw new Exception('Field ' . $key . ' does not exist in table');
             }
             // nullable?
             if($tableFields[$key]['null'] === false && $value === null) {
                 $value = false;
+            } elseif(is_null($value)) {
+                $this->rawSubstitutions[':' . $this->underscoreKey($key)] = null;
+                continue;
+            }
+            // enum?
+            if ($value instanceof \BackedEnum) {
+                $value = $value->value;
             }
             match (preg_replace('/\([0-9]+\)/','',$tableFields[$key]['type'])) {
-                'int', 'tinyint' => $this->rawSubstitutions[':' . $key] = (int) $value,
-                'bool', 'boolean' => $this->rawSubstitutions[':' . $key] = (bool) $value,
-                'datetime', 'date', 'year' => $this->rawSubstitutions[':' . $key] = trim((string) $value),
-                'decimal' => $this->rawSubstitutions[':' . $key] = (float) $value,
-                default => $this->rawSubstitutions[':' . $key] = $value
+                'int', 'tinyint' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = (int) $value,
+                'bool', 'boolean' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = (bool) $value,
+                'datetime', 'date', 'year' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = preg_replace('/[^0-9-\s:]/','',trim((string) $value)),
+                'decimal' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = (float) $value,
+                default => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = (string) $value
             };
         }
     }
 
     private function addCallFunctions(?array $extra): void
     {
-        foreach ($this->callFunctions as $key => $set){
+        foreach (['orderBy', 'limit'] as $key){
             if(isset($extra[$key])){
                 $this->callFunctions[$key] = $extra[$key];
             }
@@ -210,7 +281,7 @@ class MySQlAdapter implements Adapter
             }
         }
 
-        Event::dispatch('MySQLAdapter.execute', ['sql' => $sql, 'substitutions' => $this->rawSubstitutions]);
+        Event::dispatch('MySQLAdapter.execute', ['sql' => $sql, 'substitutions' => $this->rawSubstitutions ?? []]);
         $exec = $this->db->prepare($sql);
         if (empty($this->rawSubstitutions)) {
             $exec->execute();

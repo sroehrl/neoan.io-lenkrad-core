@@ -76,7 +76,7 @@ class NeoanSQLTranslator
                     $array[$key] = mb_substr($value, 1);
                     $sql .= $operandi->setNamedParameter($key);
                 } catch (UnhandledMatchError | Exception $e){
-                    $sql .= ' = :' . $key;
+                    $sql .= ' = :' . str_replace('.', '_',$key);
                 }
 
             }

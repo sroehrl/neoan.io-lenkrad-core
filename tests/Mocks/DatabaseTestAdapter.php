@@ -79,7 +79,7 @@ class DatabaseTestAdapter implements \Neoan\Database\Adapter
     /**
      * @inheritDoc
      */
-    public function easy(string $selectorString, array $conditions = [], mixed $extra = null)
+    public function easy(string $selectorString, array $conditions = [], mixed $extra = null): array
     {
         $selections = explode(' ', $selectorString);
         $sql = 'SELECT ';
@@ -122,7 +122,7 @@ class DatabaseTestAdapter implements \Neoan\Database\Adapter
     /**
      * @inheritDoc
      */
-    public function update($table, array $values, array $where)
+    public function update($table, array $values, array $where): false|array|null
     {
         $sql = "UPDATE `$table` SET ";
         [
@@ -143,7 +143,7 @@ class DatabaseTestAdapter implements \Neoan\Database\Adapter
     /**
      * @inheritDoc
      */
-    public function delete($table, string $id, bool $hard = false)
+    public function delete($table, string $id, bool $hard = false): false|array|null
     {
         return $this->raw("DELETE FROM `$table` WHERE id = ?",['id'=>$id]);
     }

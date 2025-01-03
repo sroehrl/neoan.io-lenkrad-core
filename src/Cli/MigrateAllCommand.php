@@ -68,7 +68,7 @@ class MigrateAllCommand extends Command
         if (false !== $fileOption) {
 
             $fileName = $modelName . '-' . time() . '.sql';
-            $directory = $this->appPath . DIRECTORY_SEPARATOR . $fileOption . DIRECTORY_SEPARATOR;
+            $directory = $this->app->appPath . DIRECTORY_SEPARATOR . $fileOption . DIRECTORY_SEPARATOR;
             $full = $directory . $fileName;
             $this->output->writeln("Writing to " . $full);
 
@@ -146,7 +146,6 @@ class MigrateAllCommand extends Command
         $this->input = $input;
         $this->output = $output;
         $composerParser = new ComposerParser($this->app);
-
 
         foreach ($composerParser->getAutoloadNamespaces() as $ns => $path) {
             $this->directoryExplorer($this->app->cliPath . '/'. $path, $ns);
