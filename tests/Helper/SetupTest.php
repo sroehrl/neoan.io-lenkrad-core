@@ -2,7 +2,7 @@
 
 namespace Test\Helper;
 
-use Neoan\Database\SqLiteAdapter;
+use Neoan\Database\Adapters\SqLiteAdapter;
 use Neoan\Enums\ResponseOutput;
 use Neoan\Helper\Setup;
 use PHPUnit\Framework\TestCase;
@@ -41,7 +41,7 @@ class SetupTest extends TestCase
     public function testSetDatabaseAdapter()
     {
         $this->setup->setDatabaseAdapter(new SqLiteAdapter());
-        $this->assertSame('Neoan\Database\SqLiteAdapter', $this->setup->get('databaseAdapter'));
+        $this->assertSame('Neoan\Database\Adapters\SqLiteAdapter', $this->setup->get('databaseAdapter'));
     }
 
     public function testSet()
