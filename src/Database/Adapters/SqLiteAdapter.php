@@ -1,7 +1,9 @@
 <?php
 
-namespace Neoan\Database;
+namespace Neoan\Database\Adapters;
 
+use Neoan\Database\Adapter;
+use Neoan\Database\NeoanSQLTranslator;
 use Neoan\Helper\DateHelper;
 use PDO;
 use PDOStatement;

@@ -2,6 +2,7 @@
 
 namespace Neoan\Model;
 
+use Exception;
 use Iterator;
 
 class Collection implements Iterator
@@ -23,10 +24,51 @@ class Collection implements Iterator
         return $this;
     }
 
+    function first(): ?Model
+    {
+        $this->rewind();
+        return $this->valid() ? $this->current() : null;
+    }
+
+    function last(): ?Model
+    {
+        $this->position = count($this->modelInstances) - 1;
+        return $this->valid() ? $this->current() : null;
+    }
+
+    /**
+     * @throws Exception
+     */
+    function nth(int $n): Model
+    {
+        $this->position = $n - 1;
+        return $this->valid() ? $this->current() : throw new Exception('Position out of bounds');
+    }
+
+    function filter(callable $callback): self
+    {
+        $this->modelInstances = [...array_filter($this->modelInstances, $callback)];
+        return $this;
+    }
+
+
     function add(Model $modelInstance): self
     {
         $this->modelInstances[] = $modelInstance;
         return $this;
+    }
+
+    function grab(array $keys = ['id']): array
+    {
+        $output = [];
+        foreach ($this->modelInstances as $modelInstance) {
+            $rowOutput = [];
+            foreach ($keys as $key) {
+                $rowOutput[$key] = $modelInstance->$key ?? null;
+            }
+            $output[] = $rowOutput;
+        }
+        return $output;
     }
 
     function toArray(): array

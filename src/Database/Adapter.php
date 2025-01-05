@@ -16,7 +16,7 @@ interface Adapter
     /**
      * @throws Exception
      */
-    public function easy(string $selectorString, array $conditions = [], mixed $extra = null);
+    public function easy(string $selectorString, array $conditions = [], mixed $extra = null): array;
 
     /**
      * @throws Exception

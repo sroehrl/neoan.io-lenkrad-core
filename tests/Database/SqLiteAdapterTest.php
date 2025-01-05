@@ -2,8 +2,8 @@
 
 namespace Test\Database;
 
+use Neoan\Database\Adapters\SqLiteAdapter;
 use Neoan\Database\Database;
-use Neoan\Database\SqLiteAdapter;
 use PHPUnit\Framework\TestCase;
 
 class SqLiteAdapterTest extends TestCase

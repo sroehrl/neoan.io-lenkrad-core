@@ -94,7 +94,7 @@ class Interpreter
         foreach ($attributes as $attribute) {
             if ($attribute['type'] === $type) {
                 $interim = $attribute['instance']($this->currentModel->toArray(), $direction, $propertyName);
-                if(isset($interim[$propertyName])){
+                if(isset($interim[$propertyName]) || key_exists($propertyName, $interim) && is_null($interim[$propertyName])){
                     $this->currentModel->{$propertyName} = $interim[$propertyName];
                 } else {
                     unset($this->currentModel->{$propertyName});

@@ -79,7 +79,6 @@ class MySqlMigration
             }
         } catch (Exception $e) {
         }
-
     }
 
     /**

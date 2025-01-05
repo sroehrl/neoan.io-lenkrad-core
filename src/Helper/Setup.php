@@ -15,7 +15,9 @@ use Neoan\Response\Response;
 class Setup
 {
 
-    private array $configuration = [];
+    private array $configuration = [
+        'webPath' => '/',
+    ];
 
     public function __construct()
     {
@@ -117,6 +119,18 @@ class Setup
     public function setPublicPath(string $path): self
     {
         $this->configuration['publicPath'] = $path;
+        return $this;
+    }
+
+    public function setWebPath(string $path): self
+    {
+        $this->configuration['webPath'] = $path;
+        return $this;
+    }
+
+    public function setLogFile(string $path): self
+    {
+        $this->configuration['logFile'] = $path;
         return $this;
     }
 
