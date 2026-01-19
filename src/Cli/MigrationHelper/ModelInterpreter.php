@@ -46,13 +46,13 @@ class ModelInterpreter
 
     public function filteredProperties(): array
     {
-        return array_filter($this->declaration[$this->getTableName()], function (array $property) {
+        return [...array_filter($this->declaration[$this->getTableName()], function (array $property) {
             foreach ($property['attributes'] as $attribute) {
                 if ($attribute['type'] === AttributeType::ATTACH) {
                     return false;
                 }
             }
             return true;
-        });
+        })];
     }
 }
