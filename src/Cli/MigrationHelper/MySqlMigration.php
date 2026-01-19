@@ -95,10 +95,15 @@ class MySqlMigration
     function updateTable(): void
     {
         $sql = '';
-        foreach ($this->interpreter->filteredProperties() as $i => $property) {
+        $properties = $this->interpreter->filteredProperties();
+        foreach ($properties as $i => $property) {
 
             $keyword = isset($this->existingTable[$property['name']]) || $property['isPrimary'] ? 'MODIFY' : 'ADD';
-            $sql .= "ALTER TABLE `{$this->interpreter->getTableName()}` $keyword {$this->getFieldSql($property)};\n";
+            $placement = '';
+            if($i > 0){
+                $placement = " AFTER {$this->getFieldSql($properties[$i-1])}";
+            }
+            $sql .= "ALTER TABLE `{$this->interpreter->getTableName()}` $keyword {$this->getFieldSql($property)}{$placement};\n";
             $sql .= $this->createUniqueConstraint($property);
         }
         $this->sql .= $sql;
