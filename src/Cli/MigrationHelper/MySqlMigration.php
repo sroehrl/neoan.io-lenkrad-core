@@ -101,7 +101,7 @@ class MySqlMigration
             $keyword = isset($this->existingTable[$property['name']]) || $property['isPrimary'] ? 'MODIFY' : 'ADD';
             $placement = '';
             if($i > 0){
-                $placement = " AFTER {$this->getFieldSql($properties[$i-1])}";
+                $placement = " AFTER `{$properties[$i-1]['name']}`";
             }
             $sql .= "ALTER TABLE `{$this->interpreter->getTableName()}` $keyword {$this->getFieldSql($property)}{$placement};\n";
             $sql .= $this->createUniqueConstraint($property);
