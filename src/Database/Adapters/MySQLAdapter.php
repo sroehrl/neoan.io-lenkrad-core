@@ -150,6 +150,9 @@ class MySQLAdapter implements Adapter
         return $result;
     }
 
+    /**
+     * @throws Exception
+     */
     private function parseConditions(array $description, array $array, string $separator = ', ', string $equalizer = '='): string
     {
         $sql = '';
@@ -166,6 +169,9 @@ class MySQLAdapter implements Adapter
                 continue;
             }
             $pureKey = preg_replace('/_\d+$/','', $key);
+            if(!isset($description[$pureKey])) {
+                throw new Exception($pureKey . ' does not exist.');
+            }
 
             $definition = $description[$pureKey];
             $sql .= $i > 0 ? $separator : '';

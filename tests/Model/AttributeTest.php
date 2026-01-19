@@ -2,6 +2,7 @@
 
 namespace Test\Model;
 
+use Neoan\Model\Traits\HasUUID;
 use Neoan\Enums\AttributeType;
 use Neoan\Enums\Direction;
 use Neoan\Enums\TimePeriod;
@@ -22,6 +23,8 @@ use Test\Mocks\MockModel;
 class AttributeTest extends TestCase
 {
     use Setter;
+
+    use HasUUID;
     private string $testVariable;
     function testTransform()
     {
@@ -65,6 +68,7 @@ class AttributeTest extends TestCase
     {
         $this->set('testVariable', 'works');
         $this->assertSame('works', $this->testVariable);
+        $this->assertClassHasAttribute('uuid', get_called_class());
     }
     function testDateTimeProperty()
     {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1736008909">
-  <project timestamp="1736008909">
+<coverage generated="1768785486">
+  <project timestamp="1768785486">
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\CoreInterfaces\RequestInterface.php">
       <metrics loc="12" ncloc="12" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
@@ -49,7 +49,7 @@
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Database\Adapters\MySQLAdapter.php">
       <class name="Neoan\Database\Adapters\MySQLAdapter" namespace="global">
-        <metrics complexity="58" methods="17" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="175" coveredstatements="157" elements="192" coveredelements="167"/>
+        <metrics complexity="59" methods="17" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="176" coveredstatements="158" elements="193" coveredelements="168"/>
       </class>
       <line num="33" type="method" name="__construct" visibility="public" complexity="2" crap="2.03" count="6"/>
       <line num="35" type="stmt" count="6"/>
@@ -124,7 +124,7 @@
       <line num="147" type="stmt" count="5"/>
       <line num="148" type="stmt" count="5"/>
       <line num="150" type="stmt" count="5"/>
-      <line num="153" type="method" name="parseConditions" visibility="private" complexity="6" crap="6" count="4"/>
+      <line num="153" type="method" name="parseConditions" visibility="private" complexity="7" crap="7" count="4"/>
       <line num="155" type="stmt" count="4"/>
       <line num="156" type="stmt" count="4"/>
       <line num="157" type="stmt" count="4"/>
@@ -132,118 +132,119 @@
       <line num="159" type="stmt" count="1"/>
       <line num="160" type="stmt" count="1"/>
       <line num="161" type="stmt" count="1"/>
-      <line num="164" type="stmt" count="1"/>
+      <line num="162" type="stmt" count="1"/>
       <line num="165" type="stmt" count="1"/>
-      <line num="167" type="stmt" count="4"/>
-      <line num="169" type="stmt" count="4"/>
+      <line num="166" type="stmt" count="1"/>
+      <line num="168" type="stmt" count="4"/>
       <line num="170" type="stmt" count="4"/>
       <line num="171" type="stmt" count="4"/>
       <line num="172" type="stmt" count="4"/>
       <line num="173" type="stmt" count="4"/>
       <line num="174" type="stmt" count="4"/>
       <line num="175" type="stmt" count="4"/>
-      <line num="177" type="stmt" count="4"/>
-      <line num="179" type="method" name="dateHandler" visibility="private" complexity="10" crap="10.98" count="2"/>
-      <line num="181" type="stmt" count="2"/>
+      <line num="176" type="stmt" count="4"/>
+      <line num="178" type="stmt" count="4"/>
+      <line num="180" type="method" name="dateHandler" visibility="private" complexity="10" crap="10.98" count="2"/>
       <line num="182" type="stmt" count="2"/>
-      <line num="183" type="stmt" count="0"/>
+      <line num="183" type="stmt" count="2"/>
       <line num="184" type="stmt" count="0"/>
       <line num="185" type="stmt" count="0"/>
-      <line num="187" type="stmt" count="2"/>
+      <line num="186" type="stmt" count="0"/>
       <line num="188" type="stmt" count="2"/>
-      <line num="190" type="stmt" count="2"/>
+      <line num="189" type="stmt" count="2"/>
       <line num="191" type="stmt" count="2"/>
-      <line num="192" type="stmt" count="0"/>
+      <line num="192" type="stmt" count="2"/>
       <line num="193" type="stmt" count="0"/>
       <line num="194" type="stmt" count="0"/>
-      <line num="195" type="stmt" count="2"/>
-      <line num="196" type="stmt" count="1"/>
+      <line num="195" type="stmt" count="0"/>
+      <line num="196" type="stmt" count="2"/>
       <line num="197" type="stmt" count="1"/>
       <line num="198" type="stmt" count="1"/>
-      <line num="199" type="stmt" count="2"/>
-      <line num="200" type="stmt" count="1"/>
+      <line num="199" type="stmt" count="1"/>
+      <line num="200" type="stmt" count="2"/>
       <line num="201" type="stmt" count="1"/>
       <line num="202" type="stmt" count="1"/>
-      <line num="203" type="stmt" count="2"/>
-      <line num="204" type="stmt" count="1"/>
+      <line num="203" type="stmt" count="1"/>
+      <line num="204" type="stmt" count="2"/>
       <line num="205" type="stmt" count="1"/>
       <line num="206" type="stmt" count="1"/>
-      <line num="207" type="stmt" count="2"/>
+      <line num="207" type="stmt" count="1"/>
       <line num="208" type="stmt" count="2"/>
-      <line num="210" type="stmt" count="1"/>
-      <line num="213" type="stmt" count="2"/>
-      <line num="216" type="method" name="normalizeConditions" visibility="private" complexity="5" crap="5" count="4"/>
-      <line num="218" type="stmt" count="4"/>
+      <line num="209" type="stmt" count="2"/>
+      <line num="211" type="stmt" count="1"/>
+      <line num="214" type="stmt" count="2"/>
+      <line num="217" type="method" name="normalizeConditions" visibility="private" complexity="5" crap="5" count="4"/>
       <line num="219" type="stmt" count="4"/>
       <line num="220" type="stmt" count="4"/>
       <line num="221" type="stmt" count="4"/>
-      <line num="222" type="stmt" count="1"/>
+      <line num="222" type="stmt" count="4"/>
       <line num="223" type="stmt" count="1"/>
       <line num="224" type="stmt" count="1"/>
       <line num="225" type="stmt" count="1"/>
       <line num="226" type="stmt" count="1"/>
       <line num="227" type="stmt" count="1"/>
-      <line num="232" type="stmt" count="1"/>
-      <line num="234" type="stmt" count="1"/>
-      <line num="236" type="stmt" count="4"/>
+      <line num="228" type="stmt" count="1"/>
+      <line num="233" type="stmt" count="1"/>
+      <line num="235" type="stmt" count="1"/>
       <line num="237" type="stmt" count="4"/>
-      <line num="241" type="stmt" count="4"/>
-      <line num="244" type="method" name="normalizeCondition" visibility="private" complexity="3" crap="3" count="4"/>
-      <line num="246" type="stmt" count="4"/>
-      <line num="248" type="stmt" count="4"/>
-      <line num="249" type="stmt" count="1"/>
+      <line num="238" type="stmt" count="4"/>
+      <line num="242" type="stmt" count="4"/>
+      <line num="245" type="method" name="normalizeCondition" visibility="private" complexity="3" crap="3" count="4"/>
+      <line num="247" type="stmt" count="4"/>
+      <line num="249" type="stmt" count="4"/>
       <line num="250" type="stmt" count="1"/>
       <line num="251" type="stmt" count="1"/>
-      <line num="253" type="stmt" count="4"/>
+      <line num="252" type="stmt" count="1"/>
       <line num="254" type="stmt" count="4"/>
-      <line num="256" type="stmt" count="4"/>
+      <line num="255" type="stmt" count="4"/>
       <line num="257" type="stmt" count="4"/>
-      <line num="259" type="method" name="underscoreKey" visibility="private" complexity="1" crap="1" count="4"/>
-      <line num="261" type="stmt" count="4"/>
-      <line num="267" type="method" name="typeMatch" visibility="private" complexity="8" crap="8.75" count="4"/>
-      <line num="269" type="stmt" count="4"/>
+      <line num="258" type="stmt" count="4"/>
+      <line num="260" type="method" name="underscoreKey" visibility="private" complexity="1" crap="1" count="4"/>
+      <line num="262" type="stmt" count="4"/>
+      <line num="268" type="method" name="typeMatch" visibility="private" complexity="8" crap="8.75" count="4"/>
       <line num="270" type="stmt" count="4"/>
-      <line num="272" type="stmt" count="4"/>
-      <line num="273" type="stmt" count="1"/>
+      <line num="271" type="stmt" count="4"/>
+      <line num="273" type="stmt" count="4"/>
       <line num="274" type="stmt" count="1"/>
-      <line num="276" type="stmt" count="4"/>
-      <line num="278" type="stmt" count="4"/>
-      <line num="279" type="stmt" count="0"/>
-      <line num="282" type="stmt" count="4"/>
-      <line num="283" type="stmt" count="0"/>
-      <line num="284" type="stmt" count="4"/>
-      <line num="285" type="stmt" count="0"/>
+      <line num="275" type="stmt" count="1"/>
+      <line num="277" type="stmt" count="4"/>
+      <line num="279" type="stmt" count="4"/>
+      <line num="280" type="stmt" count="0"/>
+      <line num="283" type="stmt" count="4"/>
+      <line num="284" type="stmt" count="0"/>
+      <line num="285" type="stmt" count="4"/>
       <line num="286" type="stmt" count="0"/>
-      <line num="289" type="stmt" count="4"/>
-      <line num="290" type="stmt" count="0"/>
-      <line num="292" type="stmt" count="4"/>
+      <line num="287" type="stmt" count="0"/>
+      <line num="290" type="stmt" count="4"/>
+      <line num="291" type="stmt" count="0"/>
       <line num="293" type="stmt" count="4"/>
       <line num="294" type="stmt" count="4"/>
       <line num="295" type="stmt" count="4"/>
       <line num="296" type="stmt" count="4"/>
       <line num="297" type="stmt" count="4"/>
       <line num="298" type="stmt" count="4"/>
-      <line num="302" type="method" name="addCallFunctions" visibility="private" complexity="3" crap="3" count="2"/>
-      <line num="304" type="stmt" count="2"/>
+      <line num="299" type="stmt" count="4"/>
+      <line num="303" type="method" name="addCallFunctions" visibility="private" complexity="3" crap="3" count="2"/>
       <line num="305" type="stmt" count="2"/>
-      <line num="306" type="stmt" count="1"/>
-      <line num="310" type="method" name="orderBy" visibility="private" complexity="1" crap="1" count="1"/>
-      <line num="312" type="stmt" count="1"/>
-      <line num="314" type="method" name="limit" visibility="private" complexity="1" crap="1" count="1"/>
-      <line num="316" type="stmt" count="1"/>
-      <line num="318" type="method" name="execute" visibility="private" complexity="4" crap="4.01" count="6"/>
-      <line num="320" type="stmt" count="6"/>
-      <line num="321" type="stmt" count="1"/>
+      <line num="306" type="stmt" count="2"/>
+      <line num="307" type="stmt" count="1"/>
+      <line num="311" type="method" name="orderBy" visibility="private" complexity="1" crap="1" count="1"/>
+      <line num="313" type="stmt" count="1"/>
+      <line num="315" type="method" name="limit" visibility="private" complexity="1" crap="1" count="1"/>
+      <line num="317" type="stmt" count="1"/>
+      <line num="319" type="method" name="execute" visibility="private" complexity="4" crap="4.01" count="6"/>
+      <line num="321" type="stmt" count="6"/>
       <line num="322" type="stmt" count="1"/>
-      <line num="326" type="stmt" count="6"/>
+      <line num="323" type="stmt" count="1"/>
       <line num="327" type="stmt" count="6"/>
       <line num="328" type="stmt" count="6"/>
-      <line num="329" type="stmt" count="0"/>
-      <line num="331" type="stmt" count="6"/>
-      <line num="334" type="stmt" count="6"/>
+      <line num="329" type="stmt" count="6"/>
+      <line num="330" type="stmt" count="0"/>
+      <line num="332" type="stmt" count="6"/>
       <line num="335" type="stmt" count="6"/>
       <line num="336" type="stmt" count="6"/>
-      <metrics loc="338" ncloc="329" classes="1" methods="17" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="175" coveredstatements="157" elements="192" coveredelements="167"/>
+      <line num="337" type="stmt" count="6"/>
+      <metrics loc="339" ncloc="330" classes="1" methods="17" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="176" coveredstatements="158" elements="193" coveredelements="168"/>
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Database\Adapters\SqLiteAdapter.php">
       <class name="Neoan\Database\Adapters\SqLiteAdapter" namespace="global">
@@ -448,17 +449,6 @@
       <line num="31" type="method" name="setNamedParameter" visibility="public" complexity="1" crap="2" count="0"/>
       <line num="33" type="stmt" count="0"/>
       <metrics loc="37" ncloc="34" classes="1" methods="2" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="10" coveredstatements="8" elements="12" coveredelements="8"/>
-    </file>
-    <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Database\Selectandi.php">
-      <class name="Neoan\Database\Selectandi" namespace="global">
-        <metrics complexity="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="0" elements="5" coveredelements="0"/>
-      </class>
-      <line num="11" type="method" name="matchHit" visibility="public" complexity="1" crap="2" count="0"/>
-      <line num="13" type="stmt" count="0"/>
-      <line num="14" type="stmt" count="0"/>
-      <line num="15" type="stmt" count="0"/>
-      <line num="16" type="stmt" count="0"/>
-      <metrics loc="20" ncloc="20" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="0" elements="5" coveredelements="0"/>
     </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Enums\AttributeType.php">
       <metrics loc="13" ncloc="13" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
@@ -1553,6 +1543,14 @@
       <line num="76" type="stmt" count="1"/>
       <metrics loc="79" ncloc="73" classes="1" methods="7" coveredmethods="6" conditionals="0" coveredconditionals="0" statements="29" coveredstatements="28" elements="36" coveredelements="34"/>
     </file>
+    <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Model\Traits\HasUUID.php">
+      <class name="Neoan\Model\Traits\HasUUID" namespace="global">
+        <metrics complexity="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
+      </class>
+      <line num="13" type="method" name="byUUID" visibility="public" complexity="1" crap="2" count="0"/>
+      <line num="15" type="stmt" count="0"/>
+      <metrics loc="19" ncloc="19" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
+    </file>
     <file name="C:\xampp\htdocs\neoan.io-tools\lenkrad-core\src\Model\Traits\Setter.php">
       <class name="Neoan\Model\Traits\Setter" namespace="global">
         <metrics complexity="2" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="3" coveredstatements="3" elements="4" coveredelements="4"/>
@@ -2234,6 +2232,6 @@
       <line num="60" type="stmt" count="32"/>
       <metrics loc="62" ncloc="62" classes="2" methods="7" coveredmethods="7" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="16" elements="23" coveredelements="23"/>
     </file>
-    <metrics files="79" loc="4547" ncloc="4341" classes="64" methods="345" coveredmethods="309" conditionals="0" coveredconditionals="0" statements="1453" coveredstatements="1383" elements="1798" coveredelements="1692"/>
+    <metrics files="79" loc="4547" ncloc="4341" classes="64" methods="345" coveredmethods="309" conditionals="0" coveredconditionals="0" statements="1451" coveredstatements="1384" elements="1796" coveredelements="1693"/>
   </project>
 </coverage>
