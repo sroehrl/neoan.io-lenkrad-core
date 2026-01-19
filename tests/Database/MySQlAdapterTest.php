@@ -18,7 +18,7 @@ class MySQlAdapterTest extends TestCase
     {
         $this->mock->setData([
             [
-                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => ''],
+                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => '', 'Default' => ''],
                 ['Field' => 'eve', 'Type' => 'varchar(255)', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => '']
             ],
             [
@@ -47,7 +47,7 @@ class MySQlAdapterTest extends TestCase
     {
         $this->mock->setData([
             [
-                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => ''],
+                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => '', 'Default' => ''],
                 ['Field' => 'eve', 'Type' => 'varchar(255)', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => '']
             ],
             [],
@@ -61,7 +61,7 @@ class MySQlAdapterTest extends TestCase
     {
         $this->mock->setData([
             [
-                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => ''],
+                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => '', 'Default' => ''],
                 ['Field' => 'eve', 'Type' => 'varchar(255)', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => ''],
                 ['Field' => 'created', 'Type' => 'datetime', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => '']
             ],
@@ -75,7 +75,7 @@ class MySQlAdapterTest extends TestCase
     {
         $this->mock->setData([
             [
-                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => ''],
+                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => '', 'Default' => ''],
                 ['Field' => 'eve', 'Type' => 'varchar(255)', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => ''],
                 ['Field' => 'created', 'Type' => 'datetime', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => '']
             ],
@@ -89,8 +89,8 @@ class MySQlAdapterTest extends TestCase
     {
         $this->mock->setData([
             [
-                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => ''],
-                ['Field' => 'eve', 'Type' => 'varchar(200)', 'Null' => 'NO', 'Key' => ''],
+                ['Field' => 'id', 'Type' => 'int(11)', 'Null' => 'NO', 'Key' => '', 'Default' => ''],
+                ['Field' => 'eve', 'Type' => 'varchar(200)', 'Null' => 'NO', 'Key' => '', 'Default' => ''],
                 ['Field' => 'created', 'Type' => 'datetime', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => ''],
                 ['Field' => 'updated', 'Type' => 'datetime', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => ''],
                 ['Field' => 'deleted', 'Type' => 'datetime', 'Null' => 'YES', 'Key' => '', 'Default' => null, 'Extra' => ''],

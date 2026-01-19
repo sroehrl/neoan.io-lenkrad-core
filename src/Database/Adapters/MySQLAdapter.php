@@ -33,7 +33,7 @@ class MySQLAdapter implements Adapter
     public function __construct($credentials = [], MockPDO|bool $debug = false)
     {
         $this->credentials = array_merge($this->credentials, $credentials);
-        if(!$debug){
+        if (!$debug) {
             $this->db = new PDO("mysql:host={$this->credentials['host']};port={$this->credentials['port']};dbname={$this->credentials['database']}", $this->credentials['user'], $this->credentials['password']);
         } else {
             $this->db = $debug;
@@ -44,7 +44,7 @@ class MySQLAdapter implements Adapter
 
     public function raw(string $sql, array $conditions, mixed $extra = null): MockStm|PDOStatement
     {
-        $sql = preg_replace_callback('/{\{([a-z.]+)\}\}/i', function($matches) use ($conditions, &$conditionArray){
+        $sql = preg_replace_callback('/{\{([a-z.]+)\}\}/i', function ($matches) use ($conditions, &$conditionArray) {
             $this->rawSubstitutions[] = $conditions[$matches[1]];
             return ':' . $matches[1];
         }, $sql);
@@ -59,7 +59,7 @@ class MySQLAdapter implements Adapter
 
         $description = $this->describeTable($this->translator->tableName);
 
-        $sql = "SELECT " . implode(', ', $select) . " FROM " .  $this->translator->addBackticks($this->translator->tableName);
+        $sql = "SELECT " . implode(', ', $select) . " FROM " . $this->translator->addBackticks($this->translator->tableName);
         if (!empty($conditions)) {
             $this->normalizeConditions($this->translator->tableName);
 
@@ -88,7 +88,7 @@ class MySQLAdapter implements Adapter
         $sql .= $values;
 
         $result = $this->execute($sql);
-        if($result->errorCode() && $result->rowCount() === 0) {
+        if ($result->errorCode() && $result->rowCount() === 0) {
             $error = $result->errorInfo();
             throw new Exception($error[2], $error[1]);
         }
@@ -118,7 +118,7 @@ class MySQLAdapter implements Adapter
         $sql = rtrim($sql, ', ') . ' WHERE ';
         $sql .= $where;
         $result = $this->execute($sql);
-        if($result->errorCode() && $result->rowCount() === 0) {
+        if ($result->errorCode() && $result->rowCount() === 0) {
             $error = $result->errorInfo();
             throw new Exception($error[2], $error[1]);
         }
@@ -142,9 +142,10 @@ class MySQLAdapter implements Adapter
         $description = $query->fetchAll(PDO::FETCH_ASSOC);
         $result = [];
         foreach ($description as $field) {
-            $result[$table . '.' .$field['Field']] = [
+            $result[$table . '.' . $field['Field']] = [
                 'type' => $field['Type'],
-                'null' => $field['Null'] === 'YES'
+                'null' => $field['Null'] === 'YES',
+                'default' => $field['Default'],
             ];
         }
         return $result;
@@ -158,7 +159,7 @@ class MySQLAdapter implements Adapter
         $sql = '';
         $i = 0;
         foreach ($array as $key => $value) {
-            if(is_array($value)){
+            if (is_array($value)) {
                 $isSequential = array_keys($value) === range(0, count($value) - 1);
                 $sql .= ($i > 0 ? $separator : '') . ' (' . $this->parseConditions($description, $value, $isSequential ? ' OR ' : ' AND ', $equalizer) . ')';
                 foreach ($value as $k => $v) {
@@ -168,33 +169,42 @@ class MySQLAdapter implements Adapter
                 $i++;
                 continue;
             }
-            $pureKey = preg_replace('/_\d+$/','', $key);
-            if(!isset($description[$pureKey])) {
+            $pureKey = preg_replace('/_\d+$/', '', $key);
+            if (!isset($description[$pureKey])) {
                 throw new Exception($pureKey . ' does not exist.');
             }
 
             $definition = $description[$pureKey];
-            $sql .= $i > 0 ? $separator : '';
-            $sql .= match ($definition['type']) {
-                'datetime', 'date', 'year' => $this->dateHandler($key, $value),
+
+            $potential = match ($definition['type']) {
+                'datetime', 'date', 'year' => $this->dateHandler($key, $value, $definition['default']),
                 default => $this->translator->addBackticks($pureKey) . " {$equalizer} :{$this->underscoreKey($key)} "
             };
+            // decide if separator is needed
+            if (!empty($potential)) {
+                $sql .= ($i > 0 ? $separator : '') . $potential;
+            }
+
             $i++;
         }
         return $sql;
     }
-    private function dateHandler(string $key, string|null $value) :string
+    private function dateHandler(string $key, string|null $value, string|null $default): string
     {
-        $pureKey = preg_replace('/_\d+$/','', $key);
-        if(is_null($value)) {
-            $sql = $this->translator->addBackticks($pureKey) . " = NULL";
+        $pureKey = preg_replace('/_\d+$/', '', $key);
+        if (is_null($value)) {
             unset($this->conditions[$key]);
-            return $sql;
+            unset($this->rawSubstitutions[':' . $this->underscoreKey($key)]);
+            if ($default) {
+                return '';
+            }
+
+            return $this->translator->addBackticks($pureKey) . " = NULL";
         }
         $sql = '';
-        $position = strcspn( $value , '0123456789');
+        $position = strcspn($value, '0123456789');
 
-        switch(trim(substr($value, 0, $position))) {
+        switch (trim(substr($value, 0, $position))) {
             case '.':
                 $sql = $this->translator->addBackticks($pureKey) . ' = NOW() ';
                 unset($this->conditions[$key]);
@@ -225,7 +235,7 @@ class MySQLAdapter implements Adapter
         $normalized = [];
         $i = 0;
         foreach ($this->conditions as $key => $value) {
-            if(is_array($value)){
+            if (is_array($value)) {
                 $passDown = [];
                 foreach ($value as $int => $v) {
                     $passDown[$int] = [];
@@ -252,12 +262,12 @@ class MySQLAdapter implements Adapter
     {
         $return = [];
         // short declaration?
-        if(is_numeric($key)){
-            $position = strcspn( $value , '!^');
+        if (is_numeric($key)) {
+            $position = strcspn($value, '!^');
             $key = substr($value, $position + 1);
             $value = substr($value, 0, $position + 1);
         }
-        if(!str_contains($key, $defaultTable .'.')) {
+        if (!str_contains($key, $defaultTable . '.')) {
             $key = $defaultTable . '.' . $key;
         }
         $return[$key . '_' . $runner] = $value;
@@ -276,19 +286,19 @@ class MySQLAdapter implements Adapter
         $i = 0;
         foreach ($conditions as $key => $value) {
 
-            if(is_array($value)){
+            if (is_array($value)) {
                 $this->typeMatch($value, $tableFields);
                 continue;
             }
-            $pureKey = preg_replace('/_\d+$/','',$key);
+            $pureKey = preg_replace('/_\d+$/', '', $key);
 
-            if(!array_key_exists($pureKey, $tableFields)) {
+            if (!array_key_exists($pureKey, $tableFields)) {
                 throw new Exception('Field ' . $pureKey . ' does not exist in table');
             }
             // nullable?
-            if($tableFields[$pureKey]['null'] === false && $value === null) {
+            if ($tableFields[$pureKey]['null'] === false && $value === null) {
                 $value = false;
-            } elseif(is_null($value)) {
+            } elseif (is_null($value)) {
                 $this->rawSubstitutions[':' . $this->underscoreKey($key)] = null;
                 continue;
             }
@@ -296,10 +306,10 @@ class MySQLAdapter implements Adapter
             if ($value instanceof \BackedEnum) {
                 $value = $value->value;
             }
-            match (preg_replace('/\([0-9]+\)/','',$tableFields[$pureKey]['type'])) {
+            match (preg_replace('/\([0-9]+\)/', '', $tableFields[$pureKey]['type'])) {
                 'int', 'tinyint' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = (int) $value,
                 'bool', 'boolean' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = (bool) $value,
-                'datetime', 'date', 'year' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = preg_replace('/[^0-9-\s:]/','',trim((string) $value)),
+                'datetime', 'date', 'year' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = preg_replace('/[^0-9-\s:]/', '', trim((string) $value)),
                 'decimal' => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = (float) $value,
                 default => $this->rawSubstitutions[':' . $this->underscoreKey($key)] = (string) $value
             };
@@ -308,8 +318,8 @@ class MySQLAdapter implements Adapter
 
     private function addCallFunctions(?array $extra): void
     {
-        foreach (['orderBy', 'limit'] as $key){
-            if(isset($extra[$key])){
+        foreach (['orderBy', 'limit'] as $key) {
+            if (isset($extra[$key])) {
                 $this->callFunctions[$key] = $extra[$key];
             }
         }
@@ -322,10 +332,10 @@ class MySQLAdapter implements Adapter
     {
         return " LIMIT $set[0], $set[1]";
     }
-    private function execute($sql) : PDOStatement|MockStm
+    private function execute($sql): PDOStatement|MockStm
     {
-        foreach ($this->callFunctions as $key => $set){
-            if(!empty($set)){
+        foreach ($this->callFunctions as $key => $set) {
+            if (!empty($set)) {
                 $sql .= $this->{$key}($set);
             }
         }
@@ -338,7 +348,7 @@ class MySQLAdapter implements Adapter
             $exec->execute($this->rawSubstitutions);
         }
         // reset
-        $this->callFunctions = ['orderBy'=>[],'limit'=>[]];
+        $this->callFunctions = ['orderBy' => [], 'limit' => []];
         $this->rawSubstitutions = [];
         return $exec;
     }
