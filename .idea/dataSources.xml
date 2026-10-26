@@ -14,11 +14,6 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:C:\xampp\htdocs\neoan.io-tools\lenkrad-core\tests\Database\db.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.38.0/sqlite-jdbc-3.38.0.jar</url>
-        </library>
-      </libraries>
     </data-source>
     <data-source source="LOCAL" name="lenkrad_playground@localhost" uuid="48015edc-a7e4-4867-9129-0ebfdbdaf2f4">
       <driver-ref>mariadb</driver-ref>

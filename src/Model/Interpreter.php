@@ -75,7 +75,7 @@ class Interpreter
         return $this->currentModel;
     }
 
-    public function fillWithReadOnlyGuard(array $property, bool $readOnly, string $value): void
+    public function fillWithReadOnlyGuard(array $property, bool $readOnly, string|array $value): void
     {
         if ($readOnly && !isset($this->currentModel->{$property['name']})) {
             $this->currentModel->set($property['name'], $value);
@@ -83,8 +83,13 @@ class Interpreter
             try {
                 $this->currentModel->{$property['name']} = $value;
             } catch (TypeError $e) {
-                // some day...
-                var_dump($e->getMessage());
+                // is type array but value string?
+                if(is_string($value) && $property['type'] === 'array'){
+                    $this->currentModel->{$property['name']} = json_decode($value, true);
+                } else {
+                    // some day...
+                    var_dump($e->getMessage());
+                }
             }
         }
     }

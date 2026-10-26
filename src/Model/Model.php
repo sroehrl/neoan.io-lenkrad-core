@@ -39,11 +39,11 @@ class Model
     {
         $check = new AttributeHelper(static::class);
         $foreignKeyProperties = $check->findPropertiesByAttribute(IsForeignKey::class);
-        if($foreignKeyProperties){
+        if ($foreignKeyProperties) {
             return $this->executeMagicCall($foreignKeyProperties, $method, $check);
         }
 
-        throw new Exception('Unknown model method "' . $method . '" for model "'. static::class . '"');
+        throw new Exception('Unknown model method "' . $method . '" for model "' . static::class . '"');
     }
 
     /**
@@ -51,14 +51,13 @@ class Model
      */
     private function executeMagicCall(array $foreignKeyProperties, string $method, AttributeHelper $helper): ?Model
     {
-        foreach ($foreignKeyProperties as $property)
-        {
+        foreach ($foreignKeyProperties as $property) {
             $fkAttributes = $helper->reflection->getProperty($property)->getAttributes(IsForeignKey::class);
             $modelClass = $fkAttributes[0]->getArguments()[0];
             $interpreter = new Interpreter($modelClass);
             $key = $fkAttributes[0]->getArguments()[1] ?? $interpreter->getPrimaryKey();
 
-            if(str_starts_with($property, $method)) {
+            if (str_starts_with($property, $method)) {
                 return $modelClass::retrieveOne([$key => $this->{$property}]);
             } elseif (str_starts_with('with' . ucfirst($property), $method)) {
                 $identifier = lcfirst(substr($method, 4));
@@ -77,7 +76,7 @@ class Model
         self::interpret();
         $select = self::$tableName . '.' . self::$interpreter->getPrimaryKey();
         foreach ($condition as $key => $value) {
-            if(str_contains($key, '.')) {
+            if (str_contains($key, '.')) {
                 $select .= ' ' . $key;
             }
         }
@@ -107,7 +106,7 @@ class Model
     public static function retrieveOneOrCreate(array $condition): static
     {
         $newInstance = self::retrieveOne($condition);
-        if(!$newInstance) {
+        if (!$newInstance) {
             $newInstance = new static($condition);
         }
         return $newInstance;
@@ -126,6 +125,7 @@ class Model
     {
         $modelClass = get_called_class();
         $copy = new $modelClass($this->toArray(true));
+
         self::interpret();
         self::$interpreter->removePrivateAttributes($copy);
         $insertOrUpdate = self::$interpreter->generateInsertUpdate($copy);
@@ -143,7 +143,7 @@ class Model
                 break;
         }
 
-        try{
+        try {
             $this->rehydrate($id);
         } catch (\TypeError $e) {
             throw new Exception('Store error: not hydratable');
@@ -172,8 +172,9 @@ class Model
                 unset($values[$key]);
             } elseif ($value instanceof Collection || $value instanceof Model) {
                 $values[$key] = $value->toArray();
+            } elseif (is_object($value) && method_exists($value, 'whenResponding')) {
+                $values[$key] = $value->whenResponding();
             }
-
         }
         return $values;
     }
@@ -233,7 +234,7 @@ class Model
     }
 
 
-    public function delete($hard = false):void
+    public function delete($hard = false): void
     {
         self::interpret();
         $primaryKey = self::$interpreter->getPrimaryKey();

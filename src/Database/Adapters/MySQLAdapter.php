@@ -24,6 +24,8 @@ class MySQLAdapter implements Adapter
     private array $rawSubstitutions;
     private array $conditions;
 
+    private array $setters;
+
     private array $callFunctions = [];
 
     private PDO|MockPDO $db;
@@ -45,7 +47,7 @@ class MySQLAdapter implements Adapter
     public function raw(string $sql, array $conditions, mixed $extra = null): MockStm|PDOStatement
     {
         $sql = preg_replace_callback('/{\{([a-z.]+)\}\}/i', function ($matches) use ($conditions, &$conditionArray) {
-            $this->rawSubstitutions[] = $conditions[$matches[1]];
+            $this->rawSubstitutions[$matches[1]] = $conditions[$matches[1]];
             return ':' . $matches[1];
         }, $sql);
         return $this->execute($sql);
@@ -79,10 +81,10 @@ class MySQLAdapter implements Adapter
     {
         $tableDefinition = $this->describeTable($table);
 
-        $this->conditions = $content;
-        $this->normalizeConditions($table);
-        $this->typeMatch($this->conditions, $tableDefinition);
-        $values = $this->parseConditions($tableDefinition, $this->conditions, ', ');
+        $this->setters = $content;
+        $this->normalizeSetters($table);
+        $this->typeMatch($this->setters, $tableDefinition, true);
+        $values = $this->parseSetters($tableDefinition, $this->setters);
 
         $sql = "INSERT INTO `{$table}` SET ";
         $sql .= $values;
@@ -108,10 +110,10 @@ class MySQLAdapter implements Adapter
         $where = $this->parseConditions($tableDefinition, $this->conditions, ' AND ', 'LIKE');
 
         // SET
-        $this->conditions = $values;
-        $this->normalizeConditions($table);
-        $this->typeMatch($this->conditions, $tableDefinition);
-        $values = $this->parseConditions($tableDefinition, $this->conditions, ', ');
+        $this->setters = $values;
+        $this->normalizeSetters($table);
+        $this->typeMatch($this->conditions, $tableDefinition, true);
+        $values = $this->parseSetters($tableDefinition, $this->conditions);
 
         $sql = "UPDATE `{$table}` SET ";
         $sql .= $values;
@@ -154,6 +156,26 @@ class MySQLAdapter implements Adapter
     /**
      * @throws Exception
      */
+    private function parseSetters(array $description, array $setterArray): string
+    {
+        $sql = '';
+        $i = 0;
+        foreach ($setterArray as $key => $value) {
+            $pureKey = $this->purifyKey($key);
+            if (!isset($description[$pureKey])) {
+                throw new Exception($pureKey . ' does not exist.');
+            }
+            $nullable = $description[$pureKey]['null'];
+
+            $sql .= ($i > 0 ? ', ' : '') . $this->translator->addBackticks($pureKey) . " = :{$this->underscoreKey($key)} ";
+            $i++;
+        }
+        return $sql;
+    }
+
+    /**
+     * @throws Exception
+     */
     private function parseConditions(array $description, array $array, string $separator = ', ', string $equalizer = '='): string
     {
         $sql = '';
@@ -169,7 +191,7 @@ class MySQLAdapter implements Adapter
                 $i++;
                 continue;
             }
-            $pureKey = preg_replace('/_\d+$/', '', $key);
+            $pureKey = $this->purifyKey($key);
             if (!isset($description[$pureKey])) {
                 throw new Exception($pureKey . ' does not exist.');
             }
@@ -178,7 +200,7 @@ class MySQLAdapter implements Adapter
 
             $potential = match ($definition['type']) {
                 'datetime', 'date', 'year' => $this->dateHandler($key, $value, $definition['default']),
-                default => $this->translator->addBackticks($pureKey) . " {$equalizer} :{$this->underscoreKey($key)} "
+                default => $this->defaultHandler($definition['default'], $definition['null'], $key, $value, $equalizer)
             };
             // decide if separator is needed
             if (!empty($potential)) {
@@ -189,9 +211,46 @@ class MySQLAdapter implements Adapter
         }
         return $sql;
     }
+    private function purifyKey(string $key): string
+    {
+        return preg_replace('/_\d+$/','', $key);
+    }
+
+    private function defaultHandler(string|null $default, bool $nullable, string $key, mixed $value, string $equalizer = '='):string
+    {
+        $pureKey = $this->purifyKey($key);
+        $sql = '';
+        if(!$nullable) {
+            return $this->translator->addBackticks($pureKey) . " {$equalizer} :{$this->underscoreKey($key)} ";
+        }
+
+        if (is_null($value)) {
+            unset($this->conditions[$key]);
+            unset($this->rawSubstitutions[':' . $this->underscoreKey($key)]);
+            if ($default) {
+                return '';
+            }
+
+            return $this->translator->addBackticks($pureKey) . " = NULL";
+        }
+
+        switch(trim(substr($value, 0, 1))) {
+            case '^':
+                $sql = $this->translator->addBackticks($pureKey) . ' IS NULL ';
+                unset($this->conditions[$key]);
+                break;
+            case '!':
+                $sql = $this->translator->addBackticks($pureKey) . ' IS NOT NULL ';
+                unset($this->conditions[$key]);
+                break;
+            default:
+                $sql = $this->translator->addBackticks($pureKey) . " {$equalizer} :{$this->underscoreKey($key)} ";
+        }
+        return $sql;
+    }
     private function dateHandler(string $key, string|null $value, string|null $default): string
     {
-        $pureKey = preg_replace('/_\d+$/', '', $key);
+        $pureKey = $this->purifyKey($key);
         if (is_null($value)) {
             unset($this->conditions[$key]);
             unset($this->rawSubstitutions[':' . $this->underscoreKey($key)]);
@@ -228,6 +287,19 @@ class MySQLAdapter implements Adapter
 
         }
         return $sql;
+    }
+
+    private function normalizeSetters(string $defaultTable): void
+    {
+        $normalized = [];
+        $i = 0;
+        foreach ($this->setters as $key => $value) {
+            $normalized = array_merge($normalized, $this->normalizeCondition($key, $value, $defaultTable, $i));
+            $i++;
+        }
+        $this->setters = $normalized;
+
+
     }
 
     private function normalizeConditions(string $defaultTable): void
@@ -278,23 +350,41 @@ class MySQLAdapter implements Adapter
         return str_replace('.', '_', $key);
     }
 
+    private function arrayJsonCheck(string $key, mixed $value, array $tableFields): mixed
+    {
+        if(!is_array($value)){
+            return $value;
+        }
+        $pureKey = preg_replace('/_\d+$/', '', $key);
+        $type = preg_replace('/\([0-9]+\)/', '', $tableFields[$pureKey]['type']);
+        if(in_array(strtolower($type), ['json', 'longtext'])){
+            return json_encode($value);
+        }
+        return $value;
+
+    }
+
     /**
      * @throws Exception
      */
-    private function typeMatch(array $conditions, array $tableFields): void
+    private function typeMatch(array $conditions, array $tableFields, $isSetter = false): void
     {
         $i = 0;
         foreach ($conditions as $key => $value) {
+
+            $pureKey = preg_replace('/_\d+$/', '', $key);
+            if (!array_key_exists($pureKey, $tableFields)) {
+                throw new Exception('Field ' . $pureKey . ' does not exist in table');
+            }
+            if($isSetter){
+                $value = $this->arrayJsonCheck($key, $value, $tableFields);
+            }
 
             if (is_array($value)) {
                 $this->typeMatch($value, $tableFields);
                 continue;
             }
-            $pureKey = preg_replace('/_\d+$/', '', $key);
 
-            if (!array_key_exists($pureKey, $tableFields)) {
-                throw new Exception('Field ' . $pureKey . ' does not exist in table');
-            }
             // nullable?
             if ($tableFields[$pureKey]['null'] === false && $value === null) {
                 $value = false;
