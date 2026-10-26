@@ -24,6 +24,30 @@ class Collection implements Iterator
         return $this;
     }
 
+    public function find(array $conditions): ?Model
+    {
+        foreach ($this->modelInstances as $modelInstance) {
+            $match = true;
+            foreach ($conditions as $key => $value) {
+                $actualValue = $modelInstance->$key ?? null;
+                if (str_contains((string) $value, '%')) {
+                    $regex = '/^' . str_replace('%', '.*', preg_quote((string) $value, '/')) . '$/';
+                    if (!preg_match($regex, (string) $actualValue)) {
+                        $match = false;
+                        break;
+                    }
+                } elseif ($actualValue != $value) {
+                    $match = false;
+                    break;
+                }
+            }
+            if ($match) {
+                return $modelInstance;
+            }
+        }
+        return null;
+    }
+
     function first(): ?Model
     {
         $this->rewind();

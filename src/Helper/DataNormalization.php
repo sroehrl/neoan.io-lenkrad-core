@@ -31,6 +31,8 @@ class DataNormalization implements Iterator
             $data = $data->value;
         } elseif ($data instanceof \UnitEnum) {
             $data = $data->name;
+        } elseif (is_object($data) && method_exists($data, 'whenResponding')) {
+            $data = $data->whenResponding();
         } elseif (is_array($data)) {
             foreach ($data as $key => $value) {
                 $data[$key] = $this->convert($value);

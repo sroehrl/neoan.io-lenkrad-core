@@ -39,7 +39,7 @@ class MigrateAllCommand extends Command
             ->setHelp('Syncs a model declaration to the database')
             ->addArgument(
                 'dialect',
-                InputArgument::REQUIRED,
+                InputArgument::OPTIONAL,
                 'sqlite | mysql'
             )
             ->addOption(

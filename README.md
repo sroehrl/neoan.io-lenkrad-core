@@ -12,6 +12,8 @@ This is a core rewrite of neoan and not (yet) meant for production.
 Using modern PHP, we believe it's possible to create easy & static internal APIs without the usual 
 problems regarding mocking & injection and testability.
 
+We recommend using a out-of-the-box starter kit (f.e. [rest starter](https://github.com/sroehrl/neoanio-rest-starter)), but feel free to dive into the core:
+
 ## It's modern!
 
 At a glance:
@@ -73,7 +75,7 @@ $user->store();
 
 As you can see, a lot of overhead can be omitted while maintaining an approachable style.
 
-You will need PHP 8.1 & composer2 to run this
+You will need PHP 8.3 & composer2 to run this
 
 - [Why yet another framework?](#why)
 - [Getting Started](#getting-started)

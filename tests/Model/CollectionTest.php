@@ -23,7 +23,7 @@ class CollectionTest extends TestCase
             'password' => '123123'
         ]);
         $this->model->ensure()->store();
-        $this->collection = MockModel::retrieve(['userName'=>$randomUser]);
+        $this->collection = MockModel::retrieve(['userName' => $randomUser]);
 
     }
     protected function tearDown(): void
@@ -33,7 +33,7 @@ class CollectionTest extends TestCase
 
     public function testEach()
     {
-        $this->collection->each(function ($item, $iterator){
+        $this->collection->each(function ($item, $iterator) {
             $this->lastItem = $item;
         });
         $this->assertInstanceOf(MockModel::class, $this->lastItem);
@@ -49,7 +49,7 @@ class CollectionTest extends TestCase
     {
         $this->collection->add(new MockModel());
         $this->assertIsArray($this->collection->toArray());
-        foreach($this->collection as $item){
+        foreach ($this->collection as $item) {
             $this->assertInstanceOf(MockModel::class, $item);
         }
     }
@@ -58,8 +58,8 @@ class CollectionTest extends TestCase
     {
         $this->collection->add(new MockModel([
             'userName' => 'different',
-            'email'=>'as@as.de',
-            'password'=>'safe'
+            'email' => 'as@as.de',
+            'password' => 'safe'
         ]));
         $this->assertInstanceOf(Collection::class, $this->collection->store());
     }
@@ -78,7 +78,7 @@ class CollectionTest extends TestCase
     {
         $this->collection->add(new MockModel([
             'userName' => 'different',
-            'email'=>'as@as.de',
+            'email' => 'as@as.de',
         ]));
         $this->assertSame('as@as.de', $this->collection->last()->email);
     }
@@ -96,5 +96,23 @@ class CollectionTest extends TestCase
         $collectionCopy = clone $this->collection;
         $collectionCopy->filter(fn($model) => false);
         $this->assertEmpty($collectionCopy->toArray());
+    }
+    public function testFind()
+    {
+        $this->collection->add(new MockModel([
+            'userName' => 'adam',
+            'email' => 'adam@test.com'
+        ]));
+        $found = $this->collection->find(['userName' => 'adam']);
+        $this->assertSame('adam@test.com', $found->email);
+    }
+    public function testFindWildcard()
+    {
+        $this->collection->add(new MockModel([
+            'userName' => 'eve',
+            'email' => 'eve@test.com'
+        ]));
+        $found = $this->collection->find(['userName' => 'ev%']);
+        $this->assertSame('eve@test.com', $found->email);
     }
 }

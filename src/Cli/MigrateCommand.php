@@ -39,7 +39,7 @@ class MigrateCommand extends Command
             )
             ->addArgument(
                 'model',
-                InputArgument::REQUIRED,
+                InputArgument::OPTIONAL,
                 'Fully qualified model name',
                 null
             )->addOption(
